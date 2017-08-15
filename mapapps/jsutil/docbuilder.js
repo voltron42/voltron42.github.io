@@ -46,8 +46,8 @@ function range(count) {
 
 function applyToGrid(bitsize,func) {
     var size = (1 << bitsize);
-    range(size).forEach(function(x) {
-        range(size).forEach(function (y) {
+    range(size).forEach(function(y) {
+        range(size).forEach(function (x) {
             func(x, y, size);
         });
     });
@@ -62,7 +62,7 @@ function encodebitmap(bitsize, colorssize) {
         colorbits["#r" + c] = c;
     }
     var colors = [];
-    applyToGrid(bitsize, function (x, y) {
+    applyToGrid(bitsize, function (x, y, size) {
         var rect = document.getElementById(x.toString(size) + "" + y.toString(size));
         var fill = rect.attributes.getNamedItem("href");
         colors.push(colorbits[fill.value]);
@@ -156,7 +156,7 @@ function transform(type, bitsize) {
     newPoints.forEach(function (p) {
         var rect = document.getElementById(p.x.toString(size) + "" + p.y.toString(size));
         var fill = rect.attributes.getNamedItem("href");
-        fill.value = p.value
+        fill.value = p.fill
     })
 }
 
