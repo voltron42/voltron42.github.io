@@ -1,3 +1,22 @@
+var frame = {
+	tag: "polygon",
+	attrs: {
+		id: "frame",
+		points: [
+			[0,10],
+			[5,0],
+			[15,0],
+			[20,10],
+			[15,20],
+			[5,20]
+		].map(function(p){
+			return p.join(",");
+		}).join(" "),
+		stroke: "black",
+		"stroke-width": "1",
+		fill: "inherit"
+	}
+};
 function TileSet(appendTo,defId) {
 	var mytiles = 0;
 	var tileCtrl = function(n) {
@@ -9,34 +28,47 @@ function TileSet(appendTo,defId) {
 					name: "tileSelect",
 					id: "tileSelect" + n,
 					type: "radio",
+					checked: "true",
 					value: n
 				}
 			},{
-				tag: "label",
-				children: " Name: "
-			},{
-				tag: "input",
-				attrs: {
-					id: "tileName" + n,
-					type: "text",
-				}
-			},{
-				tag: "label",
-				children: " Color: "
-			},{
-				tag: "input",
-				attrs: {
-					id: "tileColor" + n,
-					type: "text",
-				}
-			},{
-				tag: "label",
-				children: " JSON Contents: "
-			},{
-				tag: "textarea",
-				attrs: {
-					id: "tileContents" + n,
-				}
+				tag: "ul",
+				children: [{
+					tag: "li",
+					children: [{
+						tag: "label",
+						children: [" Name: "]
+					},{
+						tag: "input",
+						attrs: {
+							id: "tileName" + n,
+							type: "text",
+						}
+					}]
+				},{
+					tag: "li",
+					children: [{
+						tag: "label",
+						children: [" Color: "]
+					},{
+						tag: "input",
+						attrs: {
+							id: "tileColor" + n,
+							type: "text",
+						}
+					}]
+				},{
+					tag: "li",
+					children: [{
+						tag: "label",
+						children: [" JSON Contents: "]
+					},{
+						tag: "textarea",
+						attrs: {
+							id: "tileContents" + n,
+						}
+					}]
+				}]
 			}]
 		}]
 	}
@@ -61,21 +93,34 @@ function TileSet(appendTo,defId) {
 		mytiles++;
 	}
 	this.update = function() {
-		build(document.getElementById(defId),range(mytiles).map(function(n){
+		build(document.getElementById(defId),[frame].concat(range(mytiles).map(function(n){
 			var fields = ["tileName","tileColor","tileContents"].map(function(label){
 				return document.getElementById(label + n).value;
 			})
 			return tilePattern.apply(null,fields);
-		}))
+		})));
 	}
 	this.getSelected = function() {
-		var value = range(mytiles).map(function(n){
+		return range(mytiles).map(function(n){
 			return document.getElementById("tileSelect" + n);
 		}).filter(function(radio){
 			return radio.checked;
 		}).map(function(radio){
 			return radio.value;
-		});
+		})[0];
+	}
+	this.getTiles = function() {
+		return range(mytiles).reduce(function(out,n){
+			var tile = ["tileName","tileColor","tileContents"].reduce(function(obj,label){
+				obj[label] = document.getElementById(label + n).value;
+				return obj;
+			},{});
+			out[tile.tileName] = ["tileColor","tileContents"].reduce(function(obj,label){
+				obj[label] = tile[label];
+				return obj;
+			},{});
+			return out;
+		},{});
 	}
 }
 
@@ -92,30 +137,10 @@ function Grid(instanceName,appendTo,defId,tileSet) {
 			},
 			children: [{
 				tag: "defs",
-				children:[{
-					tag: "polygon",
-					attrs: {
-						id: "frame",
-						points: [
-							[0,10],
-							[5,0],
-							[15,0],
-							[20,10],
-							[15,20],
-							[5,20]
-						].map(function(p){
-							return p.join(",");
-						}).join(" "),
-						stroke: "black",
-						"stroke-width": "1",
-						fill: "inherit"
-					}
-				},{
-					tag:"g",
-					attrs: {
-						id: defId
-					}
-				}]
+				attrs: {
+					id: "defs"
+				},
+				children:[frame]
 			},{
 				tag: "g",
 				attrs: {
@@ -125,7 +150,9 @@ function Grid(instanceName,appendTo,defId,tileSet) {
 		}]);
 	}
 	this.setDim = function(widthField, heightField) {
-		grid = {};
+		for (var x in grid) {
+			delete(grid[x]);
+		}
 		var width = document.getElementById(widthField).value;
 		var height = document.getElementById(heightField).value;
 		var svg = document.getElementById("mySvg");
@@ -138,7 +165,6 @@ function Grid(instanceName,appendTo,defId,tileSet) {
 		var hexes = range(height).reduce(function(out,row){
 			return range(width).reduce(function(prev,col){
 				var id = col + "-" + row;
-				grid[id] = "white";
 				return prev.concat({
 					tag: "use",
 					attrs: {
@@ -164,11 +190,34 @@ function Grid(instanceName,appendTo,defId,tileSet) {
 		build(document.getElementById("thisGrid"), hexes);
 	}
 	this.publish = function(textOut) {
-		
+		var output = document.getElementById(textOut);
+		var json = {
+			tiles:tileSet.getTiles(),
+			map:Object.keys(grid).reduce(function(out,key){
+				var tileId = grid[key];
+				var point = key.split("-").map(parseInt);
+				if (tileId in out) {
+					out[tileId].push(point);
+				} else {
+					out[tileId] = [point];
+				}
+				return out;
+			},{})
+		};
+		output.innerHTML = JSON.stringify(json);
 	}
 	this.applyTile = function(col,row) {
-		var tileId = tileSet.getSelected();
-		var hex = document.getElementById(col + "-" + row);
+		tileSet.update();
+		console.log(JSON.stringify(tileSet.getTiles()));
+		var tileIndex = tileSet.getSelected();
+		console.log("tile index: " + tileIndex);
+		var tileId = document.getElementById("tileName" + tileIndex).value;
+		console.log("tile id: " + tileId);
+		var hexId = col + "-" + row;
+		console.log("hex id: " + hexId);
+		grid[hexId] = tileId;
+		console.log("grid: " + JSON.stringify(grid));
+		var hex = document.getElementById(hexId);
 		var fill = hex.attributes.getNamedItem("fill");
 		fill.value = "url(#" + tileId + ")";
 	}
@@ -178,125 +227,7 @@ var tiles = new TileSet("input-list","defs");
 
 var myGrid = new Grid("myGrid","map","defs",tiles);
 
-function buildHexmap(tiles, map) {
-	var hexframe = {
-		tag: "polygon",
-		attrs: {
-			id: "frame",
-			points: [
-				[0,10],
-				[5,0],
-				[15,0],
-				[20,10],
-				[15,20],
-				[5,20]
-			].map(function(p){
-				return p.join(",");
-			}).join(" "),
-			stroke: "black",
-			"stroke-width": "1",
-			fill: "inherit"
-		}
-	};
-	var patterns = Object.keys(tiles).map(function(tileId) {
-		var tile = tiles[tileId];
-		return {
-			tag: "pattern",
-			attrs: {
-				id: tileId,
-				width: "20",
-				height: "20"
-			},
-			children: [{
-				tag: "rect",
-				attrs: {
-					width: 20,
-					height: 20,
-					fill: tile.color
-				}
-			}].concat(tile.contents)
-		};
-	});
-	var keys = ["x", "y"];
-	var dim = {x: 0, y: 0};
-	var hexes = Object.keys(map).reduce(function(prev,tileId){
-		return map[tileId].reduce(function(out,xy){
-			console.log("xy:" + xy);
-			var p = xy.reduce(function(prev,c,i){
-				prev[keys[i]] = c;
-				return prev;
-			},{});
-			console.log("p:");
-			console.log(p);
-			keys.forEach(function(k){
-				dim[k] = Math.max(p[k],dim[k]);
-			});
-			console.log("dim:");
-			console.log(dim);
-			return out.concat({
-				tag: "use",
-				attrs: {
-					id: p.x + "-" + p.y,
-					x: 1 + 15 * p.x,
-					y: 1 + 20 * p.y + ((p.x % 2) * 10),
-					href: "#frame",
-					fill: "url(#"+tileId+")",
-					onClick: "setHex(" + p.x + "," + p.y + ")"
-				}
-			});
-		},prev);
-	},[]);
-	keys.forEach(function(k){
-		dim[k]++;
-	})
-	var size = {
-		width: dim.x*15 + 7,
-		height: dim.y * 20 + 12
-	};
-	return [{
-		tag: "svg",
-		attrs: {
-			width: "50%",
-			height: "50%",
-			viewBox: [0, 0, size.width, size.height].join(" ")
-		},
-		children: [{
-			tag: "defs",
-			children: [hexframe].concat(patterns)
-		},{
-			tag: "rect",
-			attrs: {
-				width: size.width,
-				height: size.height,
-				"stroke-width": 1,
-				stroke: "black",
-				fill: "white"
-			}
-		}].concat(hexes)
-	}]
-}
-
-function buildMe() {
-	var input = document.getElementById("input");
-	var json = JSON.parse(input.value);
-	var divmap = document.getElementById("map");
-	var hexmap = buildHexmap(json.tiles, json.map);
-	console.log(hexmap);
-	build(divmap, hexmap);
-}
-
 function startup() {
-	var size = {
-		rows: 3,
-		cols: 4
-	};
-	var r0 = "y".repeat(size.rows).split("").reduce(function(out,v0,row){
-		return "x".repeat(size.cols).split("").reduce(function(prev,v1,col){
-			prev.push([col,row]);
-			return prev;
-		},out)
-	},[])
-	console.log(r0);
 	build(document.getElementsByTagName("body")[0],[{
 		tag: "UL",
 		attrs: {
@@ -343,7 +274,7 @@ function startup() {
 	},{
 		tag: "button",
 		attrs:{
-			onClick: "grid.setDim('cols','rows')"
+			onClick: "myGrid.setDim('cols','rows')"
 		},
 		children: ["Build"]
 	},{
@@ -351,7 +282,7 @@ function startup() {
 	},{
 		tag: "button",
 		attrs:{
-			onClick: "grid.publish('input')"
+			onClick: "myGrid.publish('output')"
 		},
 		children: ["Publish"]
 	},{
@@ -366,7 +297,8 @@ function startup() {
 	},{
 		tag: "textarea",
 		attrs: {
-			id: "input"
+			id: "output"
 		}
 	}]);
+	myGrid.init();
 }
