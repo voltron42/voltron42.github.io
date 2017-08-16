@@ -1,4 +1,5 @@
 (function(){
+try {
 global.ctrl = {
 addColor: function(paletteId){
 },
@@ -60,6 +61,9 @@ init:function() {
     }])
 }
 };
+} catch (e) {
+alert(e);
+}
 )()
 
 
