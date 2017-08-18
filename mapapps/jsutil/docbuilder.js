@@ -106,42 +106,46 @@ function buildGrid(bitsize, coeff) {
     return grid;
 }
 
-function buildTypes(bitsize) {
-    var size = (1 << bitsize);
+function buildTypes(width,height) {
     function getX(x, y) {
         return x;
     }
     function getY(x, y) {
         return y;
     }
-    function invertX(x, y) {
+    function invertX(size) {
+      return function(x, y) {
         return (size - 1) - x;
+      }
     }
-    function invertY(x, y) {
+    function invertY(size) {
+      return function(x, y) {
         return (size - 1) - y;
+      }
     }
     return {
         horiz: {
-            x: invertX,
+            x: invertX(width),
             y: getY
         },
         vert: {
             x: getX,
-            y: invertY
+            y: invertY(height)
         },
         right: {
-            x: invertY,
+            x: invertY(width),
             y: getX
         },
         left: {
             x: getY,
-            y: invertX
+            y: invertX(height)
         }
     }
 }
 
 function transform(type, bitsize) {
-    var tf = buildTypes(bitsize)[type];
+    var size = (1 << bitsize);
+    var tf = buildTypes(size,size)[type];
     var newPoints = [];
     applyToGrid(bitsize, function (x, y, size) {
         var rect = document.getElementById(x.toString(size) + "" + y.toString(size));
@@ -160,6 +164,14 @@ function transform(type, bitsize) {
     })
 }
 
+function tfGrid(type,width,height) {
+  var grid = range(height).reduce(function(out,y){
+    return range(width).reduce(function(next,x){
+      //TODO
+    },out);
+  },{});
+}
+
 function loadGrid(bitsize, colorsize, shortlist) {
     var size = 1 << bitsize;
     var colorCount = 1 << colorsize;
@@ -175,4 +187,75 @@ function loadGrid(bitsize, colorsize, shortlist) {
         var fill = rect.attributes.getNamedItem("href");
         fill.value = "#r" + color;
     })
+}
+
+function button(label,fnCall) {
+  return {
+    tag: "button",
+    attrs: { onClick: fnCall },
+    children: [label]
+  };
+}
+
+function radio(radioGroup,id,value,checked) {
+  var attrs = {
+    type: "radio",
+    name: radioGroup,
+    id: id,
+    value: value
+  }
+  if (checked) {
+    attrs.checked = true;
+  }
+  return {
+    tag: "input",
+    attrs: attrs
+  }
+}
+
+function number(id,value,onChange) {
+  var attrs = {
+    id: id,
+    type: "number",
+    value: value,
+    style: "width: 5em;",
+  }
+  if (onChange) {
+    attrs.onChange = onChange;
+  }
+  return {
+    tag: "input",
+    attrs: attrs
+  }
+}
+
+function labeled(name,label,item) {
+  item.attrs.name = name;
+  return [{
+    tag: "label",
+    attrs:{ for: name },
+    children: [label]
+  }].concat(item);
+}
+
+function listed() {
+  return {
+    tag: "li",
+    children: arguments
+  }
+}
+
+function text(id,value,onChange) {
+  var attrs = {id:id,type:"text"};
+  if (value) {
+    attrs.value = value;
+  }
+  if (onChange) {
+    attrs.onChange = onChange;
+  }
+  return {tag:"input",attrs:attrs};
+}
+
+function br() {
+  return { tag: "br" };
 }
