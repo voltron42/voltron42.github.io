@@ -11,7 +11,7 @@ function buildRequest() {
       }
     }
   }
-  req.open("POST", "http://scullery-plateau.herokuapp.com/api" + path, true);
+  req.open("POST", "https://scullery-plateau.herokuapp.com/api" + path, true);
   req.send(body);
 }
 
