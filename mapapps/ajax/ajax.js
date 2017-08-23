@@ -1,3 +1,9 @@
+var typemap = {
+  "/pdf":"application/pdf",
+  "/svg/png":"image/png",
+  "/svg/jpeg":"image/jpeg"
+}
+
 function buildRequest() {
   var path = document.getElementById("path").value;
   var body = document.getElementById("body").value;
@@ -5,7 +11,9 @@ function buildRequest() {
   req.onreadystatechange = function() {
     if (this.readyState == 4) {
       if (this.status == 200) {
-        window.open(this.response);
+        var blob = new Blob([this.response], {type: typemap[path]});
+        var objUrl = URL.createObjectURL(blob);
+        window.open(objUrl);
       } else {
         alert(this.responseText);
       }
