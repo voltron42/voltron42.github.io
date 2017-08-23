@@ -12,6 +12,7 @@ function buildRequest() {
     }
   }
   req.open("POST", "https://scullery-plateau.herokuapp.com/api" + path, true);
+  xhttp.setRequestHeader("Content-Type", "application/edn");
   req.send(body);
 }
 
