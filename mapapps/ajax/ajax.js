@@ -8,15 +8,13 @@ function buildRequest() {
   var path = document.getElementById("path").value;
   var body = document.getElementById("body").value;
   var req = new XMLHttpRequest();
-  req.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      if (this.status == 200) {
-        var blob = new Blob([this.response], {type: typemap[path]});
-        var objUrl = URL.createObjectURL(blob);
-        window.open(objUrl);
-      } else {
-        alert(this.responseText);
-      }
+  req.onload = function() {
+    if (this.status == 200) {
+      var blob = new Blob([this.response], {type: typemap[path]});
+      var objUrl = URL.createObjectURL(blob);
+      window.open(objUrl);
+    } else {
+      alert(this.responseText);
     }
   }
   req.open("POST", "https://scullery-plateau.herokuapp.com/api" + path, true);
