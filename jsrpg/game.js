@@ -17,7 +17,9 @@
       ti85.Pause();
       ti85.Menu(1, "New", CAS1, 3, "Load", LG1, 5, "Quit", END5)
     };
-    var LG1 = function() {}
+    var LG1 = function() {
+      
+    }
     var CAS1 = function() {}
     var END5 = function() {};
     init();
