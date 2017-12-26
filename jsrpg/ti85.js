@@ -15,6 +15,7 @@
         yMin:yMin,
         yMax:yMax
       });
+      document.getElementById(drawId).setAttribute("viewBox",[xMin, yMin, xMax - xMin, yMax - yMin].join(" "));
     };
     this.ClDrw = function() {
       document.getElementById(drawId).innerHTML = "";
@@ -23,7 +24,9 @@
       document.getElementById(lcdId).innerHTML = "";
     };
     this.RcPic = function(picName) {};
-    this.Pause = function() {};
+    this.Pause = function() {
+      alert("paused");
+    };
     var wrapFn = function(fn) {
       return function() {
         delete window.menu;
@@ -37,21 +40,29 @@
       }
     }
     this.Menu = function() {
+      console.log("creating menu");
       var opts = {};
       var dest = {};
       for (var i = 0; i < arguments.length; i += 3) {
-        var index = arguments[i];
-        opts[index] = args[i + 1];
-        dest[index] = wrapFn(args[i + 2]);
+        var opt = arguments[i + 1];
+        if (opt != " ") {
+          var index = arguments[i];
+          opts[index] = opt;
+          dest[index] = wrapFn(arguments[i + 2]);
+        }
       }
       var menu = "";
       Object.keys(opts).forEach(function(key) {
         menu += '<button onClick="menu(' + key + ')">' + opts[key] + '</button>';
       });
       window.menu = menufy(dest);
+      document.getElementById(menuId).innerHTML = menu;
+      console.log("menu creating");
     };
     this.Disp = function(message) {
       print(message);
+    };
+    this.DispG = function() {
     };
     this.Outpt = function(row, column, message) {
       print(message);
@@ -61,5 +72,10 @@
       output.innerHTML = output.innerHTML + '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" fill="none" stroke="black" stroke-width="1"/>';
     };
     this.ZStd = function() {};
+    this.InpST = function(message, varname) {
+      var out = {};
+      out[varname] = prompt(message);
+      return out;
+    }
   };
 })()
