@@ -45,12 +45,12 @@
       console.log("creating menu");
       var opts = {};
       var dest = {};
-      for (var i = 0; i < arguments.length; i += 2) {
-        var index = i / 2;
-        var opt = arguments[i];
+      for (var i = 0; i < arguments.length; i += 3) {
+        var opt = arguments[i + 1];
         if (opt != " ") {
+          var index = arguments[i];
           opts[index] = opt;
-          dest[index] = wrapFn(arguments[i + 1]);
+          dest[index] = wrapFn(arguments[i + 2]);
         }
       }
       var menu = "";

@@ -649,7 +649,7 @@
       ti85.Disp(state.KN1);
       ti85.Disp("");
       for (var it = 1; it <= 4; it++) {
-        var label = "IT" + i;
+        var label = "IT" + it;
         if (state[label] != " ") {
           ti85.Disp(state[label]);
         }
@@ -723,8 +723,8 @@
       ti85.Disp("SAVEGAME?");
       ti85.Menu(1, "Yes", SG1A, 2, "No", END5);
     };
-    var dispSaveGame = function(id, label, default) {
-      state[label] = (state[id] == " ")?default:state[id];
+    var dispSaveGame = function(id, label, defaultLabel) {
+      state[label] = (state[id] == " ")?defaultLabel:state[id];
       ti85.Disp(state[label]);
     }
     var SG1A = function() {
@@ -762,7 +762,7 @@
           SK3: "KN1"
         }));
     };
-    VAR SG1B = function(savegame, savedata) {
+    var SG1B = function(savegame, savedata) {
       return function() {
         state.merge(ti85.InpST("Enter Filename", savegame));
         state.copyFields(savedata);
