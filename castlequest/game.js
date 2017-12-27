@@ -789,6 +789,7 @@
       ti85.AxesOn();
       ti85.ClLCD();
       ti85.Disp("GAME OVER");
+      init();
     };
     console.log("game created.");
     init();
