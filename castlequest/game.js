@@ -119,10 +119,8 @@
     }
   }
   window.Game = function(ti85) {
-    console.log("creating game.")
     var state = new Object();
     var init = function(){
-      console.log("initializing game.")
       state.merge({
           IT1: " ",
           IT2: " ",
@@ -136,7 +134,6 @@
       ti85.ClDrw();
       ti85.RcPic("TITLE");
       ti85.Pause();
-      console.log("Game initialized.");
       ti85.Menu(1, "New", CAS1, 3, "Load", LG1, 5, "Quit", END5)
     };
     var LG1 = function() {
@@ -383,11 +380,9 @@
       MONMA();
     };
     var MONR = function() {
-      console.log("running away");
       ti85.ClLCD();
       ti85.Disp("Run away, coward!");
       ti85.Pause();
-      console.log("calling MON6");
       MON6();
     };
     var MONMA = function() {
@@ -527,7 +522,6 @@
       MON6();
     };
     var MON6 = function() {
-      console.log("next room");
       state.D++;
       if (state.ML == 1 && state.MHP <= 0) {
         END1();
@@ -543,7 +537,6 @@
       ti85.Disp("Speed: " + state.SPEED);
       ti85.Disp("Attack points: " + state.AP);
       ti85.Pause();
-      console.log("M: " + state.M);
       if (state.M == 1) {
         CAS2();
       } else if (state.M == 2) {
@@ -791,7 +784,6 @@
       ti85.Disp("GAME OVER");
       init();
     };
-    console.log("game created.");
     init();
   }
 })()
