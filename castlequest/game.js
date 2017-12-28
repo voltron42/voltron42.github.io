@@ -1,58 +1,30 @@
 (function() {
+  var storage = {};
   var data = {
-    savegames: {
-      SV1: {
-        KN1:"SK1",
-        D:"SD1",
-        L:"SL1",
-        HP:"SH1",
-        MAGIK:"SM1",
-        SPEED:"SS1",
-        AP:"SA1"
-      },
-      SV2: {
-        KN1:"SK2",
-        D:"SD2",
-        L:"SL2",
-        HP:"SH2",
-        MAGIK:"SM2",
-        SPEED:"SS2",
-        AP:"SA2"
-      },
-      SV3: {
-        KN1:"SK3",
-        D:"SD3",
-        L:"SL3",
-        HP:"SH3",
-        MAGIK:"SM3",
-        SPEED:"SS3",
-        AP:"SA3"
-      }
-    },
     newgames: {
       "Arthur": {
-        KN1: "King Arthur",
+        NAME: "King Arthur",
         MAGIK: 40,
         HP: 145,
         SPEED: 20,
         AP: 14
       },
       "Merlin": {
-        KN1: "Merlin",
+        NAME: "Merlin",
         MAGIK: 250,
         HP: 140,
         SPEED: 20,
         AP: 8
       },
       "Gawain": {
-        KN1: "Gawain",
+        NAME: "Gawain",
         MAGIK: 10,
         HP: 180,
         SPEED: 15,
         AP: 10
       },
       "Lancelot": {
-        KN1: "Lancelot",
+        NAME: "Lancelot",
         MAGIK: 10,
         HP: 150,
         SPEED: 15,
@@ -61,61 +33,111 @@
     },
     monsters: {
       BLOB: {
-        MONSTER: "Blob",
-        MHP: 5,
-        MMP: 0,
-        MSP: 2,
-        MAP: 3
+        NAME: "Blob",
+        HP: 5,
+        MAGIK: 0,
+        SPEED: 2,
+        AP: 3
       },
       GHOST: {
-        MONSTER: "Ghost",
-        MHP: 20,
-        MMP: 10,
-        MSP: 10,
-        MAP: 15
+        NAME: "Ghost",
+        HP: 20,
+        MAGIK: 10,
+        SPEED: 10,
+        AP: 15
       },
       GOBLIN: {
-        MONSTER: "Goblin",
-        MHP: 15,
-        MMP: 0,
-        MSP: 15,
-        MAP: 10
+        NAME: "Goblin",
+        HP: 15,
+        MAGIK: 0,
+        SPEED: 15,
+        AP: 10
       },
       ORC: {
-        MONSTER: "Orc",
-        MHP: 30,
-        MMP: 20,
-        MSP: 5,
-        MAP: 10
+        NAME: "Orc",
+        HP: 30,
+        MAGIK: 20,
+        SPEED: 5,
+        AP: 10
       },
       SHA: {
-        MONSTER: "Black Knight",
-        MHP: 45,
-        MMP: 20,
-        MSP: 10,
-        MAP: 30
+        NAME: "Black Knight",
+        HP: 45,
+        MAGIK: 20,
+        SPEED: 10,
+        AP: 30
       },
       SKU: {
-        MONSTER: "Demon's head",
-        MHP: 80,
-        MMP: 25,
-        MSP: 30,
-        MAP: 50
+        NAME: "Demon's head",
+        HP: 80,
+        MAGIK: 25,
+        SPEED: 30,
+        AP: 50
       },
       SOR: {
-        MONSTER: "Sorcerer",
-        MHP: 100,
-        MMP: 200,
-        MSP: 25,
-        MAP: 35
+        NAME: "Sorcerer",
+        HP: 100,
+        MAGIK: 200,
+        SPEED: 25,
+        AP: 35
       },
       DRAG: {
-        MONSTER: "Dragon",
-        MHP: 90,
-        MMP: 100,
-        MSP: 35,
-        MAP: 30
+        NAME: "Dragon",
+        HP: 90,
+        MAGIK: 100,
+        SPEED: 35,
+        AP: 30
       }
+    },
+    itemEffect: {
+      "Magic vial": { MAGIK: 5 },
+      "Magic potion": { MAGIK: 20 },
+      "Healing herb": { HP: 5 },
+      "Healing potion": { HP: 20 }
+    },
+    spellEffect: {
+      Heal: {
+        cost: 5,
+        effect: {
+          self: {
+            HP: 5
+          }
+        }
+      },
+      Healmore: {
+        cost: 20,
+        effect: {
+          self: {
+            HP: 20
+          }
+        }
+      },
+      Hurt: {
+        cost: 5,
+        effect: {
+          enemy: {
+            HP: 5
+          }
+        }
+      },
+      Hurtmore: {
+        cost: 20,
+        effect: {
+          enemy: {
+            HP: 20
+          }
+        }
+      },
+      Teleport: {
+        cost: 15,
+        effect: {
+          state: {
+            D: function() {
+              return 1 + Math.floor(state.DMAX * Math.random());
+            }
+          }
+        }
+      },
     }
   }
   window.Game = function(ti85) {
@@ -130,87 +152,46 @@
           L: 1
         });
       ti85.dimCanvas(-90,90,-90,90);
-      ti85.AxesOff();
-      ti85.ClDrw();
       ti85.RcPic("TITLE");
-      ti85.Pause();
-      ti85.Menu(1, "New", CAS1, 3, "Load", LG1, 5, "Quit", END5)
+      ti85.Menu({"New":CAS1,"Load":LG1,"Quit":END5})
     };
     var LG1 = function() {
-      ti85.ClLCD();
-      if (state.SV1 == " " && state.SV2 == " " && state.SV3 == " ") {
+      if (Object.keys(storage).length == 0) {
         ti85.Disp("No games to load.");
-        ti85.Pause();
         CAS1();
       } else {
         ti85.Disp("LOADGAME");
-        ti85.Disp(state.SV1);
-        ti85.Disp(state.SV2);
-        ti85.Disp(state.SV3);
-        ti85.Menu(
-          1, state.SV1, LG2(data.savegames.SV1),
-          2, state.SV2, LG2(data.savegames.SV2),
-          3, state.SV3, LG2(data.savegames.SV3)
-        );
+        var menu = {};
+        Object.keys(storage).forEach(function(key){
+          ti85.Disp(key);
+          menu[key] = LG2(storage[key]);
+        });
+        ti85.Menu(menu, CAS2);
       }
     }
     var LG2 = function(loadData) {
       return function() {
-        state.copyFields(loadData);
-        CAS2();
+        state.copyData(loadData);
       }
     }
     var CAS1 = function() {
-      ti85.ClDrw();
       state.merge({
         D:1,
         RM:29
       });
-      ti85.ClDrw();
       ti85.RcPic("KNIGHT1");
-      ti85.Menu(
-        1, "Arthur",
-        CNEW({
-          KN1: "King Arthur",
-          MAGIK: 40,
-          HP: 145,
-          SPEED: 20,
-          AP: 14
-        }),
-        2, "Merlin",
-        CNEW({
-          KN1: "Merlin",
-          MAGIK: 250,
-          HP: 140,
-          SPEED: 20,
-          AP: 8
-        }),
-        3, "Gawain",
-        CNEW({
-          KN1: "Gawain",
-          MAGIK: 10,
-          HP: 180,
-          SPEED: 15,
-          AP: 10
-        }),
-        4, "Lancelot",
-        CNEW({
-          KN1: "Lancelot",
-          MAGIK: 10,
-          HP: 150,
-          SPEED: 15,
-          AP: 12
-        }));
+      var menu = {};
+      Object.keys(data.newgames).forEach(function(key) {
+        menu[key] = CNEW(data.newgames[key]);
+      });
+      ti85.Menu(menu, CAS2);
     }
     var CNEW = function(newData) {
       return function() {
-        state.merge(newData);
-        CAS2();
+        state.Player = newData;
       }
     }
     var CAS2 = function() {
-      ti85.ClLCD();
-      ti85.ClDrw();
       ti85.Line(-90, 90, 90, 90);
       ti85.Line(90, 90, 90, -90);
       ti85.Line(90, -90, -90, -90);
@@ -253,25 +234,29 @@
       }
       state.M = 1;
       state.I = 1;
-      ti85.Menu(
-        1, "Go", PRO1,
-        2, "Stat", STATS,
-        3, "Spells", SPELL,
-        4, "Inventory", INVENT,
-        5, "Quit", END2);
+      ti85.Menu({
+        "Go":PRO1,
+        "Stat":STATS,
+        "Spells":SPELL,
+        "Inventory":INVENT,
+        "Quit":END2});
     }
     var PRO1 = function() {
-      state.merge({
-        ML: 0,
-        D1:"&LT;",
-        D2:"^",
-        D3:"&GT;",
-        D4: Math.floor(1 + 4 * Math.random())
-      });
-      if (state.D4 == 1) {state.D1 = " ";}
-      if (state.D4 == 2) {state.D2 = " ";}
-      if (state.D4 == 3) {state.D3 = " ";}
-      ti85.Menu(2, state.D1, MONAD(2), 3, state.D2, MONAD(1), 4, state.D3, MONAD(3));
+      var directions = {
+        Left:2,
+        Forward:1,
+        Right:3,
+      }
+      var ignore = Math.floor(1 + 4 * Math.random());
+      state.ML = 0;
+      var menu = {};
+      Object.keys(directions).forEach(function(key) {
+        var offset = directions[key];
+        if (offset != ignore) {
+          menu[key] = MONAD(offset);
+        }
+      })
+      ti85.Menu(menu);
     };
     var MONAD = function(offset) {
       return function() {
@@ -280,13 +265,7 @@
       }
     }
     var MON4 = function() {
-      if (state.RDM <= 3) {
-        MON6();
-      } else if (state.RDM <= 10) {
-        MONI();
-      } else {
-        MONM();
-      }
+      ((state.RDM <= 3)?MON6:((state.RDM <= 10)?MONI:MONM))();
     };
     var MONI = function() {
       if (state.RDM >= 3 && state.RDM <= 5) { state.TXT1 = "Healing herb"; }
@@ -301,9 +280,12 @@
       INVENT4();
     };
     var INVENT4 = function() {
-      ti85.ClLCD();
       ti85.Disp(state.TXT2);
-      ti85.Menu(1, "Take", TAK, 2, "Inventory", INVENT, 5, "Go", MON6);
+      ti85.Menu({
+        "Take": TAK,
+        "Inventory": INVENT,
+        "Go": MON6
+      });
     };
     var TAK = function() {
       if (state.IT1 == " ") {
@@ -315,19 +297,16 @@
       } else if (state.IT4 == " ") {
         state.IT4 = state.TXT1;
       } else {
-        ti85.ClLCD();
         ti85.Disp("You have no room.");
       }
       MON6();
     };
     var loadMonster = function(key) {
       ti85.RcPic(key);
-      state.merge(data.monsters[key]);
+      state.monster = data.monsters[key];
     }
     var MONM = function() {
       state.M = 2;
-      ti85.ClLCD();
-      ti85.ClDrw();
       if (state.RDM >= 11 && state.RDM <= 17) {
         loadMonster("BLOB");
       } else if (state.RDM >= 18 && state.RDM <= 23) {
@@ -349,105 +328,85 @@
         }
       }
       state.merge({
-        TXT1: "You encounter a " + state.MONSTER + ".",
+        TXT1: "You encounter a " + state.Monster.NAME + ".",
         ODD3: 1 + Math.floor(Math.random() * 100)
       });
       ti85.Disp(state.TXT1);
       state.MM = 1 + Math.floor(Math.random() * 15);
       if (state.MM <= 10) {
-        ti85.Pause();
         MONB();
       } else {
-        ti85.ClLCD();
-        ti85.Disp(state.MONSTER + " catches you off guard!");
-        ti85.Pause();
+        ti85.Disp(state.Monster.NAME + " catches you off guard!");
         MONB();
       }
     };
     var MONB = function() {
-      ti85.DispG();
-      ti85.Menu(
-        1, "Attack", MONA,
-        2, "Run", MONR,
-        3, "Inventory", INVENT,
-        4, "Spells", SPELL,
-        5, "Stat", STATS);
+      ti85.Menu({
+        "Attack":MONA,
+        "Run":MONR,
+        "Inventory":INVENT,
+        "Spells":SPELL,
+        "Stat":STATS
+      });
     };
     var MONA = function() {
-      ti85.ClLCD();
       ti85.Disp("You Attack.");
-      state.ODD1 = 1 + (state.SPEED / Math.floor(state.SPEED / 10));
+      state.ODD1 = 1 + (state.Player.SPEED / Math.floor(state.Player.SPEED / 10));
       MONMA();
     };
     var MONR = function() {
-      ti85.ClLCD();
       ti85.Disp("Run away, coward!");
-      ti85.Pause();
       MON6();
     };
     var MONMA = function() {
-      state.ODD2 = 1 + (state.MSP / Math.floor(state.MSP / 10));
+      state.ODD2 = 1 + (state.Monster.SPEED / Math.floor(state.Monster.SPEED / 10));
       if (state.ODD3 > 65) {
         if (state.ODD1 > state.ODD2) {
           ti85.Disp("Excellent shot!");
           state.merge({
-            MHP: state.MHP - (state.AP * 2),
-            AP2: 2 * state.AP,
+            MHP: state.Monster.HP - (state.Player.AP * 2),
+            AP2: 2 * state.Player.AP,
             Y: 2
           });
-          ti85.Disp(state.MONSTER + "'s HP down by " + state.AP2);
-          ti85.Pause();
+          ti85.Disp(state.Monster.NAME + "'s HP down by " + state.Player.AP2);
           MONMB();
         } else {
-          ti85.Disp(state.MONSTER + " dodges.");
-          ti85.Pause();
+          ti85.Disp(state.Monster.NAME + " dodges.");
           MONMB();
         }
       } else {
         state.merge({
-          MHP: state.MHP - state.AP,
-          AP2: state.AP,
+          MHP: state.Monster.HP - state.Player.AP,
+          AP2: state.Player.AP,
           Y: 2
         });
-        ti85.Disp(state.MONSTER + "'s HP down by " + state.AP2);
-        ti85.Pause();
+        ti85.Disp(state.Monster.NAME + "'s HP down by " + state.Player.AP2);
         MONMB();
       }
     };
     var MONMAS = function() {
-      ti85.ClLCD();
       ti85.Disp("You cast " + state.SPL + ".");
       if (state.SLP == 2) {
-        ti85.Disp(state.MONSTER + "'s HP down by " + state.AP2);
+        ti85.Disp(state.Monster.NAME + "'s HP down by " + state.AP2);
       }
-      ti85.Pause();
       MONMB();
     };
     var MONMB = function() {
-      if (state.MHP <= 0) {
+      if (state.Monster.HP <= 0) {
         MON5();
       } else {
-        if (state.MMP <= 5) {
-          state.MRA = 1 + Math.floor(15 * Math.random());
-        } else {
-          state.MRA = 1 + Math.floor(20 * Math.random());
-        }
-        if (state.MRA <= 15) {
-          MONMBA();
-        } else {
-          MONMBS();
-        }
+        state.MRA = 1 + Math.floor(((state.Monster.MAGIK <= 5)?15:20) * Math.random());
+        ((state.MRA <= 15)?MONMBA:MONMBS)();
       }
     };
     var MONMBA = function() {
-      ti85.ClLCD();
-      ti85.Disp(state.MONSTER + " attacks!");
+      ti85.Disp(state.Monster.NAME + " attacks!");
       if (state.ODD3 < 25) {
         if (state.ODD2 > (state.ODD1 * 2 / 3)) {
           ti85.Disp("You're in trouble.")
           state.merge({
-            HP: state.HP - (state.MAP * 2),
-            MAP2: 2 * state.MAP,
+            HP: state.Player.HP - (state.Monster.AP * 2),
+            MAP2: 2 * state.Monster.AP,
             Y: 2
           });
           ti85.Disp("Your HP is down by " + state.MAP2 + ".");
@@ -456,130 +415,149 @@
         }
       } else {
         state.merge({
-          HP: state.HP - state.MAP,
-          MAP2: state.MAP,
+          HP: state.Player.HP - state.Monster.AP,
+          MAP2: state.Monster.AP,
           Y: 2
         });
         ti85.Disp("Your HP is down by " + state.MAP2 + ".");
       }
-      ti85.Pause();
       MONE();
     };
     var MONMBS = function() {
-      ti85.ClLCD();
-      if (state.MMP >= 20) {
-        state.MS = 1 + Math.floor(40 * Math.random());
-      } else {
-        state.MS = 1 + Math.floor(15 * Math.random());
-      }
+      state.MS = 1 + Math.floor(((state.Monster.MAGIK >= 20)?40:15) * Math.random());
       if (state.MS <= 5) {
-        state.merge({
-          MLP: "Heal",
-          MHP: state.MHP + 5,
-          MMP: state.MMP - 5
-        })
+        state.MLP = "Heal";
       } else if (state.MS > 5 && state.MS <= 15) {
-        state.merge({
-          MLP: "Hurt",
-          HP: state.HP - 5,
-          MMP: state.MMP - 5
-        })
+        state.MLP = "Hurt";
       } else if (state.MS > 15 && state.MS <= 30) {
-        state.merge({
-          MLP: "Hurtmore",
-          HP: state.HP - 20,
-          MMP: state.MMP - 20
-        })
+        state.MLP = "Hurtmore";
       } else {
-        state.merge({
-          MLP: "Healmore",
-          MHP: state.MHP + 20,
-          MMP: state.MMP - 20
-        })
+        state.MLP = "Healmore";
       }
-      ti85.Disp(state.MONSTER + " casts " + state.MLP);
+      var spell = data.spellEffects[state.MLP];
+      state.Monster.MAGIK = state.Monster.MAGIK - spell.cost;
+      if (spell.effect.enemy) {
+        applySpellEffects(spell.effect.enemy, state.Player);
+      }
+      if (spell.effect.self) {
+        applySpellEffects(spell.effect.self, state.Monster);
+      }
+      ti85.Disp(state.Monster.NAME + " casts " + state.MLP);
       if (state.MS > 5 && state.MS <= 30) {
         ti85.Disp("Your HP is down by " + state.AP2 + ".");
       }
-      ti85.Pause();
       MONE();
     };
     var MONE = function() {
-      if (state.HP <= 0) {
+      if (state.Player.HP <= 0) {
         END4();
       } else {
         MONB();
       }
     };
     var MON5 = function() {
-      ti85.ClLCD();
-      ti85.Disp(state.MONSTER + " is dead.");
-      ti85.Pause();
+      ti85.Disp(state.Monster.NAME + " is dead.");
       state.merge({
-        HP: state.HP + 1 + Math.floor(state.MAP / 3),
-        MAGIK: state.MAGIK + 1 + Math.floor(state.MSP / 3)
+        HP: state.Player.HP + 1 + Math.floor(state.Monster.AP / 3),
+        MAGIK: state.Player.MAGIK + 1 + Math.floor(state.Monster.SPEED / 3)
       })
       MON6();
     };
     var MON6 = function() {
       state.D++;
-      if (state.ML == 1 && state.MHP <= 0) {
-        END1();
-      } else {
-        CAS2();
-      }
+      ((state.ML == 1 && state.Monster.HP <= 0)?END1:CAS2)();
     };
     var STATS = function() {
-      ti85.ClLCD();
-      ti85.Disp(state.KN1);
-      ti85.Disp("Hit points: " + state.HP);
-      ti85.Disp("Magic: " + state.MAGIK);
-      ti85.Disp("Speed: " + state.SPEED);
-      ti85.Disp("Attack points: " + state.AP);
-      ti85.Pause();
-      if (state.M == 1) {
-        CAS2();
-      } else if (state.M == 2) {
-        MONB();
-      } else {
-        SPELL();
-      }
+      ti85.Disp(state.Player.NAME);
+      ti85.Disp("Hit points: " + state.Player.HP);
+      ti85.Disp("Magic: " + state.Player.MAGIK);
+      ti85.Disp("Speed: " + state.Player.SPEED);
+      ti85.Disp("Attack points: " + state.Player.AP);
+      ((state.M == 1)?CAS2:((state.M == 2)?MONB:SPELL))();
     };
     var SPELL = function() {
-      ti85.ClLCD();
       state.SLL = 0;
       ti85.Disp("Magic: ");
-      ti85.Disp(state.MAGIK);
-      MA1();
+      ti85.Disp(state.Player.MAGIK);
+      Object.keys(data.spellEffects).forEach(function(name) {
+        var spell = data.spellEffects[name];
+        ti85.Disp(name + ": " + spell.cost);
+      })
+      ti85.Menu({
+        "Cast":MA1M,
+        "Exit":MA5
+      });
     };
-    var MA1 = function() {
-      ti85.Disp("Heal: " + 5);
-      ti85.Disp("Healmore: " + 5);
-      ti85.Disp("Hurt: " + 20);
-      ti85.Disp("Hurtmore: " + 20);
-      ti85.Disp("Heal: " + 15);
-      ti85.Menu(1, "Cast", MA1M, 5, "Exit", MA5);
-    };
+    var effectTypeFunctions = {
+      number: function(effect) {
+        return function(value) {
+          return effect + value;
+        }
+      },
+      function: function(effect) {
+        return function(value) {
+          return effect(value);
+        }
+      }
+    }
+    var applySpellEffects = function(effects, target) {
+      Object.keys(effects).forEach(function(field) {
+        var effect = effects[field];
+        var fn = effectTypeFunctions[typeof effect](effect);
+        target[field] = fn(target[field]);
+      });
+    }
+    var spellEffect = function(name, spell) {
+      return function () {
+        state.SPL = label;
+        state.SLP = 1;
+        if ((enemy in spell.effect) && state.M != 2) {
+          ti85.Disp("Nothing to hurt.");
+          MA5();
+        } else {
+          if (state.Player.MAGIK < spell.cost) {
+            ti85.Disp("Not enough magic.");
+            ((state.M == 2)?MONB:MA5)();
+          } else {
+            state.Player.MAGIK = state.Player.MAGIK - spell.cost;
+            if (spell.effect.self) {
+              applySpellEffects(spell.effect.self, state.Player);
+            }
+            if (spell.effect.enemy) {
+              applySpellEffects(spell.effect.enemy, state.Monster);
+            }
+            if (spell.effect.state) {
+              applySpellEffects(spell.effect.state, state);
+            }
+            MA5();
+          }
+        }
+      }
+    }
     var MA1M = function() {
       state.SLL = 1;
-      ti85.Menu(
-        1, "Heal", heal("Heal", 5),
-        2, "Healmore", heal("Healmore", 20),
-        3, "Hurt", hurt("Hurt", 5),
-        4, "Hurtmore", hurt("Hurtmore", 20),
-        5, "Teleport", TL);
+      var menu = {};
+      Object.keys(data.spellEffects).forEach(function(name) {
+        var spell = data.spellEffects[name];
+        menu[name] = spellEffect(name, spell);
+      })
+      ti85.Menu({
+        "Heal":heal("Heal", 5),
+        "Healmore":heal("Healmore", 20),
+        "Hurt":hurt("Hurt", 5),
+        "Hurtmore":hurt("Hurtmore", 20),
+        "Teleport":TL
+      });
     };
     var heal = function(label,mark) {
       return function() {
         state.SPL = label;
         state.SLP = 1;
-        if (state.MAGIK < mark) {
-          ti85.ClLCD();
+        if (state.Player.MAGIK < mark) {
           ti85.Disp("Not enough magic.");
-          ti85.Pause();
         } else {
-          state.HP = state.HP + mark;
-          state.MAGIK = state.MAGIC - mark;
+          state.Player.HP = state.Player.HP + mark;
+          state.Player.MAGIK = state.Player.MAGIK - mark;
         }
         MA5();
       }
@@ -589,24 +567,20 @@
         state.SPL = label;
         state.SLP = 1;
         if (state.M == 2) {
-          if (state.MAGIK < mark) {
-            ti85.ClLCD();
+          if (state.Player.MAGIK < mark) {
             ti85.Disp("Not enough magic.");
-            ti85.Pause();
             MONB();
           } else {
             state.merge({
               SLP: 2,
               AP2: mark,
-              MHP: state.MHP - mark,
-              MAGIK: state.MAGIK - mark
+              MHP: state.Monster.HP - mark,
+              MAGIK: state.Player.MAGIK - mark
             })
             MA5();
           }
         } else {
-          ti85.ClLCD();
           ti85.Disp("Nothing to hurt.");
-          ti85.Pause();
           MA5();
         }
       }
@@ -616,30 +590,21 @@
         SPL: "Teleport",
         SLP: 1
       })
-      if (state.MAGIK < 15) {
-        ti85.ClLCD();
+      if (state.Player.MAGIK < 15) {
         ti85.Disp("Not enough magic.");
-        ti85.Pause();
       } else {
         state.merge({
           D: 1 + Math.floor(state.DMAX * Math.random()),
-          MAGIK: state.MAGIK - 15
+          MAGIK: state.Player.MAGIK - 15
         })
       }
       CAS2();
     }
     var MA5 = function() {
-      if (state.M == 1) {
-        CAS2();
-      } else if (state.SLL == 0) {
-        MONB();
-      } else {
-        MONMAS();
-      }
+      ((state.M == 1)?CAS2:((state.SLL == 0)?MONB:MONMAS))()
     }
     var INVENT = function() {
-      ti85.ClLCD();
-      ti85.Disp(state.KN1);
+      ti85.Disp(state.Player.NAME);
       ti85.Disp("");
       for (var it = 1; it <= 4; it++) {
         var label = "IT" + it;
@@ -647,48 +612,55 @@
           ti85.Disp(state[label]);
         }
       }
-      ti85.Menu(1, "Use", INVENT2, 5, "Return", INVENT3, 2, "Drop", DROP)
+      ti85.Menu({
+        "Use":INVENT2,
+        "Return":INVENT3,
+        "Drop":DROP
+      });
     };
-    var DROP4 = function() {
-      state.IT4 = " ";
-      INVENT();
-    };
-    var DROP3 = function() {
-      state.IT3 = state.IT4;
-      DROP4();
-    };
-    var DROP2 = function() {
-      state.IT2 = state.IT3;
-      DROP3();
-    };
-    var DROP1 = function() {
-      state.IT1 = state.IT2;
-      DROP2();
-    };
+    var DROPX = function(x) {
+      if (x < 4) {
+        var nextVal = x + 1;
+        var nextDrop = DROPX(nextVal);
+        return function() {
+          state["IT" + x] = state["IT" + nextVal];
+          nextDrop();
+        }
+      } else {
+        return function() {
+          state.IT4 = " ";
+        }
+      }
+    }
     var DROP = function() {
-      ti85.Menu(
-        1, state.IT1, DROP1,
-        2, state.IT2, DROP2,
-        3, state.IT3, DROP3,
-        4, state.IT4, DROP4,
-        5, "Exit", INVENT);
+      var menu = {"Exit":INVENT};
+      for (var x = 1; x <= 4; x++) {
+        menu[state["IT" + x]] = DROPX(x);
+      }
+      ti85.Menu(menu);
     };
     var ITB = function(field,func) {
       return function() {
-        if (state[field] == "Magic vial") {state.MAGIK += 5;}
-        if (state[field] == "Magic potion") {state.MAGIK += 20;}
-        if (state[field] == "Healing herb") {state.HP += 5;}
-        if (state[field] == "Healing potion") {state.HP += 20;}
+        var effect = data.itemEffect[state[field]];
+        if (effect) {
+          Object.keys(effect).forEach(function(key){
+            state[key] += effect[key];
+          })
+        }
+        if (state[field] == "Magic vial") {state.Player.MAGIK += 5;}
+        if (state[field] == "Magic potion") {state.Player.MAGIK += 20;}
+        if (state[field] == "Healing herb") {state.Player.HP += 5;}
+        if (state[field] == "Healing potion") {state.Player.HP += 20;}
         func();
       }
     }
     var INVENT2 = function() {
-      ti85.Menu(
-        1, state.IT1, ITB("IT1", DROP1),
-        2, state.IT2, ITB("IT2", DROP2),
-        3, state.IT3, ITB("IT3", DROP3),
-        4, state.IT4, ITB("IT4", DROP4),
-        5, "Exit", INVENT);
+      var menu = {"Exit":INVENT};
+      for (var x = 1; x <= 4; x++) {
+        var label = "IT" + x;
+        menu[state[label]] = ITB(label, DROPX(x));
+      }
+      ti85.Menu(menu);
     };
     var INVENT3 = function() {
       if (state.I == 1 && state.M == 1) {
@@ -700,70 +672,46 @@
       }
     };
     var END1 = function() {
-      ti85.ClLCD();
       if (state.L == 3) {
         END3();
       } else {
         ti85.Disp("Wow! You defeated Level " + state.L + "!");
         state.L++;
         ti85.Disp("Now, onto Level " + state.L + ".");
-        ti85.Pause();
         CAS1();
       }
     };
     var END2 = function() {
-      ti85.ClLCD();
       ti85.Disp("SAVEGAME?");
-      ti85.Menu(1, "Yes", SG1A, 2, "No", END5);
+      ti85.Menu({"Yes":SG1A, "No":END5});
     };
-    var dispSaveGame = function(id, label, defaultLabel) {
-      state[label] = (state[id] == " ")?defaultLabel:state[id];
-      ti85.Disp(state[label]);
-    }
     var SG1A = function() {
-      ti85.ClLCD();
       ti85.Disp("SAVEGAME");
-      dispSaveGame("SV1","SV1A","Game1");
-      dispSaveGame("SV2","SV2A","Game2");
-      dispSaveGame("SV3","SV3A","Game3");
-      ti85.Menu(
-        1, state.SV1A, SG1B("SV1", {
-          SD1: "D",
-          SL1: "L",
-          SH1: "HP",
-          SS1: "SPEED",
-          SM1: "MAGIK",
-          SA1: "AP",
-          SK1: "KN1"
-        }),
-        2, state.SV2A, SG1B("SV2", {
-          SD2: "D",
-          SL2: "L",
-          SH2: "HP",
-          SS2: "SPEED",
-          SM2: "MAGIK",
-          SA2: "AP",
-          SK2: "KN1"
-        }),
-        3, state.SV3A, SG1B("SV3", {
-          SD3: "D",
-          SL3: "L",
-          SH3: "HP",
-          SS3: "SPEED",
-          SM3: "MAGIK",
-          SA3: "AP",
-          SK3: "KN1"
-        }));
+      var menu = {"New Game":SG2A};
+      Object.keys(storage).forEach(function(key) {
+        ti85.Disp(key);
+        menu[key] = SG1B(key);
+      });
+      ti85.Menu(menu, END5);
     };
-    var SG1B = function(savegame, savedata) {
+    var save = function(savename) {
+      storage[savename] = state.selectKeys(["D", "L", "Player"]);
+    }
+    var SG2A = function() {
+      var savename = ti85.InpST("Enter Filename", "savegame")["savegame"]
+      if (savename in storage) {
+        ti85.Disp("'" + savename + "' already exists.");
+        END2()
+      } else {
+        save(savename);
+      }
+    }
+    var SG1B = function(savegame) {
       return function() {
-        state.merge(ti85.InpST("Enter Filename", savegame));
-        state.copyFields(savedata);
-        END5();
+        save(savegame);
       }
     }
     var END3 = function() {
-      ti85.ClLCD();
       ti85.Disp(" ");
       ti85.Disp(" ");
       state.YDON = "...And the streets will flow with the blood of the non-believers!";
@@ -771,16 +719,10 @@
       END5();
     };
     var END4 = function() {
-      ti85.ClLCD();
       ti85.Disp("You are dead.")
       END5();
     };
     var END5 = function() {
-      ti85.Pause();
-      ti85.ClDrw();
-      ti85.ZStd();
-      ti85.AxesOn();
-      ti85.ClLCD();
       ti85.Disp("GAME OVER");
       init();
     };
