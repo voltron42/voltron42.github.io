@@ -116,7 +116,7 @@
         cost: 5,
         effect: {
           enemy: {
-            HP: 5
+            HP: -5
           }
         }
       },
@@ -124,7 +124,7 @@
         cost: 20,
         effect: {
           enemy: {
-            HP: 20
+            HP: -20
           }
         }
       },
@@ -506,9 +506,9 @@
     }
     var spellEffect = function(name, spell) {
       return function () {
-        state.SPL = label;
+        state.SPL = name;
         state.SLP = 1;
-        if ((enemy in spell.effect) && state.M != 2) {
+        if ((spell.effect.enemy) && state.M != 2) {
           ti85.Disp("Nothing to hurt.");
           MA5();
         } else {
@@ -538,13 +538,7 @@
         var spell = data.spellEffects[name];
         menu[name] = spellEffect(name, spell);
       })
-      ti85.Menu({
-        "Heal":heal("Heal", 5),
-        "Healmore":heal("Healmore", 20),
-        "Hurt":hurt("Hurt", 5),
-        "Hurtmore":hurt("Hurtmore", 20),
-        "Teleport":TL
-      });
+      ti85.Menu(menu);
     };
     var heal = function(label,mark) {
       return function() {
