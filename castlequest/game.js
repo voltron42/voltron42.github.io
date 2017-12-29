@@ -95,7 +95,7 @@
       "Healing herb": { HP: 5 },
       "Healing potion": { HP: 20 }
     },
-    spellEffect: {
+    spellEffects: {
       Heal: {
         cost: 5,
         effect: {
@@ -303,7 +303,8 @@
     };
     var loadMonster = function(key) {
       ti85.RcPic(key);
-      state.monster = data.monsters[key];
+      state.Monster = new Object();
+      state.Monster.merge(data.monsters[key]);
     }
     var MONM = function() {
       state.M = 2;
@@ -360,29 +361,25 @@
     };
     var MONMA = function() {
       state.ODD2 = 1 + (state.Monster.SPEED / Math.floor(state.Monster.SPEED / 10));
+      var mult = 0;
       if (state.ODD3 > 65) {
         if (state.ODD1 > state.ODD2) {
           ti85.Disp("Excellent shot!");
-          state.merge({
-            MHP: state.Monster.HP - (state.Player.AP * 2),
-            AP2: 2 * state.Player.AP,
-            Y: 2
-          });
-          ti85.Disp(state.Monster.NAME + "'s HP down by " + state.Player.AP2);
-          MONMB();
+          mult = 2;
         } else {
-          ti85.Disp(state.Monster.NAME + " dodges.");
-          MONMB();
+          mult = 0;
         }
       } else {
-        state.merge({
-          MHP: state.Monster.HP - state.Player.AP,
-          AP2: state.Player.AP,
-          Y: 2
-        });
-        ti85.Disp(state.Monster.NAME + "'s HP down by " + state.Player.AP2);
-        MONMB();
+        mult = 1;
       }
+      var ap2 = state.Player.AP * mult;
+      state.Monster.HP = state.Monster.HP - ap2;
+      if (ap2 == 0) {
+        ti85.Disp(state.Monster.NAME + " dodges.");
+      } else {
+        ti85.Disp(state.Monster.NAME + "'s HP down by " + ap2);
+      }
+      MONMB();
     };
     var MONMAS = function() {
       ti85.Disp("You cast " + state.SPL + ".");
@@ -401,25 +398,23 @@
     };
     var MONMBA = function() {
       ti85.Disp(state.Monster.NAME + " attacks!");
+      var mult = 0;
       if (state.ODD3 < 25) {
         if (state.ODD2 > (state.ODD1 * 2 / 3)) {
           ti85.Disp("You're in trouble.")
-          state.merge({
-            HP: state.Player.HP - (state.Monster.AP * 2),
-            MAP2: 2 * state.Monster.AP,
-            Y: 2
-          });
-          ti85.Disp("Your HP is down by " + state.MAP2 + ".");
+          mult = 2;
         } else {
-          ti85.Disp("You dodge.");
+          mult = 0;
         }
       } else {
-        state.merge({
-          HP: state.Player.HP - state.Monster.AP,
-          MAP2: state.Monster.AP,
-          Y: 2
-        });
-        ti85.Disp("Your HP is down by " + state.MAP2 + ".");
+        mult = 1;
+      }
+      var ap2 = state.Monster.AP * mult;
+      state.Player.HP = state.Player.HP - ap2;
+      if (ap2 > 0) {
+        ti85.Disp("Your HP is down by " + ap2 + ".");
+      } else {
+        ti85.Disp("You dodge.");
       }
       MONE();
     };
@@ -434,17 +429,14 @@
       } else {
         state.MLP = "Healmore";
       }
+      ti85.Disp(state.Monster.NAME + " casts " + state.MLP);
       var spell = data.spellEffects[state.MLP];
       state.Monster.MAGIK = state.Monster.MAGIK - spell.cost;
       if (spell.effect.enemy) {
-        applySpellEffects(spell.effect.enemy, state.Player);
+        applySpellEffects(spell.effect.enemy, state.Player, "Your");
       }
       if (spell.effect.self) {
         applySpellEffects(spell.effect.self, state.Monster);
-      }
-      ti85.Disp(state.Monster.NAME + " casts " + state.MLP);
-      if (state.MS > 5 && state.MS <= 30) {
-        ti85.Disp("Your HP is down by " + state.AP2 + ".");
       }
       MONE();
     };
@@ -500,11 +492,16 @@
         }
       }
     }
-    var applySpellEffects = function(effects, target) {
+    var applySpellEffects = function(effects, target, name) {
       Object.keys(effects).forEach(function(field) {
         var effect = effects[field];
         var fn = effectTypeFunctions[typeof effect](effect);
+        var prev = target[field];
         target[field] = fn(target[field]);
+        var curr = target[field];
+        if (name) {
+          ti85.Disp(name + " " + field + " has changed from " + prev + " to " + curr + ".");
+        }
       });
     }
     var spellEffect = function(name, spell) {
@@ -521,10 +518,10 @@
           } else {
             state.Player.MAGIK = state.Player.MAGIK - spell.cost;
             if (spell.effect.self) {
-              applySpellEffects(spell.effect.self, state.Player);
+              applySpellEffects(spell.effect.self, state.Player, "Your");
             }
             if (spell.effect.enemy) {
-              applySpellEffects(spell.effect.enemy, state.Monster);
+              applySpellEffects(spell.effect.enemy, state.Monster, state.Monster.NAME + "'s");
             }
             if (spell.effect.state) {
               applySpellEffects(spell.effect.state, state);
@@ -660,7 +657,7 @@
         var label = "IT" + x;
         menu[state[label]] = ITB(label, DROPX(x));
       }
-      ti85.Menu(menu);
+      ti85.Menu(menu, INVENT);
     };
     var INVENT3 = function() {
       if (state.I == 1 && state.M == 1) {
