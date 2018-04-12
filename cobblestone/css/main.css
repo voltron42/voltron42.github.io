@@ -1,0 +1,10 @@
+#builders {
+	display: none;
+}
+
+@media print {
+	#app {
+		display: none;
+	}
+}
+
