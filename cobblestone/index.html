@@ -5,7 +5,7 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css"/>
 		<script src="script/buildmap.js"></script>
 	</head>
-	<body onload="var builder = new Builder('in','builders','display')">
+	<body onload="window.builder = new Builder('in','builders','display')">
 		<div id="app">
 			<textarea id="in"></textarea>
 			<button onclick="builder.buildmap()">Build</button>

@@ -147,7 +147,7 @@ if (!Object.map) {
       return out;
     },[]));
     return explode.reduce(function(out, row, y){
-      return out.concat(row.map((c) => Object.map("c", decodeChar(c), "x", x, "y", y)));
+      return out.concat(row.map((c,x) => Object.map("c", decodeChar(c), "x", x, "y", y)));
     },[]);
 	};
 	
@@ -159,17 +159,23 @@ if (!Object.map) {
 			buildspace.innerHTML = "";
 			gallery.innerHTML = "";
 			var inData = JSON.parse(input.value);
+      console.log(inData);
 			var tiles = inData[0] || {};
 			tiles = Object.entries(tiles).reduce(function(out,entry){
 				out[entry[0]] = parseTile(entry[1]);
         return out;
 			},{});
 			var palettes = inData[1] || {};
+      console.log(palettes);
 			palettes = Object.entries(palettes).reduce(function(out,entry){
 				out[entry[0]] = entry[1].map((c) => Array.isArray(c)?"rgb(" + c.join(",") + ")":c);
+        return out;
 			},{});
+      console.log(palettes);
 			var pages = inData[2] || {};
-			gallery.innerHTML = Object.entries(pages).map(function(out,entry){
+      console.log(pages)
+			gallery.innerHTML = Object.entries(pages).map(function(entry){
+        console.log(entry);
 				var key = entry[0];
 				var page = entry[1];
 				buildspace.innerHTML += '<canvas id="' + key + '"></canvas>';
