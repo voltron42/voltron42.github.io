@@ -5,7 +5,7 @@ if (!Array.prototype.last){
 };
 if (!Array.repeat){
   Array.repeat = function(n,x){
-    return Array.from(Array(n), () -> x);
+    return Array.from(Array(n), () => x);
   };
 };
 if (!Array.prototype.groupBy) {
@@ -16,37 +16,55 @@ if (!Array.prototype.groupBy) {
     }, {});
   }
 }
+if (!Array.range) {
+  Array.range = function(low, high, step) {
+    step = step || 1;
+    if (!high) {
+      high = low;
+      low = 0;
+    }
+    var out = [];
+    for (var x = low; x < high; x += step) {
+      out.push(x);
+    }
+    return out;
+  }
+}
+if (!Object.prototype.merge) {
+  Object.prototype.merge = function(myMap) {
+    var me = this;
+    Object.entries(myMap).forEach(function(out,entry){
+      me[entry[0]] = entry[1];
+    });
+    return me;
+  }
+}
+if (!Object.map) {
+  Object.map = function() {
+    var args = Array.from(arguments);
+    var out = {};
+    while (args.length > 0) {
+      out[args.shift()] = args.shift();
+    }
+    return out;
+  }
+}
 (function() {
 	var transform = {
-		"flip-down":function(p) {
-			
-		},
-		"flip-over":function(p) {
-			
-		},
-		"turn-left":function(p) {
-			
-		},
-		"turn-right":function(p) {
-			
-		}
+		"flip-down":((p) => p.merge({ x:p.x, y:(15 - p.y) })),
+		"flip-over":((p) => p.merge({ x:(15 - p.x), y:p.y })),
+		"turn-left":((p) => p.merge({ x:p.y, y:(15 - p.x) })),
+		"turn-right":((p) => p.merge({ x:(15 - p.y), y:p.x }))
 	};
   
   var buildTransform = function(transforms) {
-    return function(p) {
-      return transforms.reduce((p1,f) => f(p1),p);
-    }
+    return (p) => transforms.reduce((p1,f) => f(p1),p);
   }
   
   var applyPalette = function(palette) {
     return function(p) {
       p.c = palette[p.c];
       return p;
-    }
-  }
-  
-  var comp = function(funcs) {
-    return function(value) {
     }
   }
   
@@ -62,7 +80,18 @@ if (!Array.prototype.groupBy) {
   }
   
   var explodeCoords = function(coords){
-    //todo
+    return coords.reduce(function(out,coord){
+      var xy = coord.split("/");
+      var x = xy[0].split("").map(decodeChar);
+      var y = xy[1].split("").map(decodeChar);
+      var xa = x[0];
+      var xb = x[1] || xa;
+      var ya = y[0];
+      var yb = y[1] || ya;
+      return Array.range(ya,yb).reduce(function(out,y){
+        return out.concat(Array.range(xa,xb).map((x) => Object.map("x",x,"y",y)));
+      },[]);
+    },[]);
   }
   
   var applyToCtx = function(ctx, tiles, palettes) {
@@ -102,6 +131,8 @@ if (!Array.prototype.groupBy) {
     return coll;
   }
   
+  var decodeChar = function (c) { return c.charCodeAt(0) - 97; }
+  
 	var parseTile = function(tileText){
 		var explode = finishHex(tileText.split("|").reduce(function(out, row){
       if (row == "") {
@@ -116,9 +147,7 @@ if (!Array.prototype.groupBy) {
       return out;
     },[]));
     return explode.reduce(function(out, row, y){
-      return out.concat(row.map(function(c,x){
-        return {c:(c.charCodeAt(0)-97),x:x,y:y};
-      }));
+      return out.concat(row.map((c) => Object.map("c", decodeChar(c), "x", x, "y", y)));
     },[]);
 	};
 	
@@ -130,34 +159,24 @@ if (!Array.prototype.groupBy) {
 			buildspace.innerHTML = "";
 			gallery.innerHTML = "";
 			var inData = JSON.parse(input.value);
-			var tiles = inData[0];
-			tiles = tiles?tiles:{};
+			var tiles = inData[0] || {};
 			tiles = Object.entries(tiles).reduce(function(out,entry){
 				out[entry[0]] = parseTile(entry[1]);
         return out;
 			},{});
-			var palettes = inData[1];
-			palettes = palettes?palettes:{};
+			var palettes = inData[1] || {};
 			palettes = Object.entries(palettes).reduce(function(out,entry){
-				out[entry[0]] = entry[1].map(function(color){
-					if ((typeof color) == "string") {
-						return color;
-					} else {
-						return "rgb(" + color.join(",") + ")";
-					};
-				});
+				out[entry[0]] = entry[1].map((c) => Array.isArray(c)?"rgb(" + c.join(",") + ")":c);
 			},{});
-			var pages = inData[2];
-			pages = pages?pages:{};
+			var pages = inData[2] || {};
 			gallery.innerHTML = Object.entries(pages).map(function(out,entry){
 				var key = entry[0];
 				var page = entry[1];
 				buildspace.innerHTML += '<canvas id="' + key + '"></canvas>';
         var canvas = document.getElementById(key);
-        var ctx = canvas.getContext('2d');
-        page.forEach(applyToCtx(ctx,tiles,palettes));
+        page.forEach(applyToCtx(canvas.getContext('2d'),tiles,palettes));
 				var img = canvas.toDataURL("image/png");
-        return '<img src="'+img+'"/>';
+        return '<img src="' + img + '" alt="' + key + '"/>';
 			}).join("");
 		};
 	};
