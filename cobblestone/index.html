@@ -2,7 +2,10 @@
 <html>
 	<head>
 		<title>Cobblestone</title>
-		<link rel="stylesheet" type="text/css" href="css/main.css"/>
+		<link rel="stylesheet" type="text/css" href="../util/print.css"/>
+    <link rel="shortcut icon" href="../favicon.ico">
+		<script src="../util/util.js"></script>
+		<script src="../util/tf.js"></script>
 		<script src="script/buildmap.js"></script>
 	</head>
 	<body onload="window.builder = new Builder('in','builders','display')">
@@ -10,7 +13,7 @@
 			<textarea id="in"></textarea>
 			<button onclick="builder.buildmap()">Build</button>
 		</div>
-		<div id="builders"></div>
+		<div id="builders" style="display: none;"></div>
 		<div id="display"></div>
 	</body>
 </html>

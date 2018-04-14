@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spritely: Pixel Art</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../util/print.css"/>
+    <link rel="shortcut icon" href="../favicon.ico">
+    <style type="text/css"></style>
+		<script src="../util/tf.js"></script>
+		<script src="../util/util.js"></script>
+    <script src="script/pixel.js"></script>
+    <script type="text/javascript">
+      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
+    </script>
+  </head>
+  <body onload="pix.init()">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h4>Controls</h4>
+          <input name="displayLoad" type="checkbox" onChange="toggleDisplay(this,'loader')"/>
+          <label for="displayLoad"> Load Data:</label>
+          <div id="loader" style="display: none;">
+            <textarea id="input"></textarea>
+            <button onClick="pix.loadData('input')">Load</button>
+          </div>
+          <hr/>
+          <label for="width"> Width:</label>
+          <input type="number" id="widthField" name="width" value="0" onChange="pix.resize()"/>
+          <label for="height"> Height:</label>
+          <input type="number" id="heightField" name="height" value="0" onChange="pix.resize()"/>
+          <label for="scale"> Scale:</label>
+          <input type="number" id="scaleField" name="scale" value="1" min="1" onChange="pix.setScale(this.value)"/>
+          <hr/>
+          <button name="transform" onClick="pix.transform('flip-down')">Flip Down</button>
+          <button name="transform" onClick="pix.transform('flip-over')">Flip Over</button>
+          <button name="transform" onClick="pix.transform('turn-right')">Turn Right</button>
+          <button name="transform" onClick="pix.transform('turn-left')">Turn Left</button>
+          <button name="transform" onClick="pix.transform('shift-right')">Shift Right</button>
+          <button name="transform" onClick="pix.transform('shift-left')">Shift Left</button>
+          <button name="transform" onClick="pix.transform('shift-up')">Shift Up</button>
+          <button name="transform" onClick="pix.transform('shift-down')">Shift Down</button>
+          <hr/>
+          <input type="checkbox" name="transparent" onChange="pix.makeTransparent(this.checked)"/>
+          <label for="transparent">Make Image Transparent?</label>
+          <br/>
+          <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activate(this.value)"/>
+          <label for="colorSelect0"> Background Color:</label>
+          <input type="color" name="palette" id="color0" value="#ffffff" onChange="pix.updateColor(this.value,0)"/>
+          <br/>
+          <ol id="palette"></ol>
+          <br/>
+          <button onClick="pix.addColor()">Add Color</button>
+        </div>
+        <div class="col-md-6">
+          <h4>Canvas</h4>
+          <div id="canvas"></div>
+        </div>
+        <div class="col-md-3">
+          <h4>Output</h4>
+          <canvas id="builder" style="display: none;"></canvas>
+          <img id="out"/>
+          <br/>
+          <br/>
+          <code id="codeOut"></code>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

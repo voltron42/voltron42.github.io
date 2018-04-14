@@ -1,64 +1,8 @@
-if (!Array.prototype.last){
-  Array.prototype.last = function(){
-    return this[this.length - 1];
-  };
-};
-if (!Array.repeat){
-  Array.repeat = function(n,x){
-    return Array.from(Array(n), () => x);
-  };
-};
-if (!Array.prototype.groupBy) {
-  Array.prototype.groupBy = function(key) {
-    return this.reduce(function(rv, x) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  }
-}
-if (!Array.range) {
-  Array.range = function(low, high, step) {
-    step = step || 1;
-    if (!high) {
-      high = low;
-      low = 0;
-    }
-    var out = [];
-    for (var x = low; x < high; x += step) {
-      out.push(x);
-    }
-    return out;
-  }
-}
-if (!Object.prototype.merge) {
-  Object.prototype.merge = function(myMap) {
-    var me = this;
-    Object.entries(myMap).forEach(function(out,entry){
-      me[entry[0]] = entry[1];
-    });
-    return me;
-  }
-}
-if (!Object.map) {
-  Object.map = function() {
-    var args = Array.from(arguments);
-    var out = {};
-    while (args.length > 0) {
-      out[args.shift()] = args.shift();
-    }
-    return out;
-  }
-}
 (function() {
-  var transform = {
-    "flip-down":((p) => p.merge({ x:p.x, y:(15 - p.y) })),
-    "flip-over":((p) => p.merge({ x:(15 - p.x), y:p.y })),
-    "turn-left":((p) => p.merge({ x:p.y, y:(15 - p.x) })),
-    "turn-right":((p) => p.merge({ x:(15 - p.y), y:p.x }))
-  };
+  var tf = transform(15);
   
   var buildTransform = function(transforms) {
-    return (p) => transforms.reduce((p1,f) => f(p1),p);
+    return (p) => transforms.reduce((p1,f) => tf.f(p1),p);
   }
   
   var applyPalette = function(palette) {
@@ -190,8 +134,6 @@ if (!Object.map) {
             return o;
           },out)
         },[]);
-        console.log("exploded");
-        console.log(exploded);
         var coords = [].concat.apply([],exploded.map((x) => x.coords));
         console.log(coords);
         var max = coords.reduce(function(out,coord){
@@ -200,8 +142,6 @@ if (!Object.map) {
             return obj;
           },{});
         },{x:0,y:0});
-        console.log("max");
-        console.log(max);
         buildspace.innerHTML += '<canvas id="' + key + '"></canvas>';
         var canvas = document.getElementById(key);
         canvas.width = (1 + max.x) * 96;

@@ -1,7 +1,3 @@
-#builders {
-	display: none;
-}
-
 @media print {
 	#app {
 		display: none;
@@ -15,4 +11,3 @@
     margin: 0;
   }
 }
-
