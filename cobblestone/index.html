@@ -1,19 +1,34 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<title>Cobblestone</title>
-		<link rel="stylesheet" type="text/css" href="../util/print.css"/>
-    <link rel="shortcut icon" href="../favicon.ico">
-		<script src="../util/util.js"></script>
-		<script src="../util/tf.js"></script>
-		<script src="script/buildmap.js"></script>
-	</head>
-	<body onload="window.builder = new Builder('in','builders','display')">
-		<div id="app">
-			<textarea id="in"></textarea>
-			<button onclick="builder.buildmap()">Build</button>
-		</div>
-		<div id="builders" style="display: none;"></div>
-		<div id="display"></div>
-	</body>
+  <head>
+    <title>Cobblestone: Tile & Map Builder</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#palettes">Palettes</a></li>
+        <li><a data-toggle="tab" href="#tiles">Tiles</a></li>
+        <li><a data-toggle="tab" href="#maps">Maps</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="palettes" class="tab-pane in active">
+          <h3>Palettes</h3>
+          <p>Some content.</p>
+        </div>
+        <div id="tiles" class="tab-pane">
+          <h3>Tiles</h3>
+          <p>Some content in menu 1.</p>
+        </div>
+        <div id="maps" class="tab-pane">
+          <h3>Maps</h3>
+          <p>Some content in menu 2.</p>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
