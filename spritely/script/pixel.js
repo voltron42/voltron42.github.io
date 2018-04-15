@@ -154,6 +154,7 @@
     }
 
     this.addColor = function() {
+      state.activeColor = data.palette.length;
       data.palette.push("#ffffff");
       ui.palette.innerHTML = data.palette.slice(1).map(function(c,i){
         var index = i + 1;
@@ -187,7 +188,6 @@
           }]
         });
       }).join("");
-      state.activeColor = count;
     }
 
     this.updateColor = function(color,index) {
