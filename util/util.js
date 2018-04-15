@@ -62,7 +62,7 @@ function buildXML(xmljson) {
     xmljson.content = xmljson.content || [];
     var attrs = Object.entries(xmljson.attrs).map(function(attr){
       return " " + attr[0] + '="' + attr[1] + '"';
-    });
+    }).join("");
     var out = "<" + xmljson.tag + attrs;
     if (xmljson.content.length > 0) {
       out += ">" + xmljson.content.map(buildXML).join("") + "</" + xmljson.tag + ">";

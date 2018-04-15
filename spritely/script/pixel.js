@@ -1,5 +1,5 @@
 (function() {
-  window.PixelCanvas = function(instanceName,inputId,widthFieldId,heightFieldId,colorSelectPrefix,colorPrefix,paletteId,svgId,canvasId,outId,codeOutId,initSize,pixelSize) {
+  window.PixelCanvas = function(instanceName,inputId,widthFieldId,heightFieldId,colorSelectPrefix,colorPrefix,paletteId,svgId,canvasId,outId,initSize,pixelSize) {
 
     var ui = {};
     
@@ -74,8 +74,17 @@
     var redraw = function() {
       buildSVG();
       drawInCanvas();
-      ui.out.setAttribute("src", ui.canvas.toDataURL("image/png"));
-      ui.codeOut.innerHTML = JSON.stringify(data,null,2);
+      ui.out.innerHTML = buildXML({
+        tag:"a",
+        attrs:{
+          target:"_blank",
+          href:("data:application/json;base64," + btoa(JSON.stringify(data)))
+        },
+        content:[{
+          tag:"img",
+          attrs:{src:ui.canvas.toDataURL("image/png")}
+        }]
+      })
     }
     
     var getActiveColorIndex = function() {
@@ -92,7 +101,6 @@
       ui.svg = document.getElementById(svgId);
       ui.canvas = document.getElementById(canvasId);
       ui.out = document.getElementById(outId);
-      ui.codeOut = document.getElementById(codeOutId);
       ui.background = document.getElementById(colorPrefix + 0);
       
       ui.ctx = ui.canvas.getContext('2d');

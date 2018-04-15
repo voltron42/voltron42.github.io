@@ -10,21 +10,24 @@
 		<script src="../util/util.js"></script>
     <script src="script/pixel.js"></script>
     <script type="text/javascript">
-      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
+      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out',16,10);
     </script>
   </head>
   <body onload="pix.init()">
     <div class="container">
+      <h1 class="heading">Spritely: Pixel Art</h1>
       <div class="row">
         <div class="col-md-3">
           <h4>Controls</h4>
           <input name="displayLoad" type="checkbox" onChange="toggleDisplay(this,'loader')"/>
           <label for="displayLoad"> Load Data:</label>
           <div id="loader" style="display: none;">
+            <p>Copy the contents of your save data file into the box below and click the "Load" buttton.</p>
             <textarea id="input"></textarea>
             <button onClick="pix.loadData('input')">Load</button>
           </div>
           <hr/>
+          <h5>Size</h5>
           <label for="width"> Width:</label>
           <input type="number" id="widthField" name="width" value="0" onChange="pix.resize()"/>
           <label for="height"> Height:</label>
@@ -32,6 +35,7 @@
           <label for="scale"> Scale:</label>
           <input type="number" id="scaleField" name="scale" value="1" min="1" onChange="pix.setScale(this.value)"/>
           <hr/>
+          <h5>Transform</h5>
           <button name="transform" onClick="pix.transform('flip-down')">Flip Down</button>
           <button name="transform" onClick="pix.transform('flip-over')">Flip Over</button>
           <button name="transform" onClick="pix.transform('turn-right')">Turn Right</button>
@@ -41,6 +45,7 @@
           <button name="transform" onClick="pix.transform('shift-up')">Shift Up</button>
           <button name="transform" onClick="pix.transform('shift-down')">Shift Down</button>
           <hr/>
+          <h5>Palette</h5>
           <input type="checkbox" name="transparent" onChange="pix.makeTransparent(this.checked)"/>
           <label for="transparent">Make Image Transparent?</label>
           <br/>
@@ -54,15 +59,14 @@
         </div>
         <div class="col-md-6">
           <h4>Canvas</h4>
+          <p>Select a color from your palette, then click on the pixels you wish to make that color. Changing the value of a color in your palette will change the color of each pixel of the matching color in your image.</p>
           <div id="canvas"></div>
         </div>
         <div class="col-md-3">
           <h4>Output</h4>
           <canvas id="builder" style="display: none;"></canvas>
-          <img id="out"/>
-          <br/>
-          <br/>
-          <code id="codeOut"></code>
+          <p>Click on the image below to create the save data file in a new tab / window. Right click on the image below to save the image.</p>
+          <div id="out"></div>
         </div>
       </div>
     </div>
