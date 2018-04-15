@@ -115,6 +115,13 @@
     
     this.loadData = function() {
       // TODO: fetch data from ui.loader, parse, load
+      var loadedData = JSON.parse(ui.loader.value);
+      if (loadedData) {
+        data = loadedData;
+        ui.background.value = data.palette[0];
+        displayPalette();
+        redraw();
+      }
     }
     
     this.resize = function() {
@@ -152,10 +159,8 @@
     this.activate = function(index) {
       state.activeColor = index;
     }
-
-    this.addColor = function() {
-      state.activeColor = data.palette.length;
-      data.palette.push("#ffffff");
+    
+    var displayPalette = function() {
       ui.palette.innerHTML = data.palette.slice(1).map(function(c,i){
         var index = i + 1;
         var colorSelect = ui.colorSelectPrefix + index;
@@ -173,6 +178,49 @@
               onChange:instanceName + ".activate(this.value)"
             }
           },{
+            tag:"button",
+            attrs:{onClick:instanceName+".deleteColor("+index+")"},
+            content:[{
+              tag:"svg",
+              attrs:{
+                width:"15px",
+                height:"15px",
+                viewBox:"0 0 30 30"
+              },
+              content:[{
+                tag:"rect",
+                attrs:{
+                  width:30,
+                  height:30,
+                  "stroke-width":6,
+                  stroke:"red",
+                  fill:"none"
+                }
+              },{
+                tag:"line",
+                attrs:{
+                  x1:0,
+                  y1:0,
+                  x2:30,
+                  y2:30,
+                  "stroke-width":3,
+                  stroke:"red",
+                  fill:"none"
+                }
+              },{
+                tag:"line",
+                attrs:{
+                  x1:0,
+                  y1:30,
+                  x2:30,
+                  y2:0,
+                  "stroke-width":3,
+                  stroke:"red",
+                  fill:"none"
+                }
+              }]
+            }]
+          },{
             tag:"label",
             attrs: {for:colorSelect},
             content:[" Color " + index + ": "]
@@ -188,6 +236,25 @@
           }]
         });
       }).join("");
+    }
+
+    this.addColor = function() {
+      state.activeColor = data.palette.length;
+      data.palette.push("#ffffff");
+      displayPalette();
+    }
+    
+    this.deleteColor = function(index) {
+      data.palette.splice(index,1);
+      displayPalette();
+      Object.entries(data.grid).forEach(function(pixel){
+        if (pixel[1] == index) {
+          delete data.grid[pixel[0]];
+        } else if (pixel[1] > index) {
+          data.grid[pixel[0]] = pixel[1] - 1;
+        }
+      });
+      redraw();
     }
 
     this.updateColor = function(color,index) {

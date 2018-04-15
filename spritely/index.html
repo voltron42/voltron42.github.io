@@ -9,7 +9,7 @@
 		<script src="../util/util.js"></script>
     <script src="script/pixel.js"></script>
     <script type="text/javascript">
-      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
+      window.pix = new PixelCanvas('pix','input','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
     </script>
   </head>
   <body onload="pix.init()">
@@ -23,7 +23,7 @@
           <div id="loader" style="display: none;">
             <p>Copy the contents of your save data file into the box below and click the "Load" buttton.</p>
             <textarea id="input"></textarea>
-            <button onClick="pix.loadData('input')">Load</button>
+            <button onClick="pix.loadData()">Load</button>
           </div>
           <hr/>
           <h5>Size</h5>
@@ -66,7 +66,7 @@
           <canvas id="builder" style="display: none;"></canvas>
           <p>Click on the image below to copy the data to your clipboard. Right click on the image below to save the image.</p>
           <div id="out"></div>
-          <textarea id="codeOut"></textarea>
+          <textarea id="codeOut" rows="20" cols="30"></textarea>
         </div>
       </div>
     </div>
