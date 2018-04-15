@@ -205,9 +205,9 @@
     }
     
     this.makeSaveFile = function() {
-      ui.codeOut.value = JSON.stringify(data);
+      ui.codeOut.value = JSON.stringify(data,null,2);
       ui.codeOut.select();
-      document.execCommand('c`opy');
+      document.execCommand('copy');
     }
 
   }
