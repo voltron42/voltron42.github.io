@@ -9,12 +9,12 @@
 		<script src="../util/util.js"></script>
     <script src="script/pixel.js"></script>
     <script type="text/javascript">
-      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out',16,10);
+      window.pix = new PixelCanvas('pix','inputId','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
     </script>
   </head>
   <body onload="pix.init()">
     <div class="container">
-      <h1 class="heading">Spritely: Pixel Art</h1>
+      <h1>Spritely: Pixel Art</h1>
       <div class="row">
         <div class="col-md-3">
           <h4>Controls</h4>
@@ -64,8 +64,9 @@
         <div class="col-md-3">
           <h4>Output</h4>
           <canvas id="builder" style="display: none;"></canvas>
-          <p>Click on the image below to create the save data file in a new tab / window. Right click on the image below to save the image.</p>
+          <p>Click on the image below to copy the data to your clipboard. Right click on the image below to save the image.</p>
           <div id="out"></div>
+          <input id="codeOut" style="display: none;"/>
         </div>
       </div>
     </div>

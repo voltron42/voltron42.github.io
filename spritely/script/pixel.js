@@ -1,5 +1,5 @@
 (function() {
-  window.PixelCanvas = function(instanceName,inputId,widthFieldId,heightFieldId,colorSelectPrefix,colorPrefix,paletteId,svgId,canvasId,outId,initSize,pixelSize) {
+  window.PixelCanvas = function(instanceName,inputId,widthFieldId,heightFieldId,colorSelectPrefix,colorPrefix,paletteId,svgId,canvasId,outId,codeOutId,initSize,pixelSize) {
 
     var ui = {};
     
@@ -36,8 +36,8 @@
         tag:"svg",
         attrs:{
           width:"100%",
-          height:"100%",
-          viewBox:[0,0,data.width * pixelSize, data.height * pixelSize].join(" ")
+          viewBox:[0,0,data.width * pixelSize, data.height * pixelSize].join(" "),
+          preserveAspectRatio:"xMaxYMax meet"
         },
         content:[{
           tag:"defs",
@@ -77,8 +77,8 @@
       ui.out.innerHTML = buildXML({
         tag:"a",
         attrs:{
-          target:"_blank",
-          href:("data:application/json;base64," + btoa(JSON.stringify(data)))
+          href:"#",
+          onClick:instanceName + ".makeSaveFile()"
         },
         content:[{
           tag:"img",
@@ -101,6 +101,7 @@
       ui.svg = document.getElementById(svgId);
       ui.canvas = document.getElementById(canvasId);
       ui.out = document.getElementById(outId);
+      ui.codeOut = document.getElementById(codeOutId);
       ui.background = document.getElementById(colorPrefix + 0);
       
       ui.ctx = ui.canvas.getContext('2d');
@@ -153,38 +154,40 @@
     }
 
     this.addColor = function() {
-      var count = ui.palette.childNodes.length + 1;
-      var colorSelect = ui.colorSelectPrefix + count;
-      var colorId = colorPrefix + count;
-      ui.palette.innerHTML += buildXML({
-        tag:"li",
-        content:[{
-          tag:"input",
-          attrs:{
-            type:"radio",
-            name:"colors",
-            id:colorSelect,
-            value:count,
-            checked:true,
-            onChange:instanceName + ".activate(this.value)"
-          }
-        },{
-          tag:"label",
-          attrs: {for:colorSelect},
-          content:[" Color " + count + ": "]
-        },{
-          tag:"input",
-          attrs:{
-            type:"color",
-            name:"palette",
-            id:colorId,
-            value:"#ffffff",
-            onChange:instanceName + ".updateColor(this.value," + count + ")"
-          }
-        }]
-      });
-      state.activeColor = count;
       data.palette.push("#ffffff");
+      ui.palette.innerHTML = data.palette.slice(1).map(function(c,i){
+        var index = i + 1;
+        var colorSelect = ui.colorSelectPrefix + index;
+        var colorId = colorPrefix + index;
+        return buildXML({
+          tag:"li",
+          content:[{
+            tag:"input",
+            attrs:{
+              type:"radio",
+              name:"colors",
+              id:colorSelect,
+              value:index,
+              checked:true,
+              onChange:instanceName + ".activate(this.value)"
+            }
+          },{
+            tag:"label",
+            attrs: {for:colorSelect},
+            content:[" Color " + index + ": "]
+          },{
+            tag:"input",
+            attrs:{
+              type:"color",
+              name:"palette",
+              id:colorId,
+              value:c,
+              onChange:instanceName + ".updateColor(this.value," + index + ")"
+            }
+          }]
+        });
+      }).join("");
+      state.activeColor = count;
     }
 
     this.updateColor = function(color,index) {
@@ -199,6 +202,12 @@
         data.grid[x + "-" + y] = state.activeColor;
       }
       redraw();
+    }
+    
+    this.makeSaveFile = function() {
+      ui.codeOut.value = JSON.stringify(data);
+      ui.codeOut.select();
+      document.execCommand('c`opy');
     }
 
   }
