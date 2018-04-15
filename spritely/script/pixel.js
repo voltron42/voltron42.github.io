@@ -142,7 +142,7 @@
       var tf = new Transformer(data.width)[tfType];
       console.log(data.grid);
       data.grid = Object.entries(data.grid).reduce(function(out,entry){
-        var xy = entry[0].split("-");
+        var xy = entry[0].split("-").map(parseInt);
         xy = {x:xy[0],y:xy[1]};
         var newXY = tf(xy);
         out[newXY.x + "-" + newXY.y] = entry[1];
