@@ -9,6 +9,7 @@
       scale: 1,
       palette: ["#ffffff"],
       grid:{},
+      transparent: false
     };
     
     var state = {
@@ -20,7 +21,7 @@
       ui.canvas.width = data.width * data.scale;
       ui.canvas.height = data.height * data.scale;
       ui.ctx.clearRect(0, 0, data.width * data.scale, data.height * data.scale);
-      if (!state.makeTransparent) {
+      if (!data.transparent) {
         ui.ctx.fillStyle = data.palette[0];
         ui.ctx.fillRect(0, 0, data.width * data.scale, data.height * data.scale);
       }
@@ -151,7 +152,7 @@
     }
     
     this.makeTransparent = function(makeTransparent) {
-      state.makeTransparent = makeTransparent;
+      data.transparent = makeTransparent;
       redraw();
     }
     
