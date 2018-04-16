@@ -1,8 +1,10 @@
 (function() {
-  var tf = transform(15);
+  var tf = new Transformer(16);
   
   var buildTransform = function(transforms) {
-    return (p) => transforms.reduce((p1,f) => tf.f(p1),p);
+    console.log("transforms");
+    console.log(transforms);
+    return (p) => transforms.reduce((p1,f) => f(p1),p);
   }
   
   var applyPalette = function(palette) {
@@ -89,8 +91,6 @@
   var applyToCtx = function(ctx) {
     return function(entry) {
       entry.coords.forEach(function(coord) {
-        console.log("coord");
-        console.log(coord);
         entry.tile.forEach(drawSquare(coord, ctx));
         ctx.lineWidth = 1;
         ctx.strokeRect(coord.x * 96, coord.y * 96, 96, 96);
@@ -105,9 +105,7 @@
     this.buildmap = function() {
       buildspace.innerHTML = "";
       gallery.innerHTML = "";
-      console.log(input.value);
       eval("var inData = (" + input.value + ");");
-      console.log(inData);
       var tiles = inData[0] || {};
       tiles = Object.entries(tiles).reduce(function(out,entry){
         out[entry[0]] = parseTile(entry[1]);
@@ -128,14 +126,13 @@
             var tile = tiles[key.shift()];
             var palette = palettes[key.shift()];
             o.push({
-              tile:tile.map(buildTransform(key.map((k) => transform[k]).concat(applyPalette(palette)))),
+              tile:tile.map(buildTransform(key.map((k) => tf[k]).concat(applyPalette(palette)))),
               coords:explodeCoords(entry[1])
             });
             return o;
           },out)
         },[]);
         var coords = [].concat.apply([],exploded.map((x) => x.coords));
-        console.log(coords);
         var max = coords.reduce(function(out,coord){
           return ["x","y"].reduce(function(obj,key) {
             obj[key] = Math.max(out[key],coord[key]);
