@@ -3,35 +3,35 @@
     <title>Cobblestone: Tile & Map Builder</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     
     <!-- Local dependencies -->
     <link rel="stylesheet" href="../util/print.css"/>
+    
 		<script src="../util/tf.js"></script>
 		<script src="../util/util.js"></script>
+		<script src="../util/tabs.js"></script>
     <script src="script/cobblestone.js"></script>
     <script type="text/javascript">
       window.cs = new Cobblestone('cs');
+      window.toptabs = new TabSet('tabMenu',['palettes','tiles','maps'],1)
     </script>
   </head>
-  <body>
+  <body onload="toptabs.init();">
+    <h2 style="text-align: center;">Cobblestone: Pixel Tile Maps</h2>
     <div class="container">
-      <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#palettes">Palettes</a></li>
-        <li><a data-toggle="tab" href="#tiles">Tiles</a></li>
-        <li><a data-toggle="tab" href="#maps">Maps</a></li>
+      <ul id="tabMenu" class="nav nav-tabs">
+        <li><a onclick="toptabs.select('palettes')">Palettes</a></li>
+        <li><a onclick="toptabs.select('tiles')">Tiles</a></li>
+        <li><a onclick="toptabs.select('maps')">Maps</a></li>
       </ul>
       <div class="tab-content">
-        <div id="palettes" class="tab-pane in active">
+        <div id="palettes" class="tab-pane">
           <h3>Palettes</h3>
           <p>Some content.</p>
         </div>
         <div id="tiles" class="tab-pane">
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-sm-3">
               <h4>Controls</h4>
               <input name="displayLoad" type="checkbox" onChange="toggleDisplay(this,'loader')"/>
               <label for="displayLoad"> Load Data:</label>
@@ -67,12 +67,12 @@
               <br/>
               <button onClick="pix.addColor()">Add Color</button>
             </div>
-            <div class="col-md-6">
+            <div class="col-sm-6">
               <h4>Canvas</h4>
               <p>Select a color from your palette, then click on the pixels you wish to make that color. Changing the value of a color in your palette will change the color of each pixel of the matching color in your image.</p>
               <div id="canvas"></div>
             </div>
-            <div class="col-md-3">
+            <div class="col-sm-3">
               <h4>Output</h4>
               <canvas id="builder" style="display: none;"></canvas>
               <p>Click on the image below to copy the data to your clipboard. Right click on the image below to save the image.</p>
@@ -85,6 +85,6 @@
           <p>Some content in menu 2.</p>
         </div>
       </div>
-    </div>
+      </div>
   </body>
 </html>
