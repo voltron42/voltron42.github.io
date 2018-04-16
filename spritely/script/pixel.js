@@ -13,8 +13,7 @@
     };
     
     var state = {
-      activeColor:0,
-      transparent:false
+      activeColor:0
     }
     
     var drawInCanvas = function() {
