@@ -1,11 +1,14 @@
 (function() {
-  window[registryName].apply('PixelCanvas',[],function() {
+  window[registryName].apply('PixelCanvas', ['Point', 'Transformer'], function(Point,Transformer) {
     return function(instanceName,svgId,initWidth,initHeight,pixelSize) {
       var state = {
         grid:{},
         width:initWidth,
         height:initHeight
       };
+      var gridKey = function(x,y) {
+        return (new Point(x,y)) + "";
+      }
       var copyGrid = function(grid) {
         return Object.entries(grid).reduce(function(out,entry) {
           out[entry[0]] = entry[1];
@@ -41,7 +44,7 @@
             })
           }].concat(Array.range(state.height).reduce(function(out,y){
             return out.concat(Array.range(state.width).map(function(x){
-              var color = state.grid[x+"-"+y] || 0;
+              var color = state.grid[gridKey(x,y)] || 0;
               return {
                 tag:"use",
                 attrs:{
@@ -55,14 +58,31 @@
           },[]))
         })
       }
+      
+      this.transform = function(tfType) {
+        if (state.width != state.height) {
+          throw {
+            message:"Grid width and height are not equal, and must be to perform transformations.",
+            width:width,
+            height:height
+          };
+        }
+        var tf = new Transformer(data.width)[tfType];
+        state.grid = Object.entries(state.grid).reduce(function(out,entry) {
+          var point = tf(Point.parse(entry[0]));
+          out[gridKey(point.getX(),point.getY())] = entry[1];
+          return out;
+        });
+      }
+      
       this.applyGrid = function(grid) {
         state.grid = copyGrid(grid);
       }
       this.setColor = function(x,y,color) {
         if (color == 0) {
-          delete state.grid[x + "-" + y];
+          delete state.grid[gridKey(x,y)];
         } else {
-          state.grid[x + "-" + y] = color;
+          state.grid[gridKey(x,y)] = color;
         }
       }
       this.removeColor = function(color) {
