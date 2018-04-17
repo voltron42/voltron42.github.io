@@ -32,7 +32,7 @@
     }
   
     var buildSVG = function() {
-      ui.svg.innerHTML = buildXML({
+      ui.svg.innerHTML = JSON.toXML({
         tag:"svg",
         attrs:{
           width:"100%",
@@ -54,8 +54,8 @@
               }
             }
           })
-        }].concat(Array.range(data.height).reduce(function(out,y){
-          return out.concat(Array.range(data.width).map(function(x){
+        }].concat(Number.range(data.height).reduce(function(out,y){
+          return out.concat(Number.range(data.width).map(function(x){
             var color = data.grid[x+"-"+y] || 0;
             return {
               tag:"use",
@@ -74,7 +74,7 @@
     var redraw = function() {
       buildSVG();
       drawInCanvas();
-      ui.out.innerHTML = buildXML({
+      ui.out.innerHTML = JSON.toXML({
         tag:"a",
         attrs:{
           href:"#",
@@ -164,7 +164,7 @@
         var index = i + 1;
         var colorSelect = ui.colorSelectPrefix + index;
         var colorId = colorPrefix + index;
-        return buildXML({
+        return JSON.toXML({
           tag:"li",
           content:[{
             tag:"input",
