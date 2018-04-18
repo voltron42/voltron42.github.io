@@ -19,6 +19,10 @@
         state.svg = document.getElementById(svgId);
         this.redraw();
       }
+      this.setSize = function(width,height) {
+        state.width = width;
+        state.height = height;
+      }
       this.redraw = function(palette) {
         state.svg.innerHTML = buildXML({
           tag:"svg",
