@@ -12,9 +12,19 @@
 		<script src="../util/tf.js"></script>
 		<script src="../util/util.js"></script>
     <script src="../jsx/jsextension.js"></script>
-    <script src="script/pixel.js"></script>
+    <script src="../jsx/registry.js"></script>
     <script type="text/javascript">
-      window.pix = new PixelCanvas('pix','input','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
+      window.registryName = "registry";
+      window.registry = new Registry();
+    </script>
+    <script src="../drawUtil/palettectrl.js"></script>
+    <script src="../drawUtil/pixelcanvas.js"></script>
+    <script src="../drawUtil/pixelpainter.js"></script>
+    <script src="../drawUtil/point.js"></script>
+    <script src="script/spritely.js"></script>
+    <script type="text/javascript">
+      var Spritely = registry.invoke('Spritely');
+      window.pix = new Spritely('pix','input','widthField','heightField','colorSelect','color','palette','canvas','builder','out','codeOut',16,10);
     </script>
   </head>
   <body onload="pix.init()">
@@ -53,7 +63,7 @@
           <input type="checkbox" name="transparent" onChange="pix.makeTransparent(this.checked)"/>
           <label for="transparent">Make Image Transparent?</label>
           <br/>
-          <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activate(this.value)"/>
+          <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activateC(this.value)"/>
           <label for="colorSelect0"> Background Color:</label>
           <input type="color" name="palette" id="color0" value="#ffffff" onChange="pix.updateColor(this.value,0)"/>
           <br/>

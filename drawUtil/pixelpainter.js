@@ -8,7 +8,7 @@
       
       this.setCanvas = function(canvas) {
         ui.canvas = canvas;
-        ui.ctx = canvas..getContext("2d");
+        ui.ctx = canvas.getContext("2d");
       }
       
       this.setTransparent = function(transparent) {

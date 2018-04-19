@@ -15,16 +15,16 @@
           return out;
         },{});
       }
-      this.init = function() {
+      this.init = function(palette) {
         state.svg = document.getElementById(svgId);
-        this.redraw();
+        this.redraw(palette);
       }
       this.setSize = function(width,height) {
         state.width = width;
         state.height = height;
       }
       this.redraw = function(palette) {
-        state.svg.innerHTML = buildXML({
+        state.svg.innerHTML = JSON.toXML({
           tag:"svg",
           attrs:{
             width:"100%",

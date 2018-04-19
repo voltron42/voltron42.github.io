@@ -12,7 +12,7 @@
       
       me.init = function() {
         paletteUI.init();
-        pixelCanvas.init();
+        pixelCanvas.init(paletteUI.getPalette());
         pixelPainter.setCanvas(document.getElementById(canvasId));        
         
         ui.loader = document.getElementById(inputId)
@@ -37,7 +37,28 @@
         });
         redraw();
       }
+      
+      this.loadData = function() {
+        // TODO: fetch data from ui.loader, parse, load
+        var loadedData = JSON.parse(ui.loader.value);
+        if (loadedData) {
+          data = loadedData;
+          ui.background.value = data.palette[0];
+          displayPalette();
+          redraw();
+        }
+      }
+      
+      this.setScale = function(scale) {
+        data.scale = scale;
+        redraw();
+      }
 
+      this.makeTransparent = function(makeTransparent) {
+        data.transparent = makeTransparent;
+        redraw();
+      }
+      
       var redraw = function() {
         var palette = paletteUI.getPalette()
         pixelCanvas.redraw(palette);
@@ -45,7 +66,7 @@
         
       }
       
-      ['activateColor','addColor'].forEach(function(fn) {
+      Array.from(["activateColor","addColor"]).forEach(function(fn) {
         me[fn] = function() {
           paletteUI[fn].apply(paletteUI,Array.from(arguments));
         };
@@ -62,13 +83,18 @@
         redraw();
       }
       
-      ['setColor','transform'].forEach(function(f) {
+      Array.from(["setColor","transform"]).forEach(function(fn) {
         me[fn] = function() {
           pixelCanvas[fn].apply(pixelCanvas,Array.from(arguments));
           redraw();
         }
       });
       
+      this.makeSaveFile = function() {
+        ui.codeOut.value = JSON.stringify(data,null,2);
+        ui.codeOut.select();
+        document.execCommand('copy');
+      }
     }
   });
 })()
