@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MasterMold: Build Your Paper Minis</title>
+    <style type="text/css">
+      @media print {
+        #app {
+          display: none;
+        }
+        svg {
+          page-break-after: always;
+          margin: 0.5in 0.75in 0.5in 0.75in;
+        }
+        @page {
+          size: portrait;
+          margin: 0;
+        }
+      }
+    </style>
+    <script src="../jsx/jsextension.js"></script>
+    <script type="text/javascript">
+      function display() {
+        var images = [
+          "bear",
+          "belinda",
+          "carl",
+          "doppelganger",
+          "halfling_rogue",
+          "jon",
+          "lightninggarin",
+          "matt2",
+          "munro",
+          "oscoril_drow",
+          "robert2",
+          "sam2",
+          "shaliidrow",
+          "skeleton",
+          "wererat_guard",
+          "werewolf",
+          "zana"
+        ];
+        
+        document.getElementById("display").innerHTML = JSON.toXML({
+          tag:"svg",
+          attrs:{
+            width:7*96,
+            height:10*96
+          },
+          content:Number.range(10).reduce(function(out,y) {
+            return out.concat(Array.from([24, 168, 360, 504]).map(function(x) {
+              return {
+                tag:"rect",
+                attrs:{
+                  x:x,
+                  y:y*96,
+                  width:144,
+                  height:96,
+                  fill:"none",
+                  "stroke-width":1,
+                  stroke:"black"
+                }
+              }
+            }))
+          },[])
+        });
+      }
+    </script>
+  </head>
+  <body onload="display()">
+    <div id="display"></div>
+  </body>
+</html>
