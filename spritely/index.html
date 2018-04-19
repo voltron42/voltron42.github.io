@@ -63,11 +63,7 @@
           <input type="checkbox" name="transparent" onChange="pix.makeTransparent(this.checked)"/>
           <label for="transparent">Make Image Transparent?</label>
           <br/>
-          <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activateC(this.value)"/>
-          <label for="colorSelect0"> Background Color:</label>
-          <input type="color" name="palette" id="color0" value="#ffffff" onChange="pix.updateColor(this.value,0)"/>
-          <br/>
-          <ol id="palette"></ol>
+          <div id="palette"></div>
           <br/>
           <button onClick="pix.addColor()">Add Color</button>
         </div>

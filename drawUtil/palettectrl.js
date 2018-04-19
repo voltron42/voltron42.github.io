@@ -1,6 +1,6 @@
 (function(){
   window[registryName].apply('PaletteUI',[],function() {
-    return function(instanceName,paletteId) {
+    return function(instanceName,paletteId,colorSelectPrefix,colorPrefix) {
     
       var state = {
         palette:["#ffffff"],
@@ -30,14 +30,14 @@
             type:"color",
             name:"palette",
             id:"color0",
-            value:"#ffffff",
+            value:state.palette[0],
             onChange:instanceName + ".updateColor(this.value,0)"
           }
         },{
           tag:"ol",
           content:state.palette.slice(1).map(function(c,i){
             var index = i + 1;
-            var colorSelect = ui.colorSelectPrefix + index;
+            var colorSelect = colorSelectPrefix + index;
             var colorId = colorPrefix + index;
             return {
               tag:"li",
@@ -118,17 +118,17 @@
         displayPalette();
       }
       
-      this.activateColor = function(index) {
+      this.activate = function(index) {
         state.activeColor = parseInt("" + index);
       }
       
       this.removeColor = function(index) {
-        data.palette.splice(index,1);
+        state.palette.splice(index,1);
         displayPalette();
       }
       
       this.updateColor = function(color, index) {
-        data.palette[index] = color;
+        state.palette[index] = color;
       }
       
       this.addColor = function() {

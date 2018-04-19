@@ -46,8 +46,8 @@
                 }
               }
             })
-          }].concat(Array.range(state.height).reduce(function(out,y){
-            return out.concat(Array.range(state.width).map(function(x){
+          }].concat(Number.range(state.height).reduce(function(out,y){
+            return out.concat(Number.range(state.width).map(function(x){
               var color = state.grid[gridKey(x,y)] || 0;
               return {
                 tag:"use",
@@ -71,7 +71,7 @@
             height:height
           };
         }
-        var tf = new Transformer(data.width)[tfType];
+        var tf = new Transformer(state.width)[tfType];
         state.grid = Object.entries(state.grid).reduce(function(out,entry) {
           var point = tf(Point.parse(entry[0]));
           out[gridKey(point.getX(),point.getY())] = entry[1];
