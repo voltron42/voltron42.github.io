@@ -19,6 +19,8 @@
     <script src="../jsx/jsextension.js"></script>
     <script type="text/javascript">
       function display() {
+        var path = "../dalelands/";
+        var ext = ".png";
         var images = [
           "bear",
           "belinda",
@@ -38,6 +40,36 @@
           "werewolf",
           "zana"
         ];
+        
+        document.getElementById("gallery").innerHTML = images.map(function(img) {
+          return JSON.toXML({
+            tag:"svg",
+            attrs:{
+              width:96,
+              height:144
+            },
+            content:[{
+              tag:"rect",
+              attrs:{
+                width:96,
+                height:144,
+                fill:"none",
+                "stroke-width":1,
+                stroke:"black"
+              }
+            },{
+              tag:"image",
+              attrs:{
+                x:3,
+                y:2,
+                width:90,
+                height:140,
+                "xlink:href":(path + img + ext),
+                preserveAspectRatio:"xminymin meet"
+              }
+            }]
+          });
+        }).join("");
         
         document.getElementById("display").innerHTML = JSON.toXML({
           tag:"svg",
@@ -67,5 +99,6 @@
   </head>
   <body onload="display()">
     <div id="display"></div>
+    <div id="gallery"></div>
   </body>
 </html>
