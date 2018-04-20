@@ -90,8 +90,6 @@ function demo() {
   
   var urls = images.map((i) => path + i + ext);
   
-  console.log(urls.join("\n"));
-
   display(urls);
 }
 
@@ -137,7 +135,6 @@ function display(urls) {
     }].concat(urls.reduce(function(out,img,i) {
       var x = (i % 2) * 336 + 24;
       var y = Math.floor(i / 2) * 96;
-      console.log(x + "," + y)
       return out.concat(frameImg(i,x,y));
     }, []))
   });
