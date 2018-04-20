@@ -2,103 +2,20 @@
 <html>
   <head>
     <title>MasterMold: Build Your Paper Minis</title>
-    <style type="text/css">
-      @media print {
-        #app {
-          display: none;
-        }
-        svg {
-          page-break-after: always;
-        }
-        @page {
-          size: portrait;
-          margin: 0.5in 0.75in 0.5in 0.75in;
-        }
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style/print.css"/>
     <script src="../jsx/jsextension.js"></script>
+    <script src="script/mastermold-sandbox.js"></script>
     <script type="text/javascript">
-      function display() {
-        var path = "../dalelands/";
-        var ext = ".png";
-        var images = [
-          "bear",
-          "belinda",
-          "carl",
-          "doppelganger",
-          "halfling_rogue",
-          "jon",
-          "lightninggarin",
-          "matt2",
-          "munro",
-          "oscoril_drow",
-          "robert2",
-          "sam2",
-          "shaliidrow",
-          "skeleton",
-          "wererat_guard",
-          "werewolf",
-          "zana"
-        ];
-        
-        document.getElementById("gallery").innerHTML = images.map(function(img) {
-          return JSON.toXML({
-            tag:"svg",
-            attrs:{
-              width:96,
-              height:144
-            },
-            content:[{
-              tag:"rect",
-              attrs:{
-                width:96,
-                height:144,
-                fill:"none",
-                "stroke-width":1,
-                stroke:"black"
-              }
-            },{
-              tag:"image",
-              attrs:{
-                x:3,
-                y:2,
-                width:90,
-                height:140,
-                "xlink:href":(path + img + ext),
-                preserveAspectRatio:"xminymin meet"
-              }
-            }]
-          });
-        }).join("");
-        
-        document.getElementById("display").innerHTML = JSON.toXML({
-          tag:"svg",
-          attrs:{
-            width:7*96,
-            height:10*96
-          },
-          content:Number.range(10).reduce(function(out,y) {
-            return out.concat(Array.from([24, 168, 360, 504]).map(function(x) {
-              return {
-                tag:"rect",
-                attrs:{
-                  x:x,
-                  y:y*96,
-                  width:144,
-                  height:96,
-                  fill:"none",
-                  "stroke-width":1,
-                  stroke:"black"
-                }
-              }
-            }))
-          },[])
-        });
-      }
     </script>
   </head>
-  <body onload="display()">
-    <div id="display"></div>
+  <body onload="demo()">
+    <div id="ctrl">
+      <p>Enter in a list of the URLS of the images you wish to use for your minis, one link per line, no more than 20 urls at a time (any additional urls will be discarded).
+      Use the browser's "print" ability to either print your minis or save them as a ".pdf" file.</p>
+      <textarea id="input"></textarea>
+      <button onclick="displayFromInput(document.getElementById('input').value)">Build My Minis</button>
+    </div>
     <div id="gallery"></div>
+    <div id="print"></div>
   </body>
 </html>
