@@ -53,7 +53,7 @@
                 }
               },{
                 tag:"button",
-                attrs:{onClick:instanceName+".deleteColor("+index+")"},
+                attrs:{onClick:instanceName+".removeColor("+index+")"},
                 content:[{
                   tag:"svg",
                   attrs:{

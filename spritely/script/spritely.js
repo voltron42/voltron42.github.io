@@ -6,16 +6,16 @@
 
       var pixelCanvas = new PixelCanvas(instanceName,svgId,initSize,initSize,pixelSize);
 
-      var pixelPainter = new PixelPainter();
+      var pixelPainter = new PixelPainter(1,false);
 	  
-	  var ui = {};
-
+      var ui = {};
+      
       var me = this;
       
       me.init = function() {
         paletteUI.init();
         pixelCanvas.init(paletteUI.getPalette());
-        pixelPainter.setCanvas(document.getElementById(canvasId));        
+        pixelPainter.setCanvas(document.getElementById(canvasId));
         
         ui.loader = document.getElementById(inputId)
         ui.width = document.getElementById(widthFieldId);
@@ -52,12 +52,12 @@
       }
       
       this.setScale = function(scale) {
-        data.scale = scale;
+        pixelPainter.setScale(scale);
         redraw();
       }
 
       this.makeTransparent = function(makeTransparent) {
-        data.transparent = makeTransparent;
+        pixelPainter.setTransparent(makeTransparent);
         redraw();
       }
       
@@ -65,17 +65,17 @@
         var palette = paletteUI.getPalette()
         pixelCanvas.redraw(palette);
         var img = pixelPainter.paint(pixelCanvas.getWidth(),pixelCanvas.getHeight(),pixelCanvas.getGrid(),palette);
-		ui.out.innerHTML = JSON.toXML({
-			tag:"a",
-			attrs:{
-			  href:"#",
-			  onClick:instanceName + ".makeSaveFile()"
-			},
-			content:[{
-			  tag:"img",
-			  attrs:{src:ui.canvas.toDataURL("image/png")}
-			}]
-		  })
+        ui.out.innerHTML = JSON.toXML({
+          tag:"a",
+          attrs:{
+            href:"#",
+            onClick:instanceName + ".makeSaveFile()"
+          },
+          content:[{
+            tag:"img",
+            attrs:{src:img}
+          }]
+        })
 
       }
       
@@ -109,7 +109,12 @@
 	  }
       
       this.makeSaveFile = function() {
-        ui.codeOut.value = JSON.stringify(data,null,2);
+        ui.codeOut.value = JSON.stringify(pixelPainter.getData().merge({
+          width:pixelCanvas.getWidth(),
+          height:pixelCanvas.getHeight(),
+          grid:pixelCanvas.getGrid(),
+          palette:paletteUI.getPalette(),
+        }),null,2);
         ui.codeOut.select();
         document.execCommand('copy');
       }
