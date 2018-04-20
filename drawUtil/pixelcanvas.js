@@ -74,9 +74,9 @@
         var tf = new Transformer(state.width)[tfType];
         state.grid = Object.entries(state.grid).reduce(function(out,entry) {
           var point = tf(Point.parse(entry[0]));
-          out[gridKey(point.getX(),point.getY())] = entry[1];
+          out[point + ""] = entry[1];
           return out;
-        });
+        },{});
       }
       
       this.applyGrid = function(grid) {
