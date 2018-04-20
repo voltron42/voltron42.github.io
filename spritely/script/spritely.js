@@ -40,7 +40,7 @@
         redraw();
       }
       
-      this.loadData = function(e) {
+      this.loadData = function() {
         var file = ui.loader.files[0];
         if (!file) {
           return;

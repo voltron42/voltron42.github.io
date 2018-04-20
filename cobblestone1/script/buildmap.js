@@ -97,15 +97,13 @@
       });
     }
   };
-
-  window.Builder = function (inId,canvasId,galleryId) {
-    var input = document.getElementById(inId);
-    var buildspace = document.getElementById(canvasId);
-    var gallery = document.getElementById(galleryId);
-    this.buildmap = function() {
+  
+  
+  
+  var buildGalleryBuilder = function(gallery, buildspace) {
+    return function(inData) {
       buildspace.innerHTML = "";
       gallery.innerHTML = "";
-      eval("var inData = (" + input.value + ");");
       var tiles = inData[0] || {};
       tiles = Object.entries(tiles).reduce(function(out,entry){
         out[entry[0]] = parseTile(entry[1]);
@@ -147,6 +145,26 @@
         var img = canvas.toDataURL("image/png");
         return '<img src="' + img + '" alt="' + key + '"/>';
       }).join("");
-    };
+    }
+  }
+
+  window.Builder = function (inId,canvasId,galleryId) {
+    var input = document.getElementById(inId);
+    var buildspace = document.getElementById(canvasId);
+    var gallery = document.getElementById(galleryId);
+    var buildGallery = buildGalleryBuilder(gallery, buildspace);
+    this.buildmap = function() {
+      var file = input.files[0];
+      if (!file) {
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var contents = e.target.result;
+        eval("var inData = (" + contents + ");");
+        buildGallery(inData);
+      };
+      reader.readAsText(file);
+    }
   };
 })()
