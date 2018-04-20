@@ -36,8 +36,7 @@
           <input name="displayLoad" type="checkbox" onChange="toggleDisplay(this,'loader')"/>
           <label for="displayLoad"> Load Data:</label>
           <div id="loader" style="display: none;">
-            <p>Copy the contents of your save data file into the box below and click the "Load" buttton.</p>
-            <textarea id="input"></textarea>
+            <input type="file" id="input" accept=".json"/>
             <button onClick="pix.loadData()">Load</button>
           </div>
           <hr/>
@@ -75,9 +74,9 @@
         <div class="col-md-3">
           <h4>Output</h4>
           <canvas id="builder" style="display: none;"></canvas>
-          <p>Click on the image below to copy the data to your clipboard. Right click on the image below to save the image.</p>
+          <p>Click on the image below to download the image. Click on "Save Data" to download the data file.</p>
           <div id="out"></div>
-          <textarea id="codeOut" rows="20" cols="30"></textarea>
+          <div id="codeOut"></div>
         </div>
       </div>
     </div>

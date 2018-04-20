@@ -40,15 +40,25 @@
         redraw();
       }
       
-      this.loadData = function() {
-        // TODO: fetch data from ui.loader, parse, load
-        var loadedData = JSON.parse(ui.loader.value);
-        if (loadedData) {
-          data = loadedData;
-          ui.background.value = data.palette[0];
-          displayPalette();
-          redraw();
+      this.loadData = function(e) {
+        var file = ui.loader.files[0];
+        if (!file) {
+          return;
         }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var contents = e.target.result;
+          var load = JSON.parse(contents);
+          if (load) {
+            pixelCanvas.setSize(load.width,load.height);
+            pixelCanvas.applyGrid(load.grid);
+            pixelPainter.setTransparent(load.transparent);
+            pixelPainter.setScale(load.scale);
+            paletteUI.applyPalette(load.palette);
+            redraw();
+          }
+        };
+        reader.readAsText(file);
       }
       
       this.setScale = function(scale) {
@@ -68,15 +78,29 @@
         ui.out.innerHTML = JSON.toXML({
           tag:"a",
           attrs:{
-            href:"#",
-            onClick:instanceName + ".makeSaveFile()"
+            href:img,
+            download:"pixelart.png"
           },
           content:[{
             tag:"img",
             attrs:{src:img}
           }]
         })
-
+        var savedata = JSON.stringify(pixelPainter.getData().merge({
+          width:pixelCanvas.getWidth(),
+          height:pixelCanvas.getHeight(),
+          grid:pixelCanvas.getGrid(),
+          palette:paletteUI.getPalette(),
+        }),null,2);
+        ui.codeOut.innerHTML = JSON.toXML({
+          tag:"a",
+          attrs:{
+            class:"btn btn-primary",
+            href:("data:text/json;charset=utf-8," + encodeURI(savedata)),
+            download:"pixeldata.json",
+          },
+          content:["Save Data"]
+        });
       }
       
       Array.from(["activate","addColor"]).forEach(function(fn) {
@@ -103,21 +127,11 @@
         }
       });
 	  
-	  this.setColor = function(x,y) {
-		  pixelCanvas.setColor(x,y,paletteUI.getActiveIndex());
-		  redraw();
-	  }
-      
-      this.makeSaveFile = function() {
-        ui.codeOut.value = JSON.stringify(pixelPainter.getData().merge({
-          width:pixelCanvas.getWidth(),
-          height:pixelCanvas.getHeight(),
-          grid:pixelCanvas.getGrid(),
-          palette:paletteUI.getPalette(),
-        }),null,2);
-        ui.codeOut.select();
-        document.execCommand('copy');
+      this.setColor = function(x,y) {
+        pixelCanvas.setColor(x,y,paletteUI.getActiveIndex());
+        redraw();
       }
+      
     }
   });
 })()

@@ -156,6 +156,11 @@
       this.getPalette = function() {
         return Array.from(state.palette).map((c) => c);
       }
+      
+      this.applyPalette = function(palette) {
+        state.palette = Array.from(palette).map((c) => c);
+        displayPalette();
+      }
     }
   })
 })()
