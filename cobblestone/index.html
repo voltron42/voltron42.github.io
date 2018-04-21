@@ -13,22 +13,18 @@
     <script src="script/cobblestone.js"></script>
     <script type="text/javascript">
       window.cs = new Cobblestone('cs');
-      window.toptabs = new TabSet('tabMenu',['palettes','tiles','maps'],1)
+      window.toptabs = new TabSet('tabMenu',['tiles','transforms','maps'],0)
     </script>
   </head>
   <body onload="toptabs.init();">
     <h2 style="text-align: center;">Cobblestone: Pixel Tile Maps</h2>
     <div class="container">
       <ul id="tabMenu" class="nav nav-tabs">
-        <li><a onclick="toptabs.select('palettes')">Palettes</a></li>
         <li><a onclick="toptabs.select('tiles')">Tiles</a></li>
+        <li><a onclick="toptabs.select('transforms')">Transforms</a></li>
         <li><a onclick="toptabs.select('maps')">Maps</a></li>
       </ul>
       <div class="tab-content">
-        <div id="palettes" class="tab-pane">
-          <h3>Palettes</h3>
-          <p>Some content.</p>
-        </div>
         <div id="tiles" class="tab-pane">
           <div class="row">
             <div class="col-sm-3">
@@ -37,13 +33,17 @@
               <label for="displayLoad"> Load Data:</label>
               <div id="loader" style="display: none;">
                 <p>Copy the contents of your save data file into the box below and click the "Load" buttton.</p>
-                <textarea id="input"></textarea>
+                <input type="file" id="input"/>
                 <button onClick="pix.loadData('input')">Load</button>
               </div>
               <hr/>
               <h5>Tiles</h5>
-              <br/>
-              
+              <div>
+                <select id="tileList"></select>
+                <br/>
+                <button onclick="cs.addNewTile()">Add New Tile</button>
+                <button id="removeTile" onclick="cs.removeCurrentTile()">Remove Current Tile</button>
+              </div>
               <hr/>
               <h5>Transform</h5>
               <button name="transform" onClick="pix.transform('flip-down')">Flip Down</button>
@@ -54,10 +54,18 @@
               <button name="transform" onClick="pix.transform('shift-left')">Shift Left</button>
               <button name="transform" onClick="pix.transform('shift-up')">Shift Up</button>
               <button name="transform" onClick="pix.transform('shift-down')">Shift Down</button>
-              <hr/>
-              <h5>Palette</h5>
-              <input type="checkbox" name="transparent" onChange="pix.makeTransparent(this.checked)"/>
-              <label for="transparent">Make Image Transparent?</label>
+            </div>
+            <div class="col-sm-6">
+              <h4>Canvas</h4>
+              <p>Select a color from your palette, then click on the pixels you wish to make that color. Changing the value of a color in your palette will change the color of each pixel of the matching color in your image.</p>
+              <div id="canvas"></div>
+            </div>
+            <div class="col-sm-3">
+              <h4>Palette</h4>
+              <select id="paletteList"></select>
+              <br/>
+              <button onclick="cs.addNewPalette()">Add New Palette</button>
+              <button id="removePalette" onclick="cs.removeCurrentPalette()">Remove Current Palette</button>
               <br/>
               <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activate(this.value)"/>
               <label for="colorSelect0"> Background Color:</label>
@@ -67,22 +75,45 @@
               <br/>
               <button onClick="pix.addColor()">Add Color</button>
             </div>
-            <div class="col-sm-6">
-              <h4>Canvas</h4>
-              <p>Select a color from your palette, then click on the pixels you wish to make that color. Changing the value of a color in your palette will change the color of each pixel of the matching color in your image.</p>
+          </div>
+        </div>
+        <div id="transforms" class="tab-pane">
+          <div class="row">
+            <div class="col-sm-4">
+              <h4>Controls</h4>
+              <div>
+                <label for="tileList">Tiles</label>
+                <select id="tileList"></select>
+                <div id="selectedTile"></div>
+                <br/>
+                <label for="paletteList">Palettes</label>
+                <select id="paletteList"></select>
+                <div id="selectedPalette"></div>
+              </div>
+              <hr/>
+              <h5>Transform</h5>
+              <button name="transform" onClick="cs.applyTransform('flip-down')">Flip Down</button>
+              <button name="transform" onClick="cs.applyTransform('flip-over')">Flip Over</button>
+              <button name="transform" onClick="cs.applyTransform('turn-right')">Turn Right</button>
+              <button name="transform" onClick="cs.applyTransform('turn-left')">Turn Left</button>
+              <hr/>
+              <div>
+                <span class="error">Exists</span>
+                <button>Add Transform</button>
+              </div>
+            </div>
+            <div class="col-sm-8">
+              <h4>Current</h4>
               <div id="canvas"></div>
-            </div>
-            <div class="col-sm-3">
-              <h4>Output</h4>
-              <canvas id="builder" style="display: none;"></canvas>
-              <p>Click on the image below to copy the data to your clipboard. Right click on the image below to save the image.</p>
-              <div id="out"></div>
-            </div>
+              <h4>All Tile Transforms</h4>
+              <ul id="listedTransforms"></ul>
+             </div>
           </div>
         </div>
         <div id="maps" class="tab-pane">
-          <h3>Maps</h3>
-          <p>Some content in menu 2.</p>
+          <div class="row">
+            <div class="col-sm-4"></div>
+          </div>
         </div>
       </div>
       </div>

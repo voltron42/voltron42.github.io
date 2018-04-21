@@ -33,12 +33,10 @@
       <div class="row">
         <div class="col-md-3">
           <h4>Controls</h4>
-          <input name="displayLoad" type="checkbox" onChange="toggleDisplay(this,'loader')"/>
           <label for="displayLoad"> Load Data:</label>
-          <div id="loader" style="display: none;">
-            <input type="file" id="input" accept=".json"/>
-            <button onClick="pix.loadData()">Load</button>
-          </div>
+          <input type="file" id="input" accept=".json"/>
+          <button onClick="pix.loadData()">Load</button>
+          <div id="codeOut"></div>
           <hr/>
           <h5>Size</h5>
           <label for="width"> Width:</label>
@@ -74,9 +72,8 @@
         <div class="col-md-3">
           <h4>Output</h4>
           <canvas id="builder" style="display: none;"></canvas>
-          <p>Click on the image below to download the image. Click on "Save Data" to download the data file.</p>
+          <p>Click on the image below to download the image.</p>
           <div id="out"></div>
-          <div id="codeOut"></div>
         </div>
       </div>
     </div>
