@@ -7,21 +7,31 @@
     <!-- Local dependencies -->
     <link rel="stylesheet" href="../util/print.css"/>
     
-		<script src="../util/tf.js"></script>
-		<script src="../util/util.js"></script>
+    <script src="../jsx/jsextension.js"></script>
+    <script src="../jsx/registry.js"></script>
+		<script src="../util/file.js"></script>
 		<script src="../util/tabs.js"></script>
+    <script type="text/javascript">
+      window.toptabs = new TabSet('tabMenu',['instructions','tiles','transforms','maps'],0)
+      window.registryName = "registry";
+      window.registry = new Registry();
+    </script>
+    <script src="../drawUtil/palettectrl.js"></script>
+    <script src="../drawUtil/pixelcanvas.js"></script>
+    <script src="../drawUtil/pixelpainter.js"></script>
+    <script src="../drawUtil/point.js"></script>
     <script src="script/cobblestone.js"></script>
     <script type="text/javascript">
-      window.cs = new Cobblestone('cs');
-      window.toptabs = new TabSet('tabMenu',['instructions','tiles','transforms','maps'],0)
+      var Cobblestone = registry.invoke('Cobblestone');
+      window.cs = new Cobblestone('cs','codeOut','tileList','canvas','paletteList','palette');
     </script>
   </head>
-  <body onload="toptabs.init();">
+  <body onload="toptabs.init();cs.init();">
     <div id="printable"></div>
     <div class="container">
       <h2 class="title" style="text-align: center;">Cobblestone: Pixel Tile Maps</h2>
       <div id="loadsave">
-        <input type="file" id="input" onChange="pix.loadData('input')"/>
+        <input type="file" onChange="cs.loadData(this)"/>
         <span id="codeOut"></span>
       </div>
       <hr/>
@@ -56,21 +66,21 @@
               <h4>Controls</h4>
               <div>
                 <label for="tileList">Tiles</label>
-                <select id="tileList"></select>
+                <select id="tileList" onchange="cs.selectTile(this)"></select>
                 <br/>
                 <button onclick="cs.addNewTile()">Add New Tile</button>
                 <button id="removeTile" onclick="cs.removeCurrentTile()">Remove Current Tile</button>
               </div>
               <hr/>
               <h5>Transform</h5>
-              <button name="transform" onClick="pix.transform('flip-down')">Flip Down</button>
-              <button name="transform" onClick="pix.transform('flip-over')">Flip Over</button>
-              <button name="transform" onClick="pix.transform('turn-right')">Turn Right</button>
-              <button name="transform" onClick="pix.transform('turn-left')">Turn Left</button>
-              <button name="transform" onClick="pix.transform('shift-right')">Shift Right</button>
-              <button name="transform" onClick="pix.transform('shift-left')">Shift Left</button>
-              <button name="transform" onClick="pix.transform('shift-up')">Shift Up</button>
-              <button name="transform" onClick="pix.transform('shift-down')">Shift Down</button>
+              <button name="transform" onClick="cs.transform('flip-down')">Flip Down</button>
+              <button name="transform" onClick="cs.transform('flip-over')">Flip Over</button>
+              <button name="transform" onClick="cs.transform('turn-right')">Turn Right</button>
+              <button name="transform" onClick="cs.transform('turn-left')">Turn Left</button>
+              <button name="transform" onClick="cs.transform('shift-right')">Shift Right</button>
+              <button name="transform" onClick="cs.transform('shift-left')">Shift Left</button>
+              <button name="transform" onClick="cs.transform('shift-up')">Shift Up</button>
+              <button name="transform" onClick="cs.transform('shift-down')">Shift Down</button>
             </div>
             <div class="col-sm-6">
               <h4>Canvas</h4>
@@ -79,18 +89,14 @@
             </div>
             <div class="col-sm-3">
               <h4>Palette</h4>
-              <select id="paletteList"></select>
+              <select id="paletteList" onchange="cs.selectPalette(this)"></select>
               <br/>
               <button onclick="cs.addNewPalette()">Add New Palette</button>
               <button id="removePalette" onclick="cs.removeCurrentPalette()">Remove Current Palette</button>
               <br/>
-              <input type="radio" name="colors" id="colorSelect0" value="0" checked="true" onChange="pix.activate(this.value)"/>
-              <label for="colorSelect0"> Background Color:</label>
-              <input type="color" name="palette" id="color0" value="#ffffff" onChange="pix.updateColor(this.value,0)"/>
+              <div id="palette"></div>
               <br/>
-              <ol id="palette"></ol>
-              <br/>
-              <button onClick="pix.addColor()">Add Color</button>
+              <button onClick="cs.addColor()">Add Color</button>
             </div>
           </div>
         </div>
@@ -99,12 +105,12 @@
             <div class="col-sm-4">
               <h4>Controls</h4>
               <div>
-                <label for="tileList">Tiles</label>
-                <select id="tileList"></select>
+                <label for="tfTileList">Tiles</label>
+                <select id="tfTileList" onchange="cs.selectTfTile(this)"></select>
                 <div id="selectedTile"></div>
                 <br/>
-                <label for="paletteList">Palettes</label>
-                <select id="paletteList"></select>
+                <label for="tfPaletteList">Palettes</label>
+                <select id="tfPaletteList" onchange="cs.selectTfPalette(this)"></select>
                 <div id="selectedPalette"></div>
               </div>
               <hr/>
@@ -132,7 +138,7 @@
             <div class="col-sm-3">
               <h4>Controls</h4>
                 <label for="transformList">Transforms</label>
-              <select id="transformList"></select>
+              <select id="transformList"  onchange="cs.selectTransform(this)"></select>
               <div id="displayTransform"></div>
             </div>
             <div class="col-sm-6">
