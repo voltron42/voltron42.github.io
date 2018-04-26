@@ -3,28 +3,100 @@
   <head>
     <title>Transform</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="../util/file.js"></script>
     <script type="text/javascript">
+    
+      (function(){
+      
+        var parser = new DOMParser();
+        
+        var filename = new RegExp("[a-zA-Z][a-zA-Z0-9_\-](\.[a-zA-Z]+)?");
+        
+        var validators = {
+          "xml":function(input){
+            return input.files.length > 0;
+          },
+          "xslt":function(input){
+            return input.files.length > 0;
+          },
+          "filename":function(input){
+            return filename.test(input.value);
+          }
+        };
+        
+        window.Transformer = function(xmlId,xsltId,filenameId,typeId,tfButtonId,targetId) {
+          var allowTf = {
+            "xml": false,
+            "xslt": false,
+            "filename": false
+          };
+          
+          var ids = {};
+          ids[xmlId] = "xml";
+          ids[xsltId] = "xslt";
+          ids[filenameId] = "filename";
+          
+          var inputs = Array.from([xmlId,xsltId,filenameId,tfButtonId,targetId]).reduce(function(out,key) {
+            out[key] = document.getElementById(key);
+            return out;
+          },{});
+          
+          this.validateInput = function(input) {
+            var type = ids[input.id];
+            allowTf[type] = validators[type];
+            inputs[tfButtonId].disabled = !Object.values(allowTf).reduce((a,b) => (a && b),true);
+            console.log(allowTf);
+          }
+          
+          this.transformToDownload = function() {
+            loadFile(inputs[xmlId],function(xmlText) {
+              var xmlDoc = parser.parseFromString(xmlText,"application/xml");
+              console.log(xmlDoc);
+              loadFile(inputs[xsltId],function(xsltText) {
+                var xsltDoc = parser.parseFromString(xsltText,"application/xml");
+                var processor = new XSLTProcessor();
+                processor.importStylesheet(xsltDoc.documentElement);
+                var result = processor.transformToDocument(xmlDoc.documentElement);
+                console.log(result);
+                result = result.documentElement
+                console.log(result);
+                var type = "text/xml";
+                var output = result.outerHTML;
+                if (result.tagName == "transformiix:result") {
+                  type = "text/plain";
+                  output = result.innerText;
+                }
+                var link = makeDownloadLink("Save Data",inputs[filenameId].value,type,"charset=utf-8",output);
+                link.setAttribute("class","btn btn-primary");
+                inputs[targetId].innerHTML = link.outerHTML;
+              })
+            })
+          }
+          
+        }
+        
+      })()
       
     </script>
   </head>
-  <body>
+  <body onload="window.transformer = new Transformer('inputXML','inputXSLT','outputName','outputType','tfBtn','download')">
     <div class="container">
       <h2>Transform XML</h2>
-      <div class="row">
-        <div class="col-md-3">
+      <div>
+        <div 
           <label for="inputXML"> XML file:</label>
-          <input type="file" id="inputXML" accept=".xml"/>
+          <input type="file" id="inputXML" accept=".xml" onchange="transformer.validateInput(this)"/>
         </div>
-        <div class="col-md-3">
+        <div>
           <label for="inputXSLT"> XSLT file:</label>
-          <input type="file" id="inputXSLT" accept=".xslt"/>
+          <input type="file" id="inputXSLT" accept=".xslt" onchange="transformer.validateInput(this)"/>
         </div>
-        <div class="col-md-3">
+        <div>
           <label for="outputName"> Filename:</label>
-          <input id="outputName"/>
+          <input id="outputName" onchange="transformer.validateInput(this)"/>
         </div>
-        <div class="col-md-3">
-          <button onClick="">Transform</button>
+        <div>
+          <button disabled="true" id="tfBtn" onClick="transformer.transformToDownload()">Transform</button>
           <div id="download"></div>
         </div>
       </div>
