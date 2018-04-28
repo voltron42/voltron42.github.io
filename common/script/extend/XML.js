@@ -33,7 +33,7 @@
       if ((typeof node) == "string") {
         return {"_text":element};
       }
-      var out = Array.from(element.childNodes).map(toObject).reduce(function(out,child) {
+      var out = mapChildren(element,toObject).reduce(function(out,child) {
         return Object.entries(child).reduce(function(out,entry) {
           var key = entry[0];
           var val = entry[1];

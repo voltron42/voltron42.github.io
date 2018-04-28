@@ -9,9 +9,9 @@ if (!Array.repeat){
   };
 };
 if (!Array.prototype.groupBy) {
-  Array.prototype.groupBy = function(key) {
+  Array.prototype.groupBy = function(func) {
     return this.reduce(function(rv, x) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
+      (rv[func(x)] = rv[func(x)] || []).push(x);
       return rv;
     }, {});
   }
