@@ -1,9 +1,14 @@
 (function() {
-  var tf = new Transformer(16);
+  var transformer = new Transformer(16);
+  
+  var tf = ["flip-down","flip-over","turn-left","turn-right"].reduce(function(out,fn) {
+    out[fn] = function(p) {
+      return p.merge(transformer[fn](new Point(p.x,p.y)).toJSON());
+    }
+    return out;
+  },{})
   
   var buildTransform = function(transforms) {
-    console.log("transforms");
-    console.log(transforms);
     return (p) => transforms.reduce((p1,f) => f(p1),p);
   }
   
@@ -23,8 +28,8 @@
       var xb = x[1] || xa;
       var ya = y[0];
       var yb = y[1] || ya;
-      return Array.range(ya,yb+1).reduce(function(out,y){
-        return out.concat(Array.range(xa,xb+1).map((x) => Object.map("x",x,"y",y)));
+      return Number.range(ya,yb+1).reduce(function(out,y){
+        return out.concat(Number.range(xa,xb+1).map((x) => Object.map("x",x,"y",y)));
       },[]);
     },[]);
     return coords;
@@ -98,8 +103,6 @@
     }
   };
   
-  
-  
   var buildGalleryBuilder = function(gallery, buildspace) {
     return function(inData) {
       buildspace.innerHTML = "";
@@ -109,6 +112,7 @@
         out[entry[0]] = parseTile(entry[1]);
         return out;
       },{});
+      console.log(tiles);
       var palettes = inData[1] || {};
       palettes = Object.entries(palettes).reduce(function(out,entry){
         out[entry[0]] = entry[1].map((c) => Array.isArray(c)?"rgb(" + c.join(",") + ")":c);

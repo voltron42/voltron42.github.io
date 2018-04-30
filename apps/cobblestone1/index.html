@@ -3,7 +3,24 @@
 	<head>
 		<title>Cobblestone</title>
 		<link rel="stylesheet" type="text/css" href="../../common/style/print.css"/>
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <script src="../../common/script/extend/Array.js"></script>
+    <script src="../../common/script/extend/Object.js"></script>
+    <script src="../../common/script/extend/Number.js"></script>
+    <script src="../../common/script/extend/JSON.js"></script>
+    <script src="../../common/script/util/registry.js"></script>
+    <script type="text/javascript">
+      window.registryName = "registry";
+      window.registry = new Registry();
+    </script>
+    <script src="../../common/script/drawUtil/Point.js"></script>
+    <script type="text/javascript">
+      window.Point = registry.invoke("Point");
+      window.Transformer = registry.invoke("Transformer");
+    </script>
+    <script type="text/javascript">
+      
+    </script>
 		<script src="script/buildmap.js"></script>
 	</head>
 	<body onload="window.builder = new Builder('in','builders','display')">

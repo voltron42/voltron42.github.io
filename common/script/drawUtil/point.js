@@ -10,6 +10,12 @@
       this.toString = function() {
         return x + "-" + y;
       }
+      this.toJSON = function() {
+        return {
+          x:x,
+          y:y
+        }
+      }
     }
     Point.parse = function(str) {
       var p = str.split("-").map((n) => parseInt(n));

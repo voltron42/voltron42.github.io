@@ -66,7 +66,7 @@ function frameImg(i,x,y) {
 
   
 function demo() {
-  var path = "../dalelands/";
+  var path = "../../archive/dalelands/";
   var ext = ".png";
   var images = [
     "bear",

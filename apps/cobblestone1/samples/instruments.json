@@ -22,7 +22,7 @@
       "harp|instruments":["b/a"],
       "drum|instruments":["c/a"],
       "pipes|instruments":["a/b"],
-      "flute|instruments":["b/b"],
+      "flute|instruments|flip-over":["b/b"],
       "mandolin|instruments":["c/b"]
     }]
   }
