@@ -27,25 +27,36 @@
       }
       this.selectTile = function(selector) {
         pixelCanvas.applyGrid(data.tiles[selector.value]);
-        pixelCanvas.redraw(data.palettes[ui.paletteList.value]);
+        var palette = data.palettes[ui.paletteList.value];
+        if (!palette) {
+          alert("Please select a palette to display grid");
+        } else {
+          pixelCanvas.redraw(palette);
+        }
       }
-      var nameTile = function() {
+      var pickName = function(colName) {
         var name = prompt("Enter the name of the new tile.");
-        if (data.tiles[name]) {
+        if (data[colName][name]) {
           return nameTile;
         } else {
           return name;
         }
       }
-      var listTiles = function(name) {
-        ui.tileList.innerHTML = Object.keys(data.tiles).map(function(tileName) {
-          var selected = (tileName == name)?' selected="true"':"";
-          return '<option' + selected + ' value="' + tileName + '">' + tileName + '</option>';
+      var makeList = function(uiList,colName,selectFn,name) {
+        uiList.innerHTML = Object.keys(data[colName]).map(function(itemName) {
+          var selected = (itemName == name)?' selected="true"':"";
+          return '<option' + selected + ' value="' + itemName + '">' + itemName + '</option>';
         }).join("");
-        me.selectTile(ui.tileList);        
+        me[selectFn](uiList);
+      }
+      var listTiles = function(name) {
+        makeList(ui.tileList,"tiles","selectTile",name);
+      }
+      var listPalettes = function(name) {
+        makeList(ui.paletteList,"palettes","selectPalette",name);
       }
       this.addNewTile = function() {
-        var name = nameTile();
+        var name = pickName("tiles");
         data.tiles[name] = {};
         listTiles(name);
       }
@@ -58,18 +69,28 @@
         data.tiles[ui.tileList.value] = pixelCanvas.getGrid();
       }
       this.selectPalette = function(selector) {
-        
+        var tile = data.tiles[ui.tileList.value];
+        if (!tile) {
+          alert("Please select a tile to display grid");
+        } else {
+          pixelCanvas.applyGrid(tile);
+          pixelCanvas.redraw(palettes[selector.value]);
+        }
       }
       this.addNewPalette = function() {
-        
+        var name = pickName("tiles");
+        data.tiles[name] = {};
+        listTiles(name);
       }
       this.removeCurrentPalette = function() {
-        
+        delete data.palettes[ui.paletteList.value];
+        listPalettes();
       }
       this.activate = function(value) {
-        
+        paletteUI.activate(value);
       }
       this.updateColor = function(value,index) {
+        data.palettes[ui.paletteList.value][index] = value;
         
       }
       this.addColor = function() {
