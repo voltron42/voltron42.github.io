@@ -7,11 +7,13 @@
     <!-- Local dependencies -->
     <link rel="stylesheet" href="../../common/style/print.css"/>
     
+		<script src="../../common/script/extend/Number.js"></script>
+		<script src="../../common/script/extend/JSON.js"></script>
     <script src="../../common/script/util/registry.js"></script>
 		<script src="../../common/script/util/file.js"></script>
 		<script src="../../common/script/util/tabs.js"></script>
     <script type="text/javascript">
-      window.toptabs = new TabSet('tabMenu',['instructions','tiles','transforms','maps'],0)
+      window.toptabs = new TabSet('tabMenu',['instructions','tiles','transforms','maps'],1);
       window.registryName = "registry";
       window.registry = new Registry();
     </script>
@@ -19,10 +21,13 @@
     <script src="../../common/script/drawUtil/pixelcanvas.js"></script>
     <script src="../../common/script/drawUtil/pixelpainter.js"></script>
     <script src="../../common/script/drawUtil/point.js"></script>
+    <script src="../../common/script/drawUtil/gridtf.js"></script>
     <script src="script/cobblestone.js"></script>
     <script type="text/javascript">
       var Cobblestone = registry.invoke('Cobblestone');
-      window.cs = new Cobblestone('cs','codeOut','tileList','canvas','paletteList','palette');
+      window.cs = new Cobblestone('cs','codeOut','tileList','canvas','paletteList',
+      'palette','tfTileList','tfPaletteList','tfCanvas','tfWarning','tfLabel',
+      'addTransform','listedTransforms','transformList');
     </script>
   </head>
   <body onload="toptabs.init();cs.init();">
@@ -105,28 +110,31 @@
               <h4>Controls</h4>
               <div>
                 <label for="tfTileList">Tiles</label>
-                <select id="tfTileList" onchange="cs.selectTfTile(this)"></select>
+                <select id="tfTileList" onchange="cs.selectTfTile()"></select>
                 <div id="selectedTile"></div>
                 <br/>
                 <label for="tfPaletteList">Palettes</label>
-                <select id="tfPaletteList" onchange="cs.selectTfPalette(this)"></select>
+                <select id="tfPaletteList" onchange="cs.selectTfPalette()"></select>
                 <div id="selectedPalette"></div>
               </div>
               <hr/>
               <h5>Transform</h5>
-              <button name="transform" onClick="cs.applyTransform('flip-down')">Flip Down</button>
-              <button name="transform" onClick="cs.applyTransform('flip-over')">Flip Over</button>
-              <button name="transform" onClick="cs.applyTransform('turn-right')">Turn Right</button>
-              <button name="transform" onClick="cs.applyTransform('turn-left')">Turn Left</button>
+              <ul>
+                <li><input type="checkbox" name="applyTf" onChange="cs.applyTransform()" value="flip-down">Flip Down</input></li>
+                <li><input type="checkbox" name="applyTf" onChange="cs.applyTransform()" value="flip-over">Flip Over</input></li>
+                <li><input type="checkbox" name="applyTf" onChange="cs.applyTransform()" value="turn-left">Turn Left</input></li>
+                <li><input type="checkbox" name="applyTf" onChange="cs.applyTransform()" value="turn-right">Turn Right</input></li>
+              </ul>
               <hr/>
               <div>
-                <span class="error">Exists</span>
-                <button>Add Transform</button>
+                <button on="cs.addTransform()" id="addTransform" disabled>Add Transform</button>
               </div>
             </div>
             <div class="col-sm-8">
               <h4>Current</h4>
-              <div id="canvas"></div>
+              <div id="tfLabel"></div>
+              <div id="tfWarning" class="error" style="display:none;">Exists</div>
+              <canvas id="tfCanvas"></canvas>
               <h4>All Tile Transforms</h4>
               <ul id="listedTransforms"></ul>
             </div>

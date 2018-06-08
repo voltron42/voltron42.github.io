@@ -1,6 +1,7 @@
 (function() {
-  window[registryName].apply('PixelCanvas', ['Point', 'Transformer'], function(Point,Transformer) {
+  window[registryName].apply('PixelCanvas', ['Point', 'Transformer','GridTransformer'], function(Point,Transformer,GridTransformer) {
     return function(instanceName,svgId,initWidth,initHeight,pixelSize) {
+      var gridTf = new GridTransformer(initWidth,initHeight);
       var state = {
         grid:{},
         width:initWidth,
@@ -22,61 +23,52 @@
       this.setSize = function(width,height) {
         state.width = width;
         state.height = height;
+        gridTf.dim(width,height);
       }
       this.redraw = function(palette) {
-        state.svg.innerHTML = JSON.toXML({
-          tag:"svg",
-          attrs:{
-            width:"100%",
-            viewBox:[0,0,state.width * pixelSize, state.height * pixelSize].join(" "),
-            preserveAspectRatio:"xMaxYMax meet"
-          },
-          content:[{
-            tag:"defs",
-            content:palette.map(function(color,index){
-              return {
-                tag:"rect",
-                attrs:{
-                  width:pixelSize,
-                  height:pixelSize,
-                  stroke:"black",
-                  "stroke-width":1,
-                  fill:color,
-                  id:"palette" + index
+        if(state.svg) {
+          state.svg.innerHTML = JSON.toXML({
+            tag:"svg",
+            attrs:{
+              width:"100%",
+              viewBox:[0,0,state.width * pixelSize, state.height * pixelSize].join(" "),
+              preserveAspectRatio:"xMaxYMax meet"
+            },
+            content:[{
+              tag:"defs",
+              content:palette.map(function(color,index){
+                return {
+                  tag:"rect",
+                  attrs:{
+                    width:pixelSize,
+                    height:pixelSize,
+                    stroke:"black",
+                    "stroke-width":1,
+                    fill:color,
+                    id:"palette" + index
+                  }
                 }
-              }
-            })
-          }].concat(Number.range(state.height).reduce(function(out,y){
-            return out.concat(Number.range(state.width).map(function(x){
-              var color = state.grid[gridKey(x,y)] || 0;
-              return {
-                tag:"use",
-                attrs:{
-                  x:x * pixelSize,
-                  y:y * pixelSize,
-                  href:"#palette" + color,
-                  onClick:instanceName + ".setColor(" + x + "," + y + ")"
-                }
-              };
-            }));
-          },[]))
-        })
+              })
+            }].concat(Number.range(state.height).reduce(function(out,y){
+              return out.concat(Number.range(state.width).map(function(x){
+                var color = state.grid[gridKey(x,y)] || 0;
+                return {
+                  tag:"use",
+                  attrs:{
+                    x:x * pixelSize,
+                    y:y * pixelSize,
+                    href:"#palette" + color,
+                    onClick:instanceName + ".setColor(" + x + "," + y + ")"
+                  }
+                };
+              }));
+            },[]))
+          })
+        }
       }
       
       this.transform = function(tfType) {
-        if (state.width != state.height) {
-          throw {
-            message:"Grid width and height are not equal, and must be to perform transformations.",
-            width:width,
-            height:height
-          };
-        }
-        var tf = new Transformer(state.width)[tfType];
-        state.grid = Object.entries(state.grid).reduce(function(out,entry) {
-          var point = tf(Point.parse(entry[0]));
-          out[point + ""] = entry[1];
-          return out;
-        },{});
+        state.grid = gridTf.transformGrid(tfType,state.grid);
       }
       
       this.applyGrid = function(grid) {
