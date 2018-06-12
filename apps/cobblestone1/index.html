@@ -8,18 +8,19 @@
     <script src="../../common/script/extend/Object.js"></script>
     <script src="../../common/script/extend/Number.js"></script>
     <script src="../../common/script/extend/JSON.js"></script>
+    <script src="../../common/script/util/file.js"></script>
     <script src="../../common/script/util/registry.js"></script>
     <script type="text/javascript">
       window.registryName = "registry";
       window.registry = new Registry();
     </script>
-    <script src="../../common/script/drawUtil/Point.js"></script>
+    <script src="../../common/script/drawUtil/point.js"></script>
+    <script src="../../common/script/drawUtil/colorconstants.js"></script>
+    <script src="../../common/script/drawUtil/tileparser.js"></script>
     <script type="text/javascript">
       window.Point = registry.invoke("Point");
       window.Transformer = registry.invoke("Transformer");
-    </script>
-    <script type="text/javascript">
-      
+      window.TileParser = registry.invoke("TileParser");
     </script>
 		<script src="script/buildmap.js"></script>
 	</head>

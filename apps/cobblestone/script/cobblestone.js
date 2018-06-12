@@ -1,7 +1,8 @@
 (function(){
   window[registryName].apply('Cobblestone',
-  ['PaletteUI','PixelCanvas','GridTransformer','PixelPainter'],
-  function(PaletteUI,PixelCanvas,GridTransformer,PixelPainter){
+  ['PaletteUI','PixelCanvas','GridTransformer','PixelPainter','TileParser'],
+  function(PaletteUI,PixelCanvas,GridTransformer,PixelPainter,TileParser){
+    var tileParser = new TileParser(16,16);
     return function(instanceName,dlButtonId,tileListId,tileCanvasId,paletteListId,
     paletteId,tfTileListId,tfPaletteListId,tfCanvasId,tfWarningId,tfLabelId,addTfId,
     listedTransformsId,transformListId) {
@@ -33,12 +34,28 @@
         
         pixelPainter.setCanvas(ui.tfCanvas);
       };
+      var parseTile = function() {}
       this.loadData = function(input) {
         loadFile(input,function(result){
           var temp = JSON.parse(result);
-          Object.entries(temp).forEach(function(entry){
-            data[entry[0]] = entry[1];
-          });
+          if (Array.isArray(temp)) {
+            temp = {
+              tiles:temp[0],
+              palettes:temp[1],
+              transforms:temp[2]
+            }
+          }
+          data.palettes = temp.palettes;
+          data.transforms = temp.transforms;
+          data.tiles = Object.keys(temp.tiles).reduce(function(out, tileName) {
+            var tile = temp.tiles[tileName];
+            if ("string" == (typeof tile)) {
+              out[tileName] = tileParser.parse(tile);
+            } else {
+              out[tileName] = tile;
+            }
+            return out;
+          }, {})
         });
       }
       var applyTile = function(name) {

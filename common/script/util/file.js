@@ -9,7 +9,6 @@
       onComplete(e.target.result);
     };
     reader.readAsText(file);
-
   }
   window.makeDownloadLink = function(label,filename,type,encoding,data) {
     var link = document.createElement("a");
