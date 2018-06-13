@@ -76,7 +76,7 @@
       {});
     }
   });
-  window[registryName].apply('MapBuilder', 
+  window[registryName].apply('TileTransformer', 
   ['ColorConstants','Point','Transformer'], 
   function(ColorConstants,Point,Transformer) {
     var transformer = new Transformer(16);
@@ -98,22 +98,12 @@
         return p;
       }
     }
-    
-    var drawSquare = function(coord,ctx) {
-      return function(point) {
-        if (point.c != "none") {
-          var xy = ["x","y"].reduce(function(out, key){
-            out[key] = 6 * (point[key] + 16 * coord[key]);
-            return out;
-          },{});
-          ctx.fillStyle = point.c;
-          ctx.fillRect(xy.x, xy.y, 6, 6);
-        }
-      }
-    }
-    
+       
     return function() {
-      
+      this.buildTransform = function(tile,palette,transforms) {
+        return tile.map(buildTransform(transforms.map((k) => tf[k]).concat(applyPalette(palette))));
+      }
+      this.
     }
     
   });
