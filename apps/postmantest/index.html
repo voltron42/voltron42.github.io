@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Postman Test Publisher</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="../../common/style/tooltip.css"/>
+    <style type="text/css">
+      @media print {
+        .container {
+          display: none;
+        }
+        svg, img, table {
+          page-break-after: always;
+          margin: 0.25in 0.5in 0.25in 0.5in;
+        }
+        @page {
+          margin: 0;
+        }
+      }
+
+      tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <script src="../../common/script/extend/Array.js"></script>
+    <script src="../../common/script/extend/Object.js"></script>
+    <script src="../../common/script/extend/Number.js"></script>
+    <script src="../../common/script/extend/JSON.js"></script>
+    <script src="../../common/script/util/file.js"></script>
+    <script src="../../common/script/util/registry.js"></script>
+    <script type="text/javascript">
+      window.registryName = "registry";
+      window.registry = new Registry();
+    </script>
+    <script src="../../common/script/drawUtil/point.js"></script>
+    <script src="../../common/script/drawUtil/colorconstants.js"></script>
+    <script src="script/app.js"></script>
+    <script type="text/javascript">
+      window.PostmanApp = registry.invoke("PostmanApp");
+    </script>
+	</head>
+	<body onload="window.app = new PostmanApp('in','builders','downloads','summary','display','percentile','summaryColors')">
+		<div class="container">
+			<input type="file" id="in" accept=".json" multiple></textarea>
+			<button onclick="app.publishTestData()">Publish</button>
+      <div class="row">
+        <div class="col-md-4">
+          <h4>Use for summary:</h4>
+          <ul>
+            <li><input type="radio" checked="true" name="percentile" value="max" onclick="app.publishTestData()">Maximum</input></li>
+            <li><input type="radio" name="percentile" value="per99" onclick="app.publishTestData()">99th Percentile</input></li>
+            <li><input type="radio" name="percentile" value="per95" onclick="app.publishTestData()">95th Percentile</input></li>
+          </ul>
+          <div id="downloads"></div>
+        </div>
+        <div class="col-md-4">
+          <ul>
+            <li><input type="color" id="minColor" value="#ff0055"> Minimum Color:</input></li>
+            <li><input type="color" id="avgColor" value="#55ff00"> Average Color:</input></li>
+            <li><input type="color" id="medianColor" value="#5500ff"> Median Color:</input></li>
+            <li><input type="color" id="maxColor" value="#AAAAAA"> Maximum Color:</input></li>
+          </ul>
+        </div>
+      </div>
+      </div>
+		</div>
+		<div id="builders" style="display: none;"></div>
+		<div id="summary"></div>
+    <div id="summaryColors"></div>
+		<div id="display"></div>
+	</body>
+</html>
