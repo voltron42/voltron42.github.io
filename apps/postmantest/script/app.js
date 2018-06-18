@@ -60,20 +60,86 @@
         "</table>"
       }
       
+      var calcIntervals = function(max) {
+        var top = max * 2;
+        var digits = top.toString().length - 1;
+        var shift = Math.pow(10,digits);
+        var maxInterval = Math.ceil(top / shift) * shift / 2;
+        var steps = [];
+        for (var init = [5,10,20]; steps.length <= 1 && init.filter(function(n) {return (n <= maxInterval)}).length >= 1; init = init.map((n) => n * 10)) {
+          steps = steps.concat(init.map(function(n) { return {step:maxInterval,n:n,i:maxInterval / n};}).filter((e) => (e.i > 3 && e.i < 20 && e.i == Math.round(e.i))));
+        }
+        steps.sort((a,b) => a.i - b.i);
+        var interval = steps[0].n;
+        var out = [];
+        for(var x = 0; x<=maxInterval; x += interval) {
+          out.push(x);
+        }
+        return out;
+      }
+      
+      var barcolors = {
+        "min":"blue",
+        "avg":"orange",
+        "med":"darkgrey",
+        "max":"yellow"
+      }
+      
       var buildVertBarChart = function(data) {
         var rowCount = data.length - 1;
-        var maxHeight = Math.max.apply(null, data.slice(1).map((r) => r[r.length-1]));
+        console.log("rowCount");
+        console.log(rowCount);
+        var maxHeight = Math.ceil(Math.max.apply(null, data.slice(1).map((r) => r[r.length-1])));
+        console.log("maxHeight");
+        console.log(maxHeight);
+        var intervals = calcIntervals(maxHeight).reverse();
+        var maxInterval = intervals[0];
+        var lineInterval = 400 / (intervals.length - 1);
+        var lines = intervals.map(function(x,i) {return {x:x,i:Math.round(i*lineInterval)+35};});
+                
         var labels = data.slice(1).map((r) => r[0]);
-        return '<svg width="100%" height="100%" viewBox="0 0 8000 5000">' + 
-          '<rect width="8000" height="5000" stroke-width="5" stroke="black" fill="white">' +
-          '<text x="4000" y="10" text-anchor="middle" alignment-baseline="hanging">Summary</text>'
-        "</svg>";
+        var blockWidth = 700 / labels.length;
+        var offset = blockWidth / 2;
+        var outer = 8;
+        var inner = 5;
+        var barwidth = (blockWidth - outer * 2 - inner * 3) / 4;
+        var bars = "?".repeat(labels.length).split("").map(function(z,row){
+          var c = String.fromCharCode(65 + row);
+          var xStart = blockWidth * row;
+          var off = Math.round(offset + xStart) + 80;
+          var datarow = data[row + 1];
+          return ["min","avg","med","max"].reduce(function(out,label,index) {
+            var value = datarow[index + 1];
+            var height = Math.round(value * 400 / maxInterval);
+            var y = 400 - height + 35;
+            var x = index * (inner + barwidth) + xStart + outer + 80;
+            return out + '<rect x="' + x + '" y="' + y + '" width="' + barwidth + '" height="' + height + '" fill="' + barcolors[label] + '" stroke="black"/>';
+          }, '<text x="' + off + '" y="440" class="row-header" text-anchor="middle" alignment-baseline="hanging">' + c + '</text>')
+        });
+        
+        return '<svg width="100%" height="100%" viewBox="0 0 800 500">' + 
+          '<rect width="800" height="500" fill="white" stroke="black" stroke-width="1"/>' +
+          '<text x="400" y="10" text-anchor="middle" alignment-baseline="hanging" class="title">Summary</text>' +
+          '<text x="400" y="470" text-anchor="middle" alignment-baseline="baseline" class="axis-title">Summary By Request</text>' +
+          '<text x="15" y="230" text-anchor="center" alignment-baseline="middle" class="axis-title" transform="rotate(-90,15,230)">Run Time (Millis)</text>' +
+          '<rect x="291" y="483" width="6" height="6" fill="blue" stroke="none"/>' +
+          '<text x="300" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Minimum</text>' +
+          '<rect x="351" y="483" width="6" height="6" fill="orange" stroke="none"/>' +
+          '<text x="360" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Average</text>' +
+          '<rect x="401" y="483" width="6" height="6" fill="darkgrey" stroke="none"/>' +
+          '<text x="410" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Median</text>' +
+          '<rect x="451" y="483" width="6" height="6" fill="yellow" stroke="none"/>' +
+          '<text x="460" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Maximum</text>' +
+          lines.map((n) => '<line x1="80" y1="' + n.i + '" x2="780" y2="' + n.i + '" stroke="black" stroke-width="1"/><text x="75" y="' + n.i + '" text-anchor="end" alignment-baseline="middle" class="legend">' + n.x + '</text>').join("") + 
+          bars +
+        "</svg>" + 
+        '<ul style="list-style-type: upper-alpha">' +
+          labels.map((l) => "<li>" + l + "</li>").join("") + 
+        "</ul>";
       }
       
       var buildLineChart = function(data) {
-        return '<svg width="100%" height="100%" viewBox="0 0 8000 5000">' + 
-          '<rect width="8000" height="5000" stroke-width="5" stroke="black" fill="white">' +
-        "</svg>";
+        return "";
       }
       
       return function(inId,canvasId,downloadsId,summaryDisplayId,displayId,percentileRadioName,colorCtrlId) {

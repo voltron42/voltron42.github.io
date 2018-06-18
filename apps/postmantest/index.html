@@ -3,7 +3,7 @@
 	<head>
 		<title>Postman Test Publisher</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-		<link rel="stylesheet" type="text/css" href="../../common/style/tooltip.css"/>
+		<link rel="stylesheet" type="text/css" href="../../common/style/barchart.css"/>
     <style type="text/css">
       @media print {
         .container {
@@ -53,7 +53,7 @@
           <div id="downloads"></div>
         </div>
         <div class="col-md-4">
-          <ul>
+          <ul style="display: none;">
             <li><input type="color" id="minColor" value="#ff0055"> Minimum Color:</input></li>
             <li><input type="color" id="avgColor" value="#55ff00"> Average Color:</input></li>
             <li><input type="color" id="medianColor" value="#5500ff"> Median Color:</input></li>
@@ -65,7 +65,7 @@
 		</div>
 		<div id="builders" style="display: none;"></div>
 		<div id="summary"></div>
-    <div id="summaryColors"></div>
+    <div id="summaryColors" style="display: none;"></div>
 		<div id="display"></div>
 	</body>
 </html>
