@@ -36,7 +36,7 @@
       window.PostmanApp = registry.invoke("PostmanApp");
     </script>
 	</head>
-	<body onload="window.app = new PostmanApp('in','builders','downloads','summary','display','percentile','summaryColors')">
+	<body onload="window.app = new PostmanApp('in','builders','downloads','summary','display','percentile','summaryColor')">
 		<div class="container">
       <h2>Postman Test Publisher</h2>
       <p>This app will take any and all chosen ".json" results files produced by the Postman Collection Runner and summarize the runtimes for those tests.</p>
@@ -55,11 +55,11 @@
           <div id="downloads"></div>
         </div>
         <div class="col-md-4">
-          <ul style="display: none;">
-            <li><input type="color" id="minColor" value="#ff0055"> Minimum Color:</input></li>
-            <li><input type="color" id="avgColor" value="#55ff00"> Average Color:</input></li>
-            <li><input type="color" id="medianColor" value="#5500ff"> Median Color:</input></li>
-            <li><input type="color" id="maxColor" value="#AAAAAA"> Maximum Color:</input></li>
+          <ul>
+            <li><input type="color" class="summaryColor" id="minColor" value="#ff0055" onchange="app.publishTestData()"> Minimum Color:</input></li>
+            <li><input type="color" class="summaryColor" id="avgColor" value="#55ff00" onchange="app.publishTestData()"> Average Color:</input></li>
+            <li><input type="color" class="summaryColor" id="medColor" value="#5500ff" onchange="app.publishTestData()"> Median Color:</input></li>
+            <li><input type="color" class="summaryColor" id="maxColor" value="#AAAAAA" onchange="app.publishTestData()"> Maximum Color:</input></li>
           </ul>
         </div>
       </div>
@@ -67,7 +67,7 @@
 		</div>
 		<div id="builders" style="display: none;"></div>
 		<div id="summary"></div>
-    <div id="summaryColors" style="display: none;"></div>
+    <div id="lineColors" style="display: none;"></div>
 		<div id="display"></div>
 	</body>
 </html>

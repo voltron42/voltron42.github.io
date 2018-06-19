@@ -77,14 +77,7 @@
         return out;
       }
       
-      var barcolors = {
-        "min":"blue",
-        "avg":"orange",
-        "med":"darkgrey",
-        "max":"yellow"
-      }
-      
-      var buildVertBarChart = function(data) {
+      var buildVertBarChart = function(data, barcolors) {
         var rowCount = data.length - 1;
         console.log("rowCount");
         console.log(rowCount);
@@ -112,7 +105,7 @@
             var height = Math.round(value * 400 / maxInterval);
             var y = 400 - height + 35;
             var x = index * (inner + barwidth) + xStart + outer + 80;
-            return out + '<rect x="' + x + '" y="' + y + '" width="' + barwidth + '" height="' + height + '" fill="' + barcolors[label] + '" stroke="black"/>';
+            return out + '<rect x="' + x + '" y="' + y + '" width="' + barwidth + '" height="' + height + '" fill="' + barcolors[label + "Color"] + '" stroke="black"/>';
           }, '<text x="' + off + '" y="440" class="row-header" text-anchor="middle" alignment-baseline="hanging">' + c + '</text>')
         });
         
@@ -121,13 +114,13 @@
           '<text x="400" y="10" text-anchor="middle" alignment-baseline="hanging" class="title">Summary</text>' +
           '<text x="400" y="470" text-anchor="middle" alignment-baseline="baseline" class="axis-title">Summary By Request</text>' +
           '<text x="15" y="230" text-anchor="center" alignment-baseline="middle" class="axis-title" transform="rotate(-90,15,230)">Run Time (Millis)</text>' +
-          '<rect x="291" y="483" width="6" height="6" fill="blue" stroke="none"/>' +
+          '<rect x="291" y="483" width="6" height="6" fill="' + barcolors["minColor"] + '" stroke="none"/>' +
           '<text x="300" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Minimum</text>' +
-          '<rect x="351" y="483" width="6" height="6" fill="orange" stroke="none"/>' +
+          '<rect x="351" y="483" width="6" height="6" fill="' + barcolors["avgColor"] + '" stroke="none"/>' +
           '<text x="360" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Average</text>' +
-          '<rect x="401" y="483" width="6" height="6" fill="darkgrey" stroke="none"/>' +
+          '<rect x="401" y="483" width="6" height="6" fill="' + barcolors["medColor"] + '" stroke="none"/>' +
           '<text x="410" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Median</text>' +
-          '<rect x="451" y="483" width="6" height="6" fill="yellow" stroke="none"/>' +
+          '<rect x="451" y="483" width="6" height="6" fill="' + barcolors["maxColor"] + '" stroke="none"/>' +
           '<text x="460" y="490" text-anchor="start" alignment-baseline="baseline" class="legend">Maximum</text>' +
           lines.map((n) => '<line x1="80" y1="' + n.i + '" x2="780" y2="' + n.i + '" stroke="black" stroke-width="1"/><text x="75" y="' + n.i + '" text-anchor="end" alignment-baseline="middle" class="legend">' + n.x + '</text>').join("") + 
           bars +
@@ -141,7 +134,7 @@
         return "";
       }
       
-      return function(inId,canvasId,downloadsId,summaryDisplayId,displayId,percentileRadioName,colorCtrlId) {
+      return function(inId,canvasId,downloadsId,summaryDisplayId,displayId,percentileRadioName,colorCtrlClass) {
 
         var input = document.getElementById(inId);
         var buildspace = document.getElementById(canvasId);
@@ -149,10 +142,14 @@
         var summaryDisplay = document.getElementById(summaryDisplayId);
         var display = document.getElementById(displayId);
         var percentileRadio = Array.from(document.getElementsByName(percentileRadioName));
-        var colorCtrl = document.getElementById(colorCtrlId);
+        var summaryColorCtrls = Array.from(document.getElementsByClassName(colorCtrlClass));
 
         this.publishTestData = function() {
           var useForSummary = percentileRadio.filter((i) => i.checked).map((i) => i.value)[0];
+          var summaryColors = summaryColorCtrls.reduce(function(out, ctrl) {
+            out[ctrl.id] = ctrl.value;
+            return out;
+          }, {});
           loadFile(input,function(dataByFileName){
             var data = Object.values(dataByFileName)
               .map(JSON.parse)
@@ -212,10 +209,10 @@
             summary.map((s) => s.join(",")).join("\n")).outerHTML +
             "</li></ul>";
             
-            colorCtrl.innerHTML = "<ul>" + headers.map((h,i) => makeColorCtrl(h,i)).join("") + "</ul>";
+            //colorCtrl.innerHTML = "<ul>" + headers.map((h,i) => makeColorCtrl(h,i)).join("") + "</ul>";
             
             summaryDisplay.innerHTML = 
-            buildVertBarChart(summary) +
+            buildVertBarChart(summary,summaryColors) +
             buildTable(summary);
             
             display.innerHTML = 
