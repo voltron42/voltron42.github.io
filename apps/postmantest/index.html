@@ -9,15 +9,13 @@
         .container {
           display: none;
         }
-        svg, img, table {
+        table {
           page-break-after: always;
-          margin: 0.25in 0.5in 0.25in 0.5in;
-        }
-        @page {
-          margin: 0;
         }
       }
-
+      .table td, .table th {
+        padding: .25em;
+      }
       tr:nth-child(even) {background-color: #f2f2f2;}
     </style>
     <link rel="shortcut icon" href="../../favicon.ico">
@@ -40,6 +38,10 @@
 	</head>
 	<body onload="window.app = new PostmanApp('in','builders','downloads','summary','display','percentile','summaryColors')">
 		<div class="container">
+      <h2>Postman Test Publisher</h2>
+      <p>This app will take any and all chosen ".json" results files produced by the Postman Collection Runner and summarize the runtimes for those tests.</p>
+      <p>Using the options below, choose the files to summarize, then click "Publish" to see download links for the data as ".csv" files, and a printable chart and tables of the summarized data.</p>
+      <p><em>This entire application is client side, so there is no archiving of data or passing of data to a server.</em></p>
 			<input type="file" id="in" accept=".json" multiple></textarea>
 			<button onclick="app.publishTestData()">Publish</button>
       <div class="row">
