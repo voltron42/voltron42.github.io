@@ -17,17 +17,16 @@
     <script src="../../common/script/drawUtil/point.js"></script>
     <script src="../../common/script/drawUtil/colorconstants.js"></script>
     <script src="../../common/script/drawUtil/tileparser.js"></script>
+		<script src="script/app.js"></script>
     <script type="text/javascript">
-      window.Point = registry.invoke("Point");
-      window.Transformer = registry.invoke("Transformer");
-      window.TileParser = registry.invoke("TileParser");
+      window.Builder = registry.invoke("BuilderProto");
+      window.builder = new Builder('in','builders','display');
     </script>
-		<script src="script/buildmap.js"></script>
 	</head>
-	<body onload="window.builder = new Builder('in','builders','display')">
+	<body onload="builder.init()">
 		<div id="app">
 			<input type="file" id="in" accept=".json" multiple></textarea>
-			<button onclick="builder.buildmap()">Build</button>
+			<button onclick="builder.build()">Build</button>
 		</div>
 		<div id="builders" style="display: none;"></div>
 		<div id="display"></div>

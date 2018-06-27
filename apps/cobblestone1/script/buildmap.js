@@ -117,7 +117,20 @@
     var buildGallery = buildGalleryBuilder(gallery, buildspace);
     this.buildmap = function() {
       loadFile(input,function(contents){
-        var inData = JSON.parse(contents);
+        var dataObj = Object.entries(contents).reduce(function(out,entry){
+          var json = JSON.parse(entry[1]);
+          Object.entries(json[0]).forEach(function(tile){
+            out.tiles[tile[0]] = tile[1];
+          });
+          Object.entries(json[1]).forEach(function(palette){
+            out.palettes[palette[0]] = palette[1];
+          });
+          Object.entries(json[2]).forEach(function(page){
+            out.pages[page[0]] = page[1];
+          });
+          return out;
+        },{tiles:{},palettes:{},pages:{}});
+        var inData = [dataObj.tiles,dataObj.palettes,dataObj.pages];
         console.log("inData");
         console.log(inData);
         buildGallery(inData);

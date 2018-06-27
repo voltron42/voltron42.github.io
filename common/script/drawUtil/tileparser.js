@@ -103,7 +103,6 @@
       this.buildTransform = function(tile,palette,transforms) {
         return tile.map(buildTransform(transforms.map((k) => tf[k]).concat(applyPalette(palette))));
       }
-      this.
     }
     
   });
