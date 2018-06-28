@@ -13,7 +13,6 @@
     }
     var filedata = {};
     Array.from(input.files).forEach(function(file){
-      console.log(file);
       var reader = new FileReader();
       reader.onload = function(e) {
         filedata[file.name] = e.target.result;

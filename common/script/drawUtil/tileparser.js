@@ -65,15 +65,19 @@
       },[]);
       return coords;
     }
-    
-    this.parse = function(myMaps) {
-      return myMaps.entries.reduce(function(out,entry) {
-        return out.merge(Object.map(entry[0], 
-        entry[1].entries().reduce(function(out,entry) {
-          return out.merge(Object.map(entry[0], explodeCoords(entry[1])));
-        }, {})))
-      }, 
-      {});
+    return function(){
+      this.parse = function(myMaps) {
+        return myMaps.entries().reduce(function(out,entry) {
+          return out.merge(Object.map(entry[0], 
+            entry[1].map(function(level){
+              return level.entries().reduce(function(out,entry) {
+                return out.merge(Object.map(entry[0], explodeCoords(entry[1])));
+              }, {})
+            })
+          ))
+        }, 
+        {});
+      }
     }
   });
   window[registryName].apply('TileTransformer', 
@@ -101,9 +105,46 @@
        
     return function() {
       this.buildTransform = function(tile,palette,transforms) {
-        return tile.map(buildTransform(transforms.map((k) => tf[k]).concat(applyPalette(palette))));
+        return tile.map(buildTransform(transforms.map((k) => tf[k]).concat(applyPalette(palette)))).filter((p) => (p.c != "none" && p.c != undefined));
       }
     }
     
   });
+  window[registryName].apply('MapBuilder', ['TileTransformer','Point'], function(TileTransformer,Point){
+    var tileTF = new TileTransformer();
+    return function(tiles,palettes) {
+      this.transform = function(levels) {
+        return levels.reduce(function(out,level){
+          return level.entries().reduce(function(out, entry){
+            //console.log("This is a key-value pair");
+            //console.log(entry[0]);
+            var key = entry[0].split("|");
+            var tileName = key.shift();
+            console.log("tile name: " + tileName);
+            var paletteName = key.shift();
+            console.log("palette name: " + paletteName);
+            var tile = tiles[tileName];
+            console.log("tile");
+            console.log(tile);
+            var palette = palettes[paletteName];
+            console.log("palette");
+            console.log(palette);
+            var tfTile = tileTF.buildTransform(tile,palette,key);
+            console.log("tfTile");
+            console.log(tfTile);
+            console.log("coords");
+            console.log(entry[1]);
+            return entry[1].reduce(function(out,s){
+              return tfTile.reduce(function(out,p){
+                var key = new Point(s.x * 16 + p.x, s.y * 16 + p.y).toString();
+                out[key] = p.c;
+                return out;
+              },out);
+            },out);
+          }, out);
+        },{})
+      }
+    }
+  });
+
 })()
