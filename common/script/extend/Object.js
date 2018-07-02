@@ -23,6 +23,27 @@
       return me;
     }
   }
+  if (!Object.prototype.assoc) {
+    Object.prototype.assoc = function() {
+      var me = this;
+      var args = Array.from(arguments);
+      while(args.length > 1) {
+        var key = args.shift();
+        var value = args.shift();
+        me[key] = value;
+      }
+      return me;
+    }
+  }
+  if (!Object.prototype.dissoc) {
+    Object.prototype.dissoc = function() {
+      var me = this;
+      Array.from(arguments).forEach(function(arg) {
+        delete me[arg];
+      });
+      return me;
+    }
+  }
   if (!Object.map) {
     Object.map = function() {
       var args = Array.from(arguments);

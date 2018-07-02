@@ -1,7 +1,7 @@
 (function() {
   var decodeChar = function (c) { return c.charCodeAt(0) - 97; }
 
-  window[registryName].apply('TileParser', [], function() {
+  window[registryName].apply('TileParser', ['Point'], function(Point) {
     var safeparse = function(str) {
       var value = parseInt(str);
       return isNaN(value)?str:value;
@@ -41,9 +41,12 @@
           }
           return out;
         },[]));
-        return explode.reduce(function(out, row, y){
+        var list = explode.reduce(function(out, row, y){
           return out.concat(row.map((c,x) => Object.map("c", decodeChar(c), "x", x, "y", y)).filter((o) => (0 < o.c)));
         },[]);
+        return list.reduce(function(out,p){
+          return out.merge(Object.map(new Point(p.x,p.y).toString(),p.c))
+        },{});
       }
     }
   });
@@ -87,12 +90,12 @@
 
     var tf = ["flip-down","flip-over","turn-left","turn-right"].reduce(function(out,fn) {
       out[fn] = function(p) {
-        return p.merge(transformer[fn](new Point(p.x,p.y)).toJSON());
+        return transformer[fn](new Point(p.x,p.y)).toJSON().assoc("c",p.c);
       }
       return out;
     },{})
     
-    var buildTransform = function(transforms) {
+    var buildTF = function(transforms) {
       return (p) => transforms.reduce((p1,f) => f(p1),p);
     }
     
@@ -104,8 +107,24 @@
     }
        
     return function() {
-      this.buildTransform = function(tile,palette,transforms) {
-        return tile.map(buildTransform(transforms.map((k) => tf[k]).concat(applyPalette(palette)))).filter((p) => (p.c != "none" && p.c != undefined));
+      this.buildTransform = function(tileMap,palette,transforms) {
+        console.log("tileMap");
+        console.log(tileMap);
+        var bg = palette[0];
+        var setColor = applyPalette(palette);
+        var thisTF = buildTF(transforms.map((k) => tf[k]));
+        var tile = tileMap.entries().map(function(entry){
+          return thisTF(Point.parse(entry[0]).toJSON()).merge(Object.map("c",setColor(entry[1])))
+        });
+        console.log("tile");
+        console.log(tile);
+        
+        return {
+          bg:bg,
+          tile:tile.reduce(function(out,p){
+            return out.assoc(new Point(p.x, p.y).toString(), p.c);
+          },{})
+        };
       }
     }
     
@@ -120,21 +139,25 @@
             //console.log(entry[0]);
             var key = entry[0].split("|");
             var tileName = key.shift();
-            console.log("tile name: " + tileName);
+            //console.log("tile name: " + tileName);
             var paletteName = key.shift();
-            console.log("palette name: " + paletteName);
+            //console.log("palette name: " + paletteName);
             var tile = tiles[tileName];
-            console.log("tile");
-            console.log(tile);
             var palette = palettes[paletteName];
-            console.log("palette");
-            console.log(palette);
             var tfTile = tileTF.buildTransform(tile,palette,key);
-            console.log("tfTile");
-            console.log(tfTile);
-            console.log("coords");
-            console.log(entry[1]);
+            //console.log("tfTile");
+            //console.log(tfTile);
+            //console.log("coords");
+            //console.log(entry[1]);
             return entry[1].reduce(function(out,s){
+              return Array.product(Number.range(0,16),Number.range(0,16)).reduce(function(out,p){
+                var x = p[0];
+                var y = p[1];
+                var tileKey = new Point(x, y).toString();
+                var key = new Point(s.x * 16 + x, s.y * 16 + y).toString();
+                var color = tfTile.tile[tileKey] || tfTile.bg;
+                
+              },out);
               return tfTile.reduce(function(out,p){
                 var key = new Point(s.x * 16 + p.x, s.y * 16 + p.y).toString();
                 out[key] = p.c;

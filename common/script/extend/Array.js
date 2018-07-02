@@ -16,3 +16,16 @@ if (!Array.prototype.groupBy) {
     }, {});
   }
 }
+if (!Array.product) {
+  Array.product = function() {
+    return Array.from(arguments).reduce(function(inVal,array) {
+      var out = [];
+      inVal.forEach(function(list){
+        array.forEach(function(value){
+          out.push([].concat(list,value))
+        })
+      })
+      return out;
+    }, [[]]);
+  }
+}

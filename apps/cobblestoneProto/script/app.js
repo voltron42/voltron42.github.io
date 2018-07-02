@@ -1,7 +1,7 @@
 (function(){
     window[registryName].apply('BuilderProto',
-    ['MapBuilder','MapParser','TileParser','ColorConstants','Point','Transformer'],
-    function(MapBuilder, MapParser, TileParser, Point, ColorConstants, Transformer) {
+    ['TileTransformer','MapBuilder','MapParser','TileParser','ColorConstants','Point','Transformer'],
+    function(TileTransformer, MapBuilder, MapParser, TileParser, Point, ColorConstants, Transformer) {
 
       var tf = new Transformer(16);
       var tileParser = new TileParser(16,16);
@@ -27,12 +27,15 @@
         return function(contents) {
           console.log(contents);
           var data = compileFiles(contents);
-          console.log(data);
           data.tiles = Object.entries(data.tiles).reduce(function(tiles,tile){
             tiles[tile[0]] = tileParser.parse(tile[1]);
             return tiles;
           },{})
+          data.transforms = data.pages.entries().reduce(function(transforms,page){
+            return transforms
+          },{});
           console.log(data);
+          /*
           data.pages = mapParser.parse(data.pages);
           console.log(data);
           var mapBuilder = new MapBuilder(data.tiles, data.palettes);
@@ -41,6 +44,7 @@
             return out;
           },{})
           console.log(pages)
+          */
         };
       }
       
