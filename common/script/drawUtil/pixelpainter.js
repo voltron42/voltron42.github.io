@@ -1,18 +1,14 @@
 (function(){
   window[registryName].apply('PixelPainter',['Point'],function(Point) {
-    return function(initScale,initTransparent) {
+    return function(initScale) {
       
       var ui = {};
       
-      var state = {scale:initScale,transparent:initTransparent};
+      var state = {scale:initScale};
       
       this.setCanvas = function(canvas) {
         ui.canvas = canvas;
         ui.ctx = canvas.getContext("2d");
-      }
-      
-      this.setTransparent = function(transparent) {
-        state.transparent = transparent;
       }
       
       this.setScale = function(scale) {
@@ -26,24 +22,19 @@
         },{});
       }
       
-      this.paint = function(width, height, grid, palette) {
+      this.paint = function(width, height, pixels) {
         var w =  width * state.scale;
         var h =  height * state.scale;
         ui.canvas.width = w;
         ui.canvas.height = h;
         ui.ctx.clearRect(0, 0, w, h);
-        if (!state.transparent) {
-          ui.ctx.fillStyle = palette[0];
-          ui.ctx.fillRect(0, 0, w, h);
-        }
-        Object.entries(grid).forEach(function(entry) {
+        pixels.entries().forEach(function(entry){
           var point = Point.parse(entry[0]);
-          ui.ctx.fillStyle = palette[entry[1]];
+          ui.ctx.fillStyle = entry[1];
           ui.ctx.fillRect(state.scale * point.getX(), state.scale * point.getY(), state.scale, state.scale);
         });
         return ui.canvas.toDataURL();
       }
-      
     }
   });
 })()

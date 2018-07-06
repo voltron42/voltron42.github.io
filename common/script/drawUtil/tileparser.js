@@ -54,7 +54,7 @@
   [], 
   function() {
     var explodeCoords = function(coords){
-      coords = coords.reduce(function(out,coord){
+      var exploded = coords.reduce(function(out,coord){
         var xy = coord.split("/");
         var x = xy[0].split("").map(decodeChar);
         var y = xy[1].split("").map(decodeChar);
@@ -64,11 +64,12 @@
         var yb = y[1] || ya;
         return Number.range(ya,yb+1).reduce(function(out,y){
           return out.concat(Number.range(xa,xb+1).map((x) => Object.map("x",x,"y",y)));
-        },[]);
+        },out);
       },[]);
-      return coords;
+      return exploded;
     }
     return function(){
+      this.explodeCoords = explodeCoords;
       this.parse = function(myMaps) {
         return myMaps.entries().reduce(function(out,entry) {
           return out.merge(Object.map(entry[0], 
@@ -106,66 +107,53 @@
       }
     }
        
-    return function() {
-      this.buildTransform = function(tileMap,palette,transforms) {
-        console.log("tileMap");
-        console.log(tileMap);
-        var bg = palette[0];
-        var setColor = applyPalette(palette);
+    return function(tiles,palettes) {
+      this.buildTransform = function(transform) {
+        var transforms = transform.split("|");
+        var tileName = transforms.shift();
+        //console.log("tile name: " + tileName);
+        var paletteName = transforms.shift();
+        //console.log("palette name: " + paletteName);
+        var tileMap = tiles[tileName];
+        var palette = palettes[paletteName];
+        //console.log("tileMap");
+        //console.log(tileMap);
+        var bg = ColorConstants.get(palette[0]) || "none";
         var thisTF = buildTF(transforms.map((k) => tf[k]));
         var tile = tileMap.entries().map(function(entry){
-          return thisTF(Point.parse(entry[0]).toJSON()).merge(Object.map("c",setColor(entry[1])))
+          return thisTF(Point.parse(entry[0]).toJSON()).merge(Object.map("c",entry[1]))
         });
-        console.log("tile");
-        console.log(tile);
-        
-        return {
-          bg:bg,
+        //console.log("tile");
+        //console.log(tile);
+        var out = {
           tile:tile.reduce(function(out,p){
-            return out.assoc(new Point(p.x, p.y).toString(), p.c);
+            return out.assoc(new Point(p.x, p.y).toString(), ColorConstants.get(palette[p.c]));
           },{})
         };
+        if ("none" != bg) {
+          out.bg = bg;
+        }
+        return out;
       }
     }
     
   });
-  window[registryName].apply('MapBuilder', ['TileTransformer','Point'], function(TileTransformer,Point){
-    var tileTF = new TileTransformer();
-    return function(tiles,palettes) {
-      this.transform = function(levels) {
-        return levels.reduce(function(out,level){
-          return level.entries().reduce(function(out, entry){
-            //console.log("This is a key-value pair");
-            //console.log(entry[0]);
-            var key = entry[0].split("|");
-            var tileName = key.shift();
-            //console.log("tile name: " + tileName);
-            var paletteName = key.shift();
-            //console.log("palette name: " + paletteName);
-            var tile = tiles[tileName];
-            var palette = palettes[paletteName];
-            var tfTile = tileTF.buildTransform(tile,palette,key);
-            //console.log("tfTile");
-            //console.log(tfTile);
-            //console.log("coords");
-            //console.log(entry[1]);
-            return entry[1].reduce(function(out,s){
-              return Array.product(Number.range(0,16),Number.range(0,16)).reduce(function(out,p){
-                var x = p[0];
-                var y = p[1];
-                var tileKey = new Point(x, y).toString();
-                var key = new Point(s.x * 16 + x, s.y * 16 + y).toString();
-                var color = tfTile.tile[tileKey] || tfTile.bg;
-                
-              },out);
-              return tfTile.reduce(function(out,p){
-                var key = new Point(s.x * 16 + p.x, s.y * 16 + p.y).toString();
-                out[key] = p.c;
-                return out;
-              },out);
-            },out);
-          }, out);
-        },{})
+  window[registryName].apply('MapBuilder', ['Point'], function(Point){
+    return function() {
+      this.placePixels = function(transform,bg,out,coords) {
+        return coords.forEach(function(p){
+          Number.range(0,16).forEach(function(x){
+            Number.range(0,16).forEach(function(y){
+              var tileKey = new Point(x,y).toString();
+              var key = new Point(p.x * 16 + x, p.y * 16 + y).toString();
+              if (transform[tileKey]) {
+                out[key] = transform[tileKey];
+              } else if (bg) {
+                out[key] = bg;
+              }
+            });
+          });
+        });
       }
     }
   });

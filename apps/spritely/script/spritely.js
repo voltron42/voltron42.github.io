@@ -74,6 +74,7 @@
       var redraw = function() {
         var palette = paletteUI.getPalette()
         pixelCanvas.redraw(palette);
+        //TODO -- FIX PIXEL PAINTER
         var img = pixelPainter.paint(pixelCanvas.getWidth(),pixelCanvas.getHeight(),pixelCanvas.getGrid(),palette);
         ui.out.innerHTML = JSON.toXML({
           tag:"a",
