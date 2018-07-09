@@ -6,7 +6,7 @@
       var tf = new Transformer(16);
       var tileParser = new TileParser(16,16);
       var mapParser = new MapParser();
-      var mapBuilder = new MapBuilder();
+      var mapBuilder = new MapBuilder(16,16);
       var pixelPainter = new PixelPainter(6);
       
       var compileFiles = function(contents) {

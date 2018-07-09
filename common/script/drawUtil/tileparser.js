@@ -139,11 +139,11 @@
     
   });
   window[registryName].apply('MapBuilder', ['Point'], function(Point){
-    return function() {
+    return function(width,height) {
       this.placePixels = function(transform,bg,out,coords) {
         return coords.forEach(function(p){
-          Number.range(0,16).forEach(function(x){
-            Number.range(0,16).forEach(function(y){
+          Number.range(0,width).forEach(function(x){
+            Number.range(0,height).forEach(function(y){
               var tileKey = new Point(x,y).toString();
               var key = new Point(p.x * 16 + x, p.y * 16 + y).toString();
               if (transform[tileKey]) {

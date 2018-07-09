@@ -1,5 +1,8 @@
 (function() {
-  window[registryName].apply('Spritely',['PixelPainter','PixelCanvas','PaletteUI'],function(PixelPainter,PixelCanvas,PaletteUI) {
+  window[registryName].apply('Spritely',
+  ['PixelPainter','PixelCanvas','PaletteUI','MapBuilder','ColorConstants'],
+  function(PixelPainter,PixelCanvas,PaletteUI,MapBuilder,ColorConstants) {
+    
     return function(instanceName,inputId,widthFieldId,heightFieldId,colorSelectPrefix,colorPrefix,paletteId,svgId,canvasId,outId,codeOutId,initSize,pixelSize) {
       
       var paletteUI = new PaletteUI(instanceName,paletteId,colorSelectPrefix,colorPrefix);
@@ -28,6 +31,7 @@
         // apply preset size
         ui.width.value = initSize;
         ui.height.value = initSize;
+        ui.isTransparent = false;
         
         this.resize();
       }
@@ -67,15 +71,24 @@
       }
 
       this.makeTransparent = function(makeTransparent) {
-        pixelPainter.setTransparent(makeTransparent);
+        ui.isTransparent = makeTransparent;
         redraw();
       }
       
       var redraw = function() {
         var palette = paletteUI.getPalette()
         pixelCanvas.redraw(palette);
-        //TODO -- FIX PIXEL PAINTER
-        var img = pixelPainter.paint(pixelCanvas.getWidth(),pixelCanvas.getHeight(),pixelCanvas.getGrid(),palette);
+        palette = palette.map((c) => ColorConstants.get(c));
+        var grid = pixelCanvas.getGrid().entries().reduce(function(out, entry){
+          out[entry[0]] = palette[entry[1]];
+          return out;
+        },{});
+        var mapBuilder = new MapBuilder(ui.width.value,ui.height.value)
+        var pixels = {};
+        var bg = (palette[0] != "none" && !ui.isTransparent)?palette[0]:undefined;
+        mapBuilder.placePixels(grid,bg,pixels,[{x:0,y:0}]);
+        console.log(pixels);
+        var img = pixelPainter.paint(pixelCanvas.getWidth(),pixelCanvas.getHeight(),pixels);
         ui.out.innerHTML = JSON.toXML({
           tag:"a",
           attrs:{
