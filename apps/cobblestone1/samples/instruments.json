@@ -14,7 +14,7 @@
 	"black"]
 },
 {
-	"all-tiles": [{
+	"all-instruments": [{
 		"horn|instruments": ["a/a"],
 		"harp|instruments": ["b/a"],
 		"drum|instruments": ["c/a"],

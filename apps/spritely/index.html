@@ -8,6 +8,9 @@
       img {
         border: 1px solid black;
       }
+      input[type="number"]{
+        width: 4em;
+      }
     </style>
     <script src="../../common/script/extend/JSON.js"></script>
     <script src="../../common/script/extend/Object.js"></script>
@@ -43,12 +46,18 @@
         <div class="col-md-3">
           <h4>Controls</h4>
           <h5>Size</h5>
-          <label for="width"> Width:</label>
-          <input type="number" id="widthField" name="width" value="0" onChange="pix.resize()"/>
-          <label for="height"> Height:</label>
-          <input type="number" id="heightField" name="height" value="0" onChange="pix.resize()"/>
-          <label for="scale"> Scale:</label>
-          <input type="number" id="scaleField" name="scale" value="1" min="1" onChange="pix.setScale(this.value)"/>
+          <div>
+            <label for="width"> Width:</label>
+            <input type="number" id="widthField" name="width" value="0" onChange="pix.resize()"/>
+          </div>
+          <div>
+            <label for="height"> Height:</label>
+            <input type="number" id="heightField" name="height" value="0" onChange="pix.resize()"/>
+          </div>
+          <div>
+            <label for="scale"> Scale:</label>
+            <input type="number" id="scaleField" name="scale" value="1" min="1" onChange="pix.setScale(this.value)"/>
+          </div>
           <hr/>
           <h5>Transform</h5>
           <button name="transform" onClick="pix.transform('flip-down')">Flip Down</button>
