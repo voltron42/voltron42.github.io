@@ -12,11 +12,11 @@
     }
     
     this.open = function(id) {
-      
+      modals[id].style.display = "block";
     }
     
     this.close = function(id) {
-      
+      modals[id].style.display = "none";
     }
   }
 })()
