@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>Spritely: Pixel Art</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <style>
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 8px 16px;
+      }
+      li a {
+        display: block;
+        width: 3em;
+        color: #000;
+        padding: 8px 16px;
+        text-decoration: none;
+      }
+      .option {
+        background-color: #f00;
+      }
+      .option:hover {
+        background-color: #ff0;
+      }
+      .tree {
+        background-color: #fff;
+        border: 1px solid black;
+        padding: 8px 16px;
+      }
+      .tree:hover {
+        background-color: #ccc;
+      }
+    </style>
+    <script type="text/javascript" src="script/poc.js"></script>
+    <script type="text/javascript">
+      var ctrl = new CascadeController("ctrl","block","option","tree");
+    </script>
+  </head>
+  <body onload="ctrl.init()">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <ul>
+            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">A</a></li>
+            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">B</a></li>
+            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">C</a></li>
+            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">D</a></li>
+            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">E</a></li>
+          </ul>
+        </div>
+        <div class="col-md-8">
+          <ul class="tree" ondragover="ctrl.allowDrop(event)" ondrop="ctrl.drop(event)">
+            <li><a>Root</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
