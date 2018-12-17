@@ -11,7 +11,6 @@
       }
       li a {
         display: block;
-        width: 3em;
         color: #000;
         padding: 8px 16px;
         text-decoration: none;
@@ -33,23 +32,15 @@
     </style>
     <script type="text/javascript" src="script/poc.js"></script>
     <script type="text/javascript">
-      var ctrl = new CascadeController("ctrl","block","option","tree");
+      var ctrl = new CascadeController("ctrl","block","option","tree","menu-listing",['A','B','C','D','E','F']);
     </script>
   </head>
-  <body onload="ctrl.init()">
+  <body onload="ctrl.init()" ondrop="ctrl.drop(event)" ondragover="ctrl.allowDrop(event)" ondragleave="ctrl.disallowDrop(event)" id="body">
     <div class="container">
       <div class="row">
-        <div class="col-md-3">
-          <ul>
-            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">A</a></li>
-            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">B</a></li>
-            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">C</a></li>
-            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">D</a></li>
-            <li><a class="option" draggable="true" ondragstart="ctrl.drag(event)">E</a></li>
-          </ul>
-        </div>
+        <div class="col-md-3" id="menu-listing"></div>
         <div class="col-md-8">
-          <ul class="tree" ondragover="ctrl.allowDrop(event)" ondrop="ctrl.drop(event)">
+          <ul class="tree" ondragover="ctrl.allowDrop(event)" ondragleave="ctrl.disallowDrop(event)" ondrop="ctrl.drop(event)">
             <li><a>Root</a></li>
           </ul>
         </div>
