@@ -31,7 +31,6 @@
       var code = e.keyCode;
       var key = e.key;
       if (code == 13 && e.shiftKey) {
-        console.scrollTop = console.scrollHeight;
         code = 10;
       }
       if (codes[code]) {
@@ -41,7 +40,6 @@
         console.innerHTML += key;
         action += key;
       } else if (code == 13) {
-        console.scrollTop = console.scrollHeight;
         console.innerHTML += String.fromCharCode(10);
         actionHandler(action);
         action = "";
@@ -49,7 +47,12 @@
         console.innerHTML = console.innerHTML.slice(0,-1);
         action = action.slice(0,-1);
       }
+      console.scrollTop = console.scrollHeight;
     }
+  }
+  var roll = function(size,count) {
+    if (!count) {count = 1;}
+    "?".repeat(count)
   }
   window.Game = function(outputId,consoleId,config){
     var ui = {}
@@ -94,7 +97,8 @@
       ].forEach(ui.println);
       ui.println("");
       if (attackTotal > 18) {
-        ["Vax hits Orc A"].forEach(ui.println);
+        ["Vax hits Orc A",
+        ""].forEach(ui.println);
       } else {
         ["Vax misses Orc A."].forEach(ui.println);
       }
