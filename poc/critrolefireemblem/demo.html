@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <title>Critical Roll Fire Emblem Rogue-like</title>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        color: #9f9;
+        background-color: #020;
+      }
+      #monitor {
+        white-space: pre;
+        width: 100%;
+      }
+      #console {
+        width: 100%;
+        height: 10em;
+        overflow-y: scroll;
+      }
+    </style>
+    <script type="text/javascript">
+      var config = {
+        tabSize:4,
+        map:[
+          "          ",
+          "          ",
+          "        ^ ",
+          "\       /=",
+          "~\  /=#=/ ",
+          "~~==/     ",
+          "~\        ",
+          "~~~~\     ",
+          "~~~~~~\   "
+        ],
+        mapKey:{
+          "^":"House",
+          "#":"Bridge",
+          "~=\/":"Water"
+        },
+        party:[
+          "Percy",
+          "Vex",
+          "Keyleth",
+          "Scanlan",
+          "Grog",
+          "Pike",
+          "Vax"
+        ],
+        foes:[
+          "Orc A",
+          "Orc B",
+          "Orc C"
+        ],
+        locs:{
+          "Percy":"A3",
+          "Vex":"B4",
+          "Keyleth":"C3",
+          "Scanlan":"E2",
+          "Grog":"E4",
+          "Pike":"H6",
+          "Vax":"G7",
+          "Orc A":"G3",
+          "Orc B":"F2",
+          "Orc C":"J6"
+        }
+      }
+    </script>
+    <script src="critrole.js"></script>
+    <script>
+      window.game = new Game("map","console",config);
+    </script>
+  </head>
+  <body onload="game.init();">
+    <h2>Critical Roll Fire Emblem Rogue-like</h2>
+    <div id="monitor">
+      <div id="map">
+      ABCDEFGHJK
+     +----------+ 
+    1|          |
+    2|    4b    |    1 - Percy     a - Orc A
+    3|1 3   a ^ |    2 - Vex       b - Orc B 
+    4|\2  5   /=|    3 - Keyleth   c - Orc C
+    5|~\  /=#=/ |    4 - Scanlan
+    6|~~==/  6c |    5 - Grog      ^ - House
+    7|~\    7   |    6 - Pike      # - Bridge
+    8|~~~~\     |    7 - Vax       ~=\/ - Water
+    9|~~~~~~\   |
+     +----------+
+      </div>
+      <div id="console"></div>
+    </div>
+  </body>
+</html>
