@@ -69,45 +69,47 @@
       ui.output.onkeydown = keyPressListener;
       ui.console.onkeydown = keyPressListener;
       draw();
-      var attackRoll = Math.floor(Math.random() * 20) + 1;
-      log(attackRoll);
-      var attackTotal = attackRoll + 8
-      var attackLine = attackRoll + " + 8 = " + attackTotal;
       ["Your adventure starts here....",
-      "You are in combat!",
-      "It is Vax's turn!",
-      "What do you wish to do?",
-      "1 - Move",
-      "2 - Attack",
-      "1",
-      "You have chosen to move.",
-      "Where would you like to move?",
-      "H3",
-      "You have chosen to move to H3.",
-      "What do you wish to do?",
-      "1 - Move",
-      "2 - Attack",
-      "2",
-      "You have chosen to attack.",
-      "Choose a foe to attack.",
-      "a",
-      "You have chosen to attack Orc A.",
-      "Rolling for attack...",
-      attackLine
+      "Type 'START' and hit 'ENTER' to begin."
       ].forEach(ui.println);
-      ui.println("");
-      if (attackTotal > 18) {
-        ["Vax hits Orc A",
-        ""].forEach(ui.println);
-      } else {
-        ["Vax misses Orc A."].forEach(ui.println);
-      }
     }
     var draw = function() {
       log("start drawing here");
     }
     var handleAction = function(action){
       log(action);
+      if (action == "START") {
+        var attackRoll = Math.floor(Math.random() * 20) + 1;
+        log(attackRoll);
+        var attackTotal = attackRoll + 8
+        var attackLine = attackRoll + " + 8 = " + attackTotal;
+        ["You are in combat!",
+        "It is Vax's turn!",
+        "What do you wish to do?",
+        "1 - Move",
+        "2 - Attack",
+        "1",
+        "You have chosen to move.",
+        "Where would you like to move?",
+        "H3",
+        "You have chosen to move to H3.",
+        "What do you wish to do?",
+        "1 - Move",
+        "2 - Attack",
+        "2",
+        "You have chosen to attack.",
+        "Choose a foe to attack.",
+        "a",
+        "You have chosen to attack Orc A.",
+        "Rolling for attack...",
+        attackLine].forEach(ui.println);
+        if (attackTotal > 18) {
+          ["Vax hits Orc A",
+          ""].forEach(ui.println);
+        } else {
+          ["Vax misses Orc A."].forEach(ui.println);
+        }
+      }
     }
   };
 })();
