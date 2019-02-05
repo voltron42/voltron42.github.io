@@ -13,14 +13,13 @@
       }
       var interaction = {
         "init":{
-          "prompt":["Your adventure starts here....",
-            "Type 'START' and hit 'ENTER' to begin."],
+          "prompt":["Your adventure starts here....","Type 'START' and hit 'ENTER' to begin."],
           "opts":{"START":{state:"initiative"}}
         },
         "initiative":{
           "prompt":["You are in combat!","It is Vax's turn!"],
           "auto":{state:"combat",turn:"7"}
-        }
+        },
         "combat":{
           "prompt":["What do you wish to do?","1 - Move","2 - Attack"],
           "opts":{"1":{state:"move"},"2":{state:"target"}}
@@ -33,7 +32,7 @@
           }
         },
         "target":{
-          "prompt":["You have chosen to attack.","Choose a foe to attack."]
+          "prompt":["You have chosen to attack.","Choose a foe to attack."],
           "input":function(value){
             return {state:"attack",target:value};
           }
@@ -44,7 +43,7 @@
             success:{state:"hit"},fail:{state:"miss"}}
         },
         "hit":{
-          "prompt":["${turn.name} hits ${target.name}"]
+          "prompt":["${turn.name} hits ${target.name}"],
           "auto":function() {
             var damage = roll(6,4) + 3;
             return {state:"damage",damage:damage};
