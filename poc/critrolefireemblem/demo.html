@@ -1,25 +1,26 @@
 <html>
   <head>
-    <title>Critical Roll Fire Emblem Rogue-like</title>
+    <title>Critical Role Text-Based RPG</title>
     <style type="text/css">
       body {
         font-family: monospace;
         color: #9f9;
         background-color: #020;
       }
-      #monitor {
+      #map {
         white-space: pre;
         width: 100%;
-      }
-      #map {
-        width: 100%;
-        max-height:18em;
+        max-height: 80%;
         overflow-y: auto;
       }
       #console {
+        white-space: pre;
         width: 100%;
-        height: 10em;
-        overflow-y: scroll;
+        max-height: 80%;
+        overflow-y: auto;
+      }
+      td {
+        vertical-align: top;
       }
     </style>
     <script type="text/javascript">
@@ -29,12 +30,12 @@
           "          ",
           "          ",
           "        ^ ",
-          "\       /=",
-          "~\  /=#=/ ",
+          "\\       /=",
+          "~\\  /=#=/ ",
           "~~==/     ",
-          "~\        ",
-          "~~~~\     ",
-          "~~~~~~\   "
+          "~\\        ",
+          "~~~~\\     ",
+          "~~~~~~\\   "
         ],
         mapKey:{
           "^":"House",
@@ -69,6 +70,7 @@
         }
       }
     </script>
+    <script src="roguelike.js"></script>
     <script src="interface.js"></script>
     <script src="gamedemo.js"></script>
     <script>
@@ -76,22 +78,18 @@
     </script>
   </head>
   <body onload="game.init();">
+    <table>
+      <tr>
+        <td>
+          <div id="map">
+         </div>
+        </td>
+        <td>
+          <div id="console"></div>
+        </td>
+      </tr>
+    </table>
     <div id="monitor">
-      <div id="map">
-      ABCDEFGHJK
-     +----------+ 
-    1|          |
-    2|    4b    |    1 - Percy     a - Orc A
-    3|1 3   a ^ |    2 - Vex       b - Orc B 
-    4|\2  5   /=|    3 - Keyleth   c - Orc C
-    5|~\  /=#=/ |    4 - Scanlan
-    6|~~==/  6c |    5 - Grog      ^ - House
-    7|~\    7   |    6 - Pike      # - Bridge
-    8|~~~~\     |    7 - Vax       ~=\/ - Water
-    9|~~~~~~\   |
-     +----------+
-     </div>
-      <div id="console"></div>
     </div>
   </body>
 </html>

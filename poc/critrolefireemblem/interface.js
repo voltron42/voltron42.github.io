@@ -7,6 +7,9 @@
         var c = chars.shift();
         dom.innerHTML += c;
         dom.scrollTop = dom.scrollHeight;
+        if (chars.length == 0) {
+          dom.dispatchEvent(new Event("bufferClear"));
+        }
       }
       setTimeout(charByChar(dom,chars,delay),delay);
     }
@@ -26,6 +29,13 @@
       },
       clearOutput:function() {
         dom.innerHTML = "";
+      },
+      after:function(fn) {
+        var wrapped = function() {
+          fn();
+          dom.removeEventListener("bufferClear",wrapped);
+        }
+        dom.addEventListener("bufferClear",wrapped);
       },
       dom:dom
     };
@@ -57,14 +67,14 @@
       }
     }
   }
-  window.Interface = function(delay,outputId,consoleId,ActionHandler) {
+  window.Interface = function(outputDelay,consoleDelay,outputId,consoleId,ActionHandler) {
     var ui = {};
     var actionHandler = new ActionHandler(ui);
     this.init = function() {
       var output = document.getElementById(outputId);
       var console = document.getElementById(consoleId);
-      ui.output = buildPrinter(output,delay);
-      ui.console = buildPrinter(console,delay);
+      ui.output = buildPrinter(output,outputDelay);
+      ui.console = buildPrinter(console,consoleDelay);
       var keyPressListener = consoleInputAction(ui,actionHandler.handle);
       actionHandler.init();
       document.getElementsByTagName("body")[0].onkeydown =keyPressListener;
