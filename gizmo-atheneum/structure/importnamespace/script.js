@@ -8,35 +8,40 @@
 		if (path.indexOf(name) >= 0) {
 			throw new Error("Circular dependency: " + path.concat(name).join(" -> "))
 		}
-		service = register[name]
+		let service = register[name];
 		if (service.service) {
 			return service.service
 		}
-		register[name] = {
-			service:service.nsBuilder(Object.entries(service.required).reduce(function(out,entry) {
-				out[entry[1]] = recurse(entry[0], path.concat(name));
+		let imports = Object.entries(service.dependencies).reduce(function(out,entry) {
+			if ((typeof out) == "string") {
 				return out;
-			}, {}))
-		};
+			}
+			if (entry[1] in out) {
+				return "Cannot re-use alias: " + entry[1] + ": " + entry[0];
+			}
+			out[entry[1]] = recurse(entry[0], path.concat(name));
+			return out;
+		}, {});
+		if ((typeof imports) == "string") {
+			throw new Error(imports);
+		}
+		service = service.nsBuilder(imports);
+		if ((typeof service) != "object" && (typeof service) != "function") {
+			throw new Error("A namespace must be an object or function; it cannot be a primitive value: " + service);
+		}
+		register[name] = { service:service };
 		return register[name].service;
 	}
 	global.import = function(namespace){
 		return recurse(name, []);
 	}
-	global.namespace = function(name,required,nsBuilder) {
+	global.namespace = function(name,dependencies,nsBuilder) {
 		if (register[name]) {
 			throw new Error("Namespace '" + name + "' has already been registered.");
 		}
-		try {
-			service = import(name)
-			register[name] = {
-				service:service
-			};
-		} catch(e) {
-			register[name] = {
-				required:required,
-				nsBuilder:nsBuilder
-			};
-		}
+		register[name] = {
+			dependencies:dependencies,
+			nsBuilder:nsBuilder
+		};
 	}
 })();
