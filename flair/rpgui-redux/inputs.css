@@ -1,0 +1,104 @@
+/**
+* input styling
+*/
+/* input/textarea input */
+.rpgui-content input,
+.rpgui-content textarea {
+  /* set size and colors */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  color: white;
+  text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+  font-size: 0.9em;
+  line-height: 32px;
+  background: #4e4a4e;
+  max-width: 100%;
+  width: 100%;
+  padding-left: 10px;
+  /* for ie */
+  min-height: 30px;
+  /* enable text selecting */
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.5); }
+
+/* textarea extra rules */
+.rpgui-content textarea {
+  line-height: 22px;
+  padding-top: 7px;
+  height: 80px;
+  resize: none; }
+
+/* selection highlight */
+.rpgui-content input::selection,
+.rpgui-content textarea::selection {
+  background: rgba(0, 0, 0, 0.5); }
+
+.rpgui-content input::-moz-selection,
+.rpgui-content textarea::-moz-selection {
+  background: rgba(0, 0, 0, 0.5); }
+
+/* dropdown box implemented with list (see rpgui-dropdown.js for details) */
+/* note! this class rule affect both the dropdown header and the list elements! */
+.rpgui-list-imp {
+  /* font */
+  text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+  color: white;
+  /* default size */
+  min-height: 40px;
+  margin-top: 0px;
+  /* scrollers */
+  overflow-x: hidden;
+  overflow-y: scroll;
+  /* border */
+  border-style: solid;
+  border-width: 7px 7px 7px 7px;
+  -moz-border-image: url("img/select-border-image.png") 10% repeat repeat;
+  -webkit-border-image: url("img/select-border-image.png") 10% repeat repeat;
+  -o-border-image: url("img/select-border-image.png") 10% repeat repeat;
+  border-image: url("img/select-border-image.png") 10% repeat repeat;
+  /* background */
+  background: url("img/select-background-image.png") repeat repeat;
+  background-clip: padding-box;
+  background-origin: padding-box;
+  background-position: center; }
+
+/* dropdown options list */
+ul.rpgui-list-imp {
+  padding: 0 0 0 0 !important;
+  z-index: 100; }
+
+/* dropdown options */
+.rpgui-list-imp li {
+  /* font */
+  text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+  color: white;
+  height: 16px;
+  margin-left: 5px !important;
+  /* remove the dot */
+  list-style-type: none;
+  /* padding */
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 6px;
+  /* background */
+  background: url("img/select-background-image.png") repeat repeat;
+  background-clip: padding-box;
+  background-origin: padding-box;
+  background-position: center; }
+
+/* list options hover */
+.rpgui-list-imp li:hover {
+  color: yellow; }
+
+/* list hover */
+.rpgui-list-imp:hover {
+  color: yellow; }
+
+.rpgui-list-imp .rpgui-selected {
+  background: rgba(0, 0, 0, 0.3); }
