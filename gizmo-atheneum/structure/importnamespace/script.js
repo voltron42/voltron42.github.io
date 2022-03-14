@@ -1,5 +1,4 @@
 (function(){
-	global = global || window;
 	let register = {};
 	var recurse = function(name, path) {
 		if (!register[name]) {
@@ -32,12 +31,15 @@
 		register[name] = { service:service };
 		return register[name].service;
 	}
-	global.import = function(namespace){
+	window.importNS = function(name){
 		return recurse(name, []);
 	}
-	global.namespace = function(name,dependencies,nsBuilder) {
+	window.namespace = function(name,dependencies,nsBuilder) {
 		if (register[name]) {
 			throw new Error("Namespace '" + name + "' has already been registered.");
+		}
+		if (Array.isArray(dependencies)) {
+			dependencies = dependencies.reduce((out,dep) => {out[dep] = dep;return out;},{})
 		}
 		register[name] = {
 			dependencies:dependencies,
