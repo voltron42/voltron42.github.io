@@ -27,16 +27,16 @@
     });
   }
   var mapFnList = function(fn,index) {
-		var out = {i:index};
-		try{
-			fn();
-		}catch(e){
-			out.e = e;
-		}
-		return out;
+    var out = {i:index};
+    try{
+      fn();
+    }catch(e){
+      out.e = e;
+    }
+    return out;
   }
   var filterFnList = function(result) {
-	  return result.e
+    return result.e
   }
   var TestScope = function(path) {
     var prereqs = [];
@@ -57,9 +57,9 @@
     this.describe = function(name, fn) {
       try {
         var prereqResults = prereqs.map(mapFnList).filter(filterFnList);
-		if (prereqResults.length > 0) {
-			
-		}
+    if (prereqResults.length > 0) {
+      
+    }
         var child = new TestScope(path.concat(name));
         var temp = setGlobal(child);
         try {
@@ -96,8 +96,8 @@
       if (!(e instanceof Error)) {
         e = new Error(e);
       }
-	  var stack = e.stack.split("\n    ");
-	  var message = stack.shift();
+    var stack = e.stack.split("\n    ");
+    var message = stack.shift();
       log.errorLog.push({
         path:path,
         error:{
@@ -120,21 +120,21 @@
   }
   top.describe = function(name, fn) {
     var test = new TestScope([]);
-	try {
-		test.describe(name, fn);
-		printResults(test.getLogs());
-	} catch(e) {
-		printResults({
-			testLog:[name],
-			errorLog:[{
-				path:[name],
-				error:{
-					message:e.message,
-					stack:e.stack
-				}
-			}]
-		});
-	}
+  try {
+    test.describe(name, fn);
+    printResults(test.getLogs());
+  } catch(e) {
+    printResults({
+      testLog:[name],
+      errorLog:[{
+        path:[name],
+        error:{
+          message:e.message,
+          stack:e.stack
+        }
+      }]
+    });
+  }
   }
 })()
 
