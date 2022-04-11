@@ -11,18 +11,20 @@ localStorage.setItem("songs",JSON.stringify([
   },
   {
     "src":"Big Audio Dynamite - Rush.mp3",
-    "start":15,
-    "end":63
+    "start":15.5,
+    "end":63.1,
   },
   {
     "src":"Rancid - _Time Bomb_ (Full Album Stream).mp3",
-    "end":80,
-    "fadeOut":2
+    "end":81,
+    "fadeOut":1,
+    "maxVolume":40
   },
   {
     "src":"You're The Best.mp3",
-    "end":46,
-    "fadeOut":1
+    "end":45,
+    "fadeOut":0.5,
+    "maxVolume":85
   },
   {
     "src":"Cake - The Distance.mp3",
@@ -32,7 +34,7 @@ localStorage.setItem("songs",JSON.stringify([
   {
     "src":"Roam.mp3",
     "start":15,
-    "fadeIn":3,
+    "fadeIn":2,
     "end":66,
     "fadeOut":3
   },
@@ -52,14 +54,14 @@ localStorage.setItem("songs",JSON.stringify([
   },
   {
     "src":"01. Irene Cara - Flashdance... What A Feeling (Original Soundtrack 1983) HQ.mp3",
-    "start":70,
+    "start":68,
     "fadeIn":1,
-    "end":103,
+    "end":105,
     "fadeOut":2
   },
   {
     "src":"Dixie Chicks - Ready To Run.mp3",
-    "start":86,
+    "start":84,
     "fadeIn":1,
     "end":111,
     "fadeOut":4
@@ -73,14 +75,14 @@ localStorage.setItem("songs",JSON.stringify([
   },
   {
     "src":"Don't Stop Me Now (Remastered 2011).mp3",
-    "start":66,
+    "start":64,
     "fadeIn":1,
-    "end":118,
+    "end":120,
     "fadeOut":2
   },
   {
     "src":"A Flock of Seagulls - I Ran (So Far Away).mp3",
-    "start":147,
+    "start":145,
     "fadeIn":1,
     "end":188,
     "fadeOut":3

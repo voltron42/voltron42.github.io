@@ -5,8 +5,9 @@
     <script src="data/images.js"></script>
     <script type="text/javascript">
       function loadImages(galleryId) {
-        document.getElementById(galleryId).innerHTML = images.map((img) => {
-          return `<div class="thumb" style="background-image: url('./img/${img.src}')"></div>`
+        let images = JSON.parse(localStorage.getItem("images"));
+        document.getElementById(galleryId).innerHTML = images.map((img,index) => {
+          return `<div class="thumb" style="background-image: url('./img/${img}')" title="${index}: ${img}"></div>`
         }).join("");
       }
     </script>

@@ -17,7 +17,6 @@
           audioIds.map((id) => document.getElementById(id)));
         window.start = function(button) {
           if (button) {
-            console.log(button);
             button.parentElement.removeChild(button);
             slideshow.start();
             delete window.start();

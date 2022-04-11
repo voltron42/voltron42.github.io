@@ -25,13 +25,14 @@ namespace("Slideshow",['Track','State'],function(ns){
       }
       let setCanvasImage = function(frame) {
         if (images[indicies.image]) {
-          frame.backgroundImage = "url('./img/" + images[indicies.image++].src + "')";
+          frame.backgroundImage = "url('./img/" + images[indicies.image++] + "')";
           setTimeout(() => {
             setCanvasImage(frame);
           },slideTime);
         } else {
+          frame.backgroundImage = "";
           ns.State.slideEndTime = (new Date()).getTime();
-          ns.State.slideTime = (ns.State.slideEndTime - state.startTime)
+          ns.State.slideTime = (ns.State.slideEndTime - ns.State.startTime)
           console.log(ns.State);
         }
       }

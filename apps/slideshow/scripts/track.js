@@ -1,21 +1,22 @@
 namespace("Track",['State'],function(ns) {
-  let overlap = 2;
+  let overlap = 1;
   return function(config,index,players,next) {
     ['start','fadeIn','fadeOut'].forEach((p) => {
       config[p] = config[p] || 0;
     });
+    config.maxVolume = config.maxVolume || 99;
     //console.log(config);
     let player = players[index % players.length];
     
     let fadeIn = (config.fadeIn > 0) ? () => {
       let interval = setTimeout(() => {
         player.volume += 0.01;
-        if (player.volume < 0.99) {
+        if (player.volume < config.maxVolume / 100) {
           fadeIn();
         }
       },config.fadeIn*10);
     } : () => {
-      player.volume = 0.99;
+      player.volume = config.maxVolume / 100;
     };
     
     let fadeOut = (config.fadeOut > 0) ? () => {
@@ -49,9 +50,13 @@ namespace("Track",['State'],function(ns) {
         }
       } else {
         return () => {
-          ns.State.musicEndTime = (new Date()).getTime();
-          ns.State.musicTime = (ns.State.musicEndTime - state.startTime)
-          console.log(ns.State);
+          let eventHandler = () => {
+            player.removeEventListener('paused',eventHandler);
+            ns.State.musicEndTime = (new Date()).getTime();
+            ns.State.musicTime = (ns.State.musicEndTime - ns.State.startTime)
+            console.log(ns.State);
+          }
+          player.addEventListener('paused',eventHandler);
         };
       }
     })();
