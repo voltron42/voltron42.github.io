@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+    <script src="data/images.js"></script>
+    <script type="text/javascript">
+      function loadImages(galleryId) {
+        document.getElementById(galleryId).innerHTML = images.map((img) => {
+          return `<div class="thumb" style="background-image: url('./img/${img.src}')"></div>`
+        }).join("");
+      }
+    </script>
+    <style>
+      .thumb {
+        width: 100px;
+        height: 100px;
+        border: 1px solid black;  
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    </style>
+  </head>
+  <body onload="loadImages('gallery')">
+    <div id="gallery" class="d-flex flex-wrap"></div>
+  </body>
+</html>

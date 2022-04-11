@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript">
+      function logFiles(input) {
+        console.log(JSON.stringify(Array.from(input.files).map((f) => {
+          return {src: f.name};
+        })));
+      }
+    </script>
+  </head>
+  <body>
+    <input type="file" id="input" multiple onchange="logFiles(this)"/>
+  </body>
+</html>
