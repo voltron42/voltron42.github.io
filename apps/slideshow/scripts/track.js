@@ -66,6 +66,7 @@ namespace("Track",['State'],function(ns) {
 
     this.play = () => {
       player.pause();
+      console.log(index + ": " + config.src);
       player.src = "./mp3/" + config.src;
       player.volume = 0;
       player.load();

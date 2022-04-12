@@ -38,7 +38,7 @@ localStorage.setItem("songs",JSON.stringify([
   {
     "src":"Rancid - _Time Bomb_ (Full Album Stream).mp3",
     "fadeIn":1,
-    "start":114,
+    "start":113.5,
     "end":143,
     "fadeOut":1,
     "maxVolume":45
@@ -88,37 +88,46 @@ localStorage.setItem("songs",JSON.stringify([
   },
   {
     "src":"Matthew Wilder - Break My Stride (Audio).mp3",
-    "start":104,
+    "start":122,
     "fadeIn":0.5,
-    "end":148,
-    "fadeOut":7
+    "end":167,
+    "fadeOut":3
   },
   {
     "src":"Don't Stop Me Now (Remastered 2011).mp3",
-    "start":147,
-    "fadeIn":1,
-    "end":188,
-    "fadeOut":2
+    "start":163.5,
+    "fadeIn":0.5,
+    "end":192,
+    "fadeOut":3,
+    "maxVolume":85
+  },
+  {
+    "src":"Don't Stop Me Now (Remastered 2011).mp3",
+    "start":163.5,
+    "fadeIn":0.5,
+    "end":192,
+    "fadeOut":3,
+    "maxVolume":85
   },
   {
     "src":"A Flock of Seagulls - I Ran (So Far Away).mp3",
     "start":217,
     "fadeIn":1,
     "end":272,
-    "fadeOut":1
+    "fadeOut":2
   },
   {
     "src":"Born to Run.mp3",
     "start":180,
     "fadeIn":2,
-    "end":237,
+    "end":239,
     "fadeOut":2
   },
   {
     "src":"Walk This Way.mp3",
-    "start":43,
+    "start":42,
     "fadeIn":1,
-    "end":83,
+    "end":84,
     "fadeOut":2
   },
   {
