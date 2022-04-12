@@ -26,6 +26,7 @@ namespace("Track",['State'],function(ns) {
           fadeOut();
         } else {
           player.pause();
+          player.dispatchEvent(new Event('fadedOut'));
         }
       },config.fadeOut*10);
     } : () => {
@@ -51,12 +52,12 @@ namespace("Track",['State'],function(ns) {
       } else {
         return () => {
           let eventHandler = () => {
-            player.removeEventListener('paused',eventHandler);
+            player.removeEventListener('fadedOut',eventHandler);
             ns.State.musicEndTime = (new Date()).getTime();
             ns.State.musicTime = (ns.State.musicEndTime - ns.State.startTime)
             console.log(ns.State);
           }
-          player.addEventListener('paused',eventHandler);
+          player.addEventListener('fadedOut',eventHandler);
         };
       }
     })();
