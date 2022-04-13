@@ -12,12 +12,14 @@
     <script src="data/images.js"></script>
     <script src="data/songs.js"></script>
     <script src="scripts/state.js"></script>
+    <script src="scripts/slide.js"></script>
     <script src="scripts/slideshow.js"></script>
     <script src="scripts/track.js"></script>
     <script type="text/javascript">
-      function init(canvasId,audioIds) {
+      function init(canvas1Id,canvas2Id,audioIds) {
         let Slideshow = importNS("Slideshow");
-        let slideshow = new Slideshow(document.getElementById(canvasId),
+        let slideshow = new Slideshow(document.getElementById(canvas1Id),
+          document.getElementById(canvas2Id),
           audioIds.map((id) => document.getElementById(id)));
         window.start = function(button) {
           if (button) {
@@ -29,8 +31,10 @@
       }
     </script>
   </head>
-  <body onload="init('canvas',['player1','player2'])">
-    <div id="canvas" class="d-flex justify-content-center align-items-center">
+  <body onload="init('canvas1','canvas2',['player1','player2'])">
+    <div id="canvas1" class="d-flex justify-content-center align-items-center">
+    </div>
+    <div id="canvas2" class="d-flex justify-content-center align-items-center">
       <button class="startButton" onclick="start(this)">Press to start slideshow</button>
     </div>
     <div class="hidden">

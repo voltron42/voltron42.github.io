@@ -1,7 +1,7 @@
 body {
   background-color: black;
 }
-#canvas {
+#canvas1, #canvas2 {
   position: absolute;
   top: 0;
   left: 0;
@@ -12,11 +12,26 @@ body {
   height: 100%;
   min-width: 100%;
   width: 100%;
-  z-index: -1;
+  text-align: center;
 }
+
+#canvas1 {
+  z-index: 1;
+}
+
+#canvas2 {
+  z-index: 2;
+}
+
 .hidden {
   display: none;
 }
+
 .startButton {
   font-size: 3em;
+}
+
+span.caption {
+  font-size: 8em;
+  color: white;
 }

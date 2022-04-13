@@ -23,9 +23,9 @@ localStorage.setItem("songs",JSON.stringify([
     "src":"Bon Jovi - Runaway.mp3",
     "start":174,
     "fadeIn":2,
-    "end":223,
+    "end":199,
     "fadeOut":3,
-    "maxVolume":75
+    "maxVolume":65
   },
   {
     "src":"You're The Best.mp3",
@@ -59,25 +59,20 @@ localStorage.setItem("songs",JSON.stringify([
     "fadeOut":1
   },
   {
-    "src":"Big Audio Dynamite - Rush.mp3",
-    "fadeIn":1,
-    "start":45,
-    "end":63,
-    "fadeOut":1
-  },
-  {
     "src":"Roam.mp3",
     "start":199,
     "fadeIn":0.5,
     "end":231,
-    "fadeOut":2
+    "fadeOut":2,
+    "maxVolume":90
   },
   {
     "src":"01. Irene Cara - Flashdance... What A Feeling (Original Soundtrack 1983) HQ.mp3",
     "start":69,
     "fadeIn":0.5,
     "end":102,
-    "fadeOut":2
+    "fadeOut":2,
+    "maxVolume":85
   },
   {
     "src":"Dixie Chicks - Ready To Run.mp3",
@@ -90,31 +85,24 @@ localStorage.setItem("songs",JSON.stringify([
     "src":"Matthew Wilder - Break My Stride (Audio).mp3",
     "start":122,
     "fadeIn":0.5,
-    "end":167,
-    "fadeOut":3
+    "end":158,
+    "fadeOut":8
   },
   {
     "src":"Don't Stop Me Now (Remastered 2011).mp3",
     "start":163.5,
-    "fadeIn":0.5,
+    "fadeIn":1,
     "end":192,
     "fadeOut":3,
-    "maxVolume":85
-  },
-  {
-    "src":"Don't Stop Me Now (Remastered 2011).mp3",
-    "start":163.5,
-    "fadeIn":0.5,
-    "end":192,
-    "fadeOut":3,
-    "maxVolume":85
+    "maxVolume":75
   },
   {
     "src":"A Flock of Seagulls - I Ran (So Far Away).mp3",
-    "start":217,
+    "start":242,
     "fadeIn":1,
     "end":272,
-    "fadeOut":2
+    "fadeOut":2,
+    "maxVolume":85
   },
   {
     "src":"Born to Run.mp3",
@@ -135,6 +123,6 @@ localStorage.setItem("songs",JSON.stringify([
     "start":209,
     "fadeIn":1,
     "end":258,
-    "fadeOut":10
+    "fadeOut":3
   }
 ]));

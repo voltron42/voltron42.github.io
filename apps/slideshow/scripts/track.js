@@ -1,6 +1,6 @@
 namespace("Track",['State'],function(ns) {
   let overlap = 1;
-  return function(config,index,players,next) {
+  let Track = function(config,index,players,next) {
     ['start','fadeIn','fadeOut'].forEach((p) => {
       config[p] = config[p] || 0;
     });
@@ -20,9 +20,9 @@ namespace("Track",['State'],function(ns) {
     };
     
     let fadeOut = (config.fadeOut > 0) ? () => {
-      let interval = setTimeout(() => {
+      setTimeout(() => {
         player.volume -= 0.01;
-        if (player.volume > 0.01) {
+        if (player.volume >= 0.01) {
           fadeOut();
         } else {
           player.pause();
@@ -37,7 +37,7 @@ namespace("Track",['State'],function(ns) {
     let timeToFadeOut = 1000 * (runtime - config.fadeOut);
     let awaitFadeOut = () => {
       setTimeout(() => {
-        fadeOut(() => {});
+        fadeOut();
       },timeToFadeOut);
     }
     let awaitNext = (function(){
@@ -53,8 +53,8 @@ namespace("Track",['State'],function(ns) {
         return () => {
           let eventHandler = () => {
             player.removeEventListener('fadedOut',eventHandler);
-            ns.State.musicEndTime = (new Date()).getTime();
-            ns.State.musicTime = (ns.State.musicEndTime - ns.State.startTime)
+            let musicEndTime = (new Date()).getTime();
+            ns.State.musicTime = (musicEndTime - ns.State.startTime)
             console.log(ns.State);
           }
           player.addEventListener('fadedOut',eventHandler);
@@ -81,4 +81,21 @@ namespace("Track",['State'],function(ns) {
       });
     }
   }
+  Track.buildTracklist = function(songs,audioList) {
+    let songErrors = songs.filter((s) => {
+      return isNaN(s.end) || ((typeof s.src) != "string");
+    });
+    if (songErrors.length > 0) {
+      console.log(songErrors);
+    } else {
+      let next;
+      while (songs.length > 0) {
+        let song = songs.pop();
+        let index = songs.length;
+        next = new Track(song,index,audioList,next);
+      }
+      return next;
+    }
+  }
+  return Track;
 });

@@ -1,63 +1,26 @@
-namespace("Slideshow",['Track','State'],function(ns){
+namespace("Slideshow",['Track','State','Slide'],function(ns){
 
-  let slideTime = 3038;
+  let slideTime = 1990;
 
-  let imageFadeOutSeconds = 3;
+  let imageFadeOutSeconds = 0.4;
 
-  return function(canvas, audioList) {
-    let indicies = {
-      image: 0,
-      song: 0
-    };
-    
+  return function(canvas1, canvas2, audioList) {
     let images = JSON.parse(localStorage.getItem("images"));
+    let slideShowTime = (slideTime + (imageFadeOutSeconds * 1000)) * (images.length + 1);
+    let firstSlide = ns.Slide.buildSlideshow(images,imageFadeOutSeconds,slideTime,canvas1,canvas2)
     let songs = JSON.parse(localStorage.getItem("songs"));
     let songTime = songs.map((s) => s.end - (s.start || 0) - (s.fadeIn || 0)).reduce((a,b) => a + b, 0);
-    let slideShowTime = slideTime * images.length;
     console.log({songTime: songTime, slideShowTime: slideShowTime});
-    let songErrors = songs.filter((s) => {
-      return isNaN(s.end) || ((typeof s.src) != "string");
-    });
-    if (songErrors.length > 0) {
-      console.log(songErrors);
-    } else {
-      let next;
-      while (songs.length > 0) {
-        let song = songs.pop();
-        let index = songs.length;
-        next = new ns.Track(song,index,audioList,next);
-      }
-      let fadeOutImage = function(frame,callback) {
-        if (frame.opacity > 0) {
-          frame.opacity -= 0.01
-          setTimeout(() => {
-            fadeOutImage(frame,callback);
-          }, imageFadeOutSeconds);
-        } else {
-          callback();
-        }
-      }
-      let setCanvasImage = function(frame) {
-        if (images[indicies.image]) {
-          console.log(indicies.image + ": " + images[indicies.image]);
-          frame.backgroundImage = "url('./img/" + images[indicies.image++] + "')";
-          setTimeout(() => {
-            setCanvasImage(frame);
-          },slideTime);
-        } else {
-          fadeOutImage(frame,() => {
-            ns.State.slideEndTime = (new Date()).getTime();
-            ns.State.slideTime = (ns.State.slideEndTime - ns.State.startTime)
-            console.log(ns.State);
-          })
-        }
-      }
+    let firstTrack = ns.Track.buildTracklist(songs,audioList);
+    if (firstTrack) {
+      canvas1.style.opacity = 0;
+      canvas2.style.opacity = 1;
       this.start = function() {
         ns.State.startTime = (new Date()).getTime();
-        canvas.style.opacity = 1;
         setTimeout(() => {
-          next.play();
-          setCanvasImage(canvas.style);
+          firstSlide.preload();
+          firstTrack.play();
+          firstSlide.transition();
         }, slideTime);
       }
     }
