@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Checklist</title>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <style>
+      html, body, pre, code, kbd, samp {
+          font-family: "Press Start 2P";
+      }
+    </style>
+    <script type="text/javascript">
+      (function() {
+        window.initChecklists = function(selectChecklistId,listId) {}
+        window.loadChecklists = function() {}
+        window.addChecklist = function(input) {}
+        window.selectChecklist = function(input) {}
+        window.addItem = function(input) {}
+        window.clearChecked = function() {}
+        window.downloadChecklists = function() {}
+      })()
+    </script>
+    <style>
+      .showcase {
+        padding: 2em;
+      }
+      .item {
+        margin: 2em;
+      }
+      .list-item:checked + .list-item-label {
+        text-decoration: line-through;
+      }
+      .item.is-centered {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body onload="initChecklists('selectChecklist','list-items')">
+    <section class="showcase">
+      <section class="nes-container with-title"> 
+        <div class="title">
+          <div class="nes-select">
+            <select required id="selectChecklist" onchange="selectChecklist(this)">
+              <option>${checklist}</option>
+            </select>
+          </div>
+        </div>
+        <div class="item">
+          <ul class="nes-list" id="list-items">
+            <li>
+              <label>
+                <input type="checkbox" class="nes-checkbox list-item" checked="${item.checked}"/>
+                <span class="list-item-label">${item.name}</span>
+              </label>
+            </li>
+          </ul>
+        </div>
+        <div class="item">
+          <div class="nes-field is-inline">
+            <label for="newItem">Add Item</label>
+            <input type="text" id="newItem" class="nes-input" placeholder="New Item" onblur="addItem(this)">
+          </div>
+        </div>
+        <div class="item">
+          <div class="nes-field is-inline">
+            <label for="newChecklist">Add Checklist</label>
+            <input type="text" id="newChecklist" class="nes-input" placeholder="New Checklist" onblur="addChecklist(this)">
+          </div>
+        </div>
+        <div class="item is-centered">
+          <label class="nes-btn">
+            <span>Upload Your Checklists</span>
+            <input type="file" onchange="loadChecklists()">
+          </label>
+        </div>
+        <div class="item is-centered">
+          <table>
+            <tr>
+              <td>
+                <button class="nes-btn is-primary" onclick="clearChecked()">Clear Checked</button>
+              </td>
+              <td>
+                <button class="nes-btn is-error" onclick="deleteCurrent()">Delete Current List</button>
+              </td>
+              <td>
+                <button class="nes-btn is-warning" onclick="downloadChecklists(this)">Download Checklists</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+    </section>
+  </body>
+</html>

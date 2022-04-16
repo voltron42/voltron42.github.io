@@ -15,15 +15,14 @@
     <script>
       var temp = console.log, lines = [];
       console.log = function(body) {
-      if (typeof body == "object") {
-        body = JSON.stringify(body);
-      }
+        if (typeof body == "object") {
+          body = JSON.stringify(body);
+        }
         lines.push(body);
         temp.call(console, body);
       }
     </script>
     <script src="./testing/testtest.js"></script>
-    <script src="./render/Mint/format.js"></script>
     <script src="./testing/Expectable/expecting.js"></script>
     <script src="./testing/Expectable/expectable.js"></script>
     <script src="./testing/Expectable/expect.test.js"></script>

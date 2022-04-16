@@ -1,58 +1,58 @@
 (function() {
-  var me = this;
-  var global = function() {
+  let me = this;
+  let global = function() {
     return me;
   }
-    var deepEqual = function(a, b) {
-        if (a===b) {
-            return true
-        }
-        if (a == b) {
-            return true;
-        }
-        if (typeof a !=  typeof b) {
-            return false;
-        }
-        var type = typeof a;
-        if (type != "object") {
-            return false;
-        }
-        var aIsArray = a instanceof Array;
-        var bIsArray = b instanceof Array;
-        if ((aIsArray && !bIsArray) || (!aIsArray && bIsArray)) {
-            return false;
-        }
-        if (aIsArray && bIsArray) {
-            if (a.length != b.length) {
-                return false;
-            }
-            var length = a;
-            for (var x = 0; x < a; x++) {
-                if (!deepEqual(a[x], b[x])) {
-                    return false;
-                }
-            }
-        } else {
-      var aKeys = Object.keys(a);
-      var bKeys = Object.keys(b);
-      aKeys.sort();
-      bKeys.sort();
-      if (!deepEqual(aKeys, bKeys)) {
-        return false
+  let deepEqual = function(a, b) {
+      if (a===b) {
+        return true
       }
-            var keys = Object.keys(a);
-            while(keys.length > 0) {
-                var key = keys.shift();
-                if (!deepEqual(a[key],b[key])) {
-                    return false;
-                }
-            }
-        }
+      if (a == b) {
         return true;
+      }
+      if (typeof a !=  typeof b) {
+        return false;
+      }
+      let type = typeof a;
+      if (type != "object") {
+        return false;
+      }
+      let aIsArray = a instanceof Array;
+      let bIsArray = b instanceof Array;
+      if ((aIsArray && !bIsArray) || (!aIsArray && bIsArray)) {
+        return false;
+      }
+      if (aIsArray && bIsArray) {
+          if (a.length != b.length) {
+            return false;
+          }
+          let length = a;
+          for (let x = 0; x < a; x++) {
+            if (!deepEqual(a[x], b[x])) {
+              return false;
+            }
+          }
+      } else {
+    let aKeys = Object.keys(a);
+    let bKeys = Object.keys(b);
+    aKeys.sort();
+    bKeys.sort();
+    if (!deepEqual(aKeys, bKeys)) {
+      return false
     }
-  var expectError = function(operation) {
+          let keys = Object.keys(a);
+          while(keys.length > 0) {
+              let key = keys.shift();
+              if (!deepEqual(a[key],b[key])) {
+                  return false;
+              }
+          }
+      }
+      return true;
+  }
+  let expectError = function(operation) {
     return function(message) {
-      var error;
+      let error;
       try {
         operation();
       } catch(e) {
@@ -66,9 +66,9 @@
       }
     }
   }
-  var expectNoError = function(operation) {
+  let expectNoError = function(operation) {
     return function() {
-      var error;
+      let error;
       try {
         operation();
       } catch(e) {
@@ -76,11 +76,11 @@
       }
     }
   }
-    var deepProp = function(obj, key, value) {
-        var steps = key.split(".");
-        var temp = obj;
+    let deepProp = function(obj, key, value) {
+        let steps = key.split(".");
+        let temp = obj;
         while (steps.length > 0) {
-            var step = steps.shift();
+            let step = steps.shift();
             if (!(step in temp)) {
                 return false;
             }
@@ -88,16 +88,16 @@
         }
         return deepEqual(temp, value);
     }
-  var deep = {
+  let deep = {
     eq:deepEqual,
     prop:deepProp,
   }
-    var needleFilter = function(haystack) {
+    let needleFilter = function(haystack) {
         return function(needle) {
             return haystack.indexOf(needle) >= 0;
         }
     }
-  var contains = {
+  let contains = {
     all:function(haystack, needles) {
       return needles.filter(needleFilter(haystack)).length == needles.length;
     },
@@ -105,8 +105,8 @@
       return needles.filter(needleFilter(haystack)).length == needles.length;
     }
   }
-  var raw = expecting.map(function(spec){
-    var obj = {};
+  let raw = expecting.map(function(spec){
+    let obj = {};
     eval("obj.fn = function(actual"+(spec.params.length > 0?",":"")+spec.params+"){return "+spec.cond+"};")
     return {
       path:spec.path,
@@ -115,27 +115,25 @@
       fn:obj.fn
     };
   });
-    var argsToArray = function(args) {
-        var out = [];
-        for (var x = 0; x < args.length; x++) {
-            out.push(args[x]);
-        }
-        return out;
+  let buildFormatter = function(template) {
+    return function() {
+      return eval("`" + template + "`");
     }
-  var build = function(root,label,cond,actual) {
+  }
+  let build = function(root,label,cond,actual) {
     return function(spec) {
-      var path = spec.path.split(".");
-      var name = path.pop();
-      var temp = root;
+      let path = spec.path.split(".");
+      let name = path.pop();
+      let temp = root;
       path.forEach(function(step){
         temp[step] = temp[step] || {};
         temp = temp[step];
       });
-      var fn = function() {
-        var args = argsToArray(arguments);
+      let fn = function() {
+        let args = Array.from(arguments);
         args.unshift(actual);
         if (cond === spec.fn.apply(null,args)) {
-          throw new Error(Mint.format.apply(null,[].concat(spec[label],args)));
+          throw new Error(buildFormatter(spec[label]).apply(null,args));
         }
       };
       if (typeof temp[name] == 'object') {
@@ -147,12 +145,12 @@
     };
   };
   this.expect = function(actual) {
-        var to = {};
-        var not = {};
+        let to = {};
+        let not = {};
         raw.forEach(build(to,"msg",false,actual));
-    to.error = expectError(actual);
+        to.error = expectError(actual);
         raw.forEach(build(not,"not",true,actual));
-    not.error = expectNoError(actual);
+        not.error = expectNoError(actual);
         to.not = not;
         return {to:to};
   }

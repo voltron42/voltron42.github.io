@@ -1,10 +1,10 @@
 namespace("Slideshow",['Track','State','Slide'],function(ns){
 
-  let slideTime = 1990;
+  let slideTime = 1961;
 
   let imageFadeOutSeconds = 0.4;
 
-  return function(canvas1, canvas2, audioList) {
+  let Slideshow = function(canvas1, canvas2, audioList) {
     let images = JSON.parse(localStorage.getItem("images"));
     let slideShowTime = (slideTime + (imageFadeOutSeconds * 1000)) * (images.length + 1);
     let firstSlide = ns.Slide.buildSlideshow(images,imageFadeOutSeconds,slideTime,canvas1,canvas2)
@@ -25,4 +25,5 @@ namespace("Slideshow",['Track','State','Slide'],function(ns){
       }
     }
   }
+  return Slideshow;
 });
