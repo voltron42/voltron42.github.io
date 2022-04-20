@@ -1,0 +1,329 @@
+.nes-badge {
+  position: relative;
+  display: inline-block;
+  width: 10.5em;
+  height: 1.875em;
+  margin: 0.5em;
+  font-size: 0.9em;
+  white-space: nowrap;
+  vertical-align: top;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.nes-badge.is-splited span.is-dark:first-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #212529;
+  left: 0;
+  box-shadow: 0 0.5em #212529, 0 -0.5em #212529, 0 0 #212529, -0.5em 0 #212529;
+}
+
+.nes-badge.is-splited span.is-dark:last-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #212529;
+  right: 0;
+  box-shadow: 0 0.5em #212529, 0 -0.5em #212529, 0.5em 0 #212529, 0 0 #212529;
+}
+
+.nes-badge.is-icon {
+  width: 5.25em;
+}
+
+.nes-badge.is-icon span.is-dark:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7em;
+  font-size: 0.5em;
+  color: #fff;
+  text-align: center;
+  background-color: #212529;
+  position: absolute;
+  top: -2.8em;
+  left: -2.7em;
+  height: 2.7em;
+}
+
+.nes-badge.is-icon span.is-dark:last-child {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  font-size: 0.88em;
+  color: #fff;
+  text-align: center;
+  background-color: #212529;
+  box-shadow: 0 0.5em #212529, 0 -0.5em #212529, 0.5em 0 #212529, -0.5em 0 #212529;
+}
+
+.nes-badge span.is-dark:first-child {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  background-color: #212529;
+  box-shadow: 0 0.5em #212529, 0 -0.5em #212529, 0.5em 0 #212529, -0.5em 0 #212529;
+}
+
+.nes-badge.is-splited span.is-primary:first-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #209cee;
+  left: 0;
+  box-shadow: 0 0.5em #209cee, 0 -0.5em #209cee, 0 0 #209cee, -0.5em 0 #209cee;
+}
+
+.nes-badge.is-splited span.is-primary:last-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #209cee;
+  right: 0;
+  box-shadow: 0 0.5em #209cee, 0 -0.5em #209cee, 0.5em 0 #209cee, 0 0 #209cee;
+}
+
+.nes-badge.is-icon {
+  width: 5.25em;
+}
+
+.nes-badge.is-icon span.is-primary:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7em;
+  font-size: 0.5em;
+  color: #fff;
+  text-align: center;
+  background-color: #209cee;
+  position: absolute;
+  top: -2.8em;
+  left: -2.7em;
+  height: 2.7em;
+}
+
+.nes-badge.is-icon span.is-primary:last-child {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  font-size: 0.88em;
+  color: #fff;
+  text-align: center;
+  background-color: #209cee;
+  box-shadow: 0 0.5em #209cee, 0 -0.5em #209cee, 0.5em 0 #209cee, -0.5em 0 #209cee;
+}
+
+.nes-badge span.is-primary:first-child {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  background-color: #209cee;
+  box-shadow: 0 0.5em #209cee, 0 -0.5em #209cee, 0.5em 0 #209cee, -0.5em 0 #209cee;
+}
+
+.nes-badge.is-splited span.is-success:first-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #92cc41;
+  left: 0;
+  box-shadow: 0 0.5em #92cc41, 0 -0.5em #92cc41, 0 0 #92cc41, -0.5em 0 #92cc41;
+}
+
+.nes-badge.is-splited span.is-success:last-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #92cc41;
+  right: 0;
+  box-shadow: 0 0.5em #92cc41, 0 -0.5em #92cc41, 0.5em 0 #92cc41, 0 0 #92cc41;
+}
+
+.nes-badge.is-icon {
+  width: 5.25em;
+}
+
+.nes-badge.is-icon span.is-success:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7em;
+  font-size: 0.5em;
+  color: #fff;
+  text-align: center;
+  background-color: #92cc41;
+  position: absolute;
+  top: -2.8em;
+  left: -2.7em;
+  height: 2.7em;
+}
+
+.nes-badge.is-icon span.is-success:last-child {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  font-size: 0.88em;
+  color: #fff;
+  text-align: center;
+  background-color: #92cc41;
+  box-shadow: 0 0.5em #92cc41, 0 -0.5em #92cc41, 0.5em 0 #92cc41, -0.5em 0 #92cc41;
+}
+
+.nes-badge span.is-success:first-child {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  background-color: #92cc41;
+  box-shadow: 0 0.5em #92cc41, 0 -0.5em #92cc41, 0.5em 0 #92cc41, -0.5em 0 #92cc41;
+}
+
+.nes-badge.is-splited span.is-warning:first-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #212529;
+  text-align: center;
+  background-color: #f7d51d;
+  left: 0;
+  box-shadow: 0 0.5em #f7d51d, 0 -0.5em #f7d51d, 0 0 #f7d51d, -0.5em 0 #f7d51d;
+}
+
+.nes-badge.is-splited span.is-warning:last-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #212529;
+  text-align: center;
+  background-color: #f7d51d;
+  right: 0;
+  box-shadow: 0 0.5em #f7d51d, 0 -0.5em #f7d51d, 0.5em 0 #f7d51d, 0 0 #f7d51d;
+}
+
+.nes-badge.is-icon {
+  width: 5.25em;
+}
+
+.nes-badge.is-icon span.is-warning:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7em;
+  font-size: 0.5em;
+  color: #212529;
+  text-align: center;
+  background-color: #f7d51d;
+  position: absolute;
+  top: -2.8em;
+  left: -2.7em;
+  height: 2.7em;
+}
+
+.nes-badge.is-icon span.is-warning:last-child {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  font-size: 0.88em;
+  color: #212529;
+  text-align: center;
+  background-color: #f7d51d;
+  box-shadow: 0 0.5em #f7d51d, 0 -0.5em #f7d51d, 0.5em 0 #f7d51d, -0.5em 0 #f7d51d;
+}
+
+.nes-badge span.is-warning:first-child {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #212529;
+  text-align: center;
+  background-color: #f7d51d;
+  box-shadow: 0 0.5em #f7d51d, 0 -0.5em #f7d51d, 0.5em 0 #f7d51d, -0.5em 0 #f7d51d;
+}
+
+.nes-badge.is-splited span.is-error:first-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #e76e55;
+  left: 0;
+  box-shadow: 0 0.5em #e76e55, 0 -0.5em #e76e55, 0 0 #e76e55, -0.5em 0 #e76e55;
+}
+
+.nes-badge.is-splited span.is-error:last-child {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  color: #fff;
+  text-align: center;
+  background-color: #e76e55;
+  right: 0;
+  box-shadow: 0 0.5em #e76e55, 0 -0.5em #e76e55, 0.5em 0 #e76e55, 0 0 #e76e55;
+}
+
+.nes-badge.is-icon {
+  width: 5.25em;
+}
+
+.nes-badge.is-icon span.is-error:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7em;
+  font-size: 0.5em;
+  color: #fff;
+  text-align: center;
+  background-color: #e76e55;
+  position: absolute;
+  top: -2.8em;
+  left: -2.7em;
+  height: 2.7em;
+}
+
+.nes-badge.is-icon span.is-error:last-child {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  font-size: 0.88em;
+  color: #fff;
+  text-align: center;
+  background-color: #e76e55;
+  box-shadow: 0 0.5em #e76e55, 0 -0.5em #e76e55, 0.5em 0 #e76e55, -0.5em 0 #e76e55;
+}
+
+.nes-badge span.is-error:first-child {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  background-color: #e76e55;
+  box-shadow: 0 0.5em #e76e55, 0 -0.5em #e76e55, 0.5em 0 #e76e55, -0.5em 0 #e76e55;
+}
