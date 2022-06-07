@@ -1,0 +1,50 @@
+body {
+  background-color: gray;
+}
+.page {
+  background-color: white;
+  border: 1px solid black;
+  width: 4.25in;
+  height: 5.5in;
+}
+.canvas {
+  width: 4in;
+  height: 5in;
+  margin: 0.125in;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+  }
+  html,
+  body,
+  .page {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+  .page {
+    border: 0px;
+    page-break-after: always;
+  }
+  .page:last-child {
+    page-break-after: auto;
+  }
+  .canvas {
+    width: 8in;
+    height: 10in;
+    margin: 0.23in;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  @page {
+    margin: 0;
+    size: portrait;
+  }
+}
