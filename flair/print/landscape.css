@@ -11,6 +11,8 @@ body {
   width: 5in;
   height: 4in;
   margin: 0.125in;
+}
+.canvas.data-url {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -39,6 +41,8 @@ body {
     width: 10in;
     height: 8in;
     margin: 0.23in;
+  }
+  .canvas.data-url {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
