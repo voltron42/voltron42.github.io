@@ -1,7 +1,125 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style type="text/css">
+      body {
+        background-color: green;
+        color: white;
+        font-family: "Lucida Console", monospace;
+      }
+      .hearts, .diamonds {
+        color: red;
+        border: 2px solid red;
+      }
+      .clubs, .spades, .card {
+        color: black;
+        border: 2px solid black;
+      }
+      .hearts, .diamonds, .clubs, .spades, .card {
+        background-color: white;
+        border-radius: 0.25em;
+        margin: 0.25em;
+        padding: 0.25em;
+        font-size: 2em;
+        font-family: "Lucida Console", monospace;
+      }
+      dt {
+        font-size: 1.5em;
+        margin-bottom: 0.5em;
+        margin-top: 1.5em;
+      }
+      button {
+        font-family: "Lucida Console", monospace;
+        font-size: 1.5em;
+        margin: 0.25em;
+      }
+      .bust {
+        color: red;
+        background-color: black;
+        margin: 0.25em;
+        padding: 0.125em;
+      }
+      .setup {
+        list-style-type: none;
+        margin: 0.5em 0 4em 0;
+        padding: 0;
+      }
+
+      .setup li {
+        float: left;
+        margin: 0 5px 0 0;
+        width: 100px;
+        height: 40px;
+        position: relative;
+      }
+
+      .setup label,
+      .setup input {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .setup input[type="radio"] {
+        opacity: 0.01;
+        z-index: 100;
+      }
+
+      .setup input[type="radio"]:checked+label,
+      .Checked+label {
+        background: yellow;
+      }
+
+      .setup label {
+        padding: 5px;
+        border: 1px solid #CCC;
+        cursor: pointer;
+        z-index: 90;
+      }
+
+      .setup label:hover {
+        background: #DDD;
+      }
+      
+      .setup::after {
+        clear: both;
+      }
+    </style>
   </head>
   <body>
+    <h2>Blackjack</h2>
+    <button id="dealButton" onclick="deal()">Deal</button>
+    <dl>
+      <dt id="dealerHead"><p>Dealer:&nbsp;<em id="dealerScore">???</em>&nbsp;<em id="dealerBust" class="bust">BUST!</em></p></dt>
+      <dd id="dealerbody">
+        <span class="card">???</span><span class="spades">10&spades;</span>
+      </dd>
+      <dt id="p1head">
+        <p>Player&nbsp;1:&nbsp;<em id="p1Score">22</em>&nbsp;<em id="p1Bust" class="bust">BUST!</em></p>
+      </dt>
+      <dd id="p1body">
+        <p>
+          <ul class="setup">
+            <li>
+              <input type="radio" name="p1" value="person" id="p1Person"/>
+              <label for="p1Person">Person</label>
+            </li>
+            <li>
+              <input type="radio" name="p1" value="computer" id="p1Computer"/>
+              <label for="p1Computer">Computer</label>
+            </li>
+            <li>
+              <input type="radio" name="p1" value="out" id="p1Out"/>
+              <label for="p1Out">Out</label>
+            </li>
+          </ul>
+        </p>
+        <p class="hand"><span class="hearts">K&nbsp;&hearts;</span><span class="clubs">5&nbsp;&clubs;</span><span class="diamonds">7&nbsp;&diams;</span></p>
+        <p class="actions"><button id="p1Hit" disabled onclick="hit(1)">Hit</button><button id="p1Stay" onclick="stay(1)">Stay</button></p>
+      </dd>
+    </dl>
   </body>
 </html>
