@@ -18,9 +18,7 @@
 		<use xlink:href="#index" transform="rotate(180, 28.5, 44)"></use>
 		<use xlink:href="#suit" transform="translate(16, 11) scale(1.5)"></use>
 		<use xlink:href="#suit" transform="translate(29, 11) scale(1.5)"></use>
-		<g transform="rotate(180, 28.5, 44)">
-			<use xlink:href="#suit" transform="translate(16, 11) scale(1.5)"></use>
-			<use xlink:href="#suit" transform="translate(29, 11) scale(1.5)"></use>
-		</g>
+		<use xlink:href="#suit" transform="rotate(180, 28.5, 44) translate(16, 11) scale(1.5)"></use>
+		<use xlink:href="#suit" transform="rotate(180, 28.5, 44) translate(29, 11) scale(1.5)"></use>
 	</g>
 </svg>

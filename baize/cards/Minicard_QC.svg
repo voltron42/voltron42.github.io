@@ -8,7 +8,7 @@
 	</symbol>
 	<symbol id="special" width="10" height="12">
 		<path d="M 1 0 l 2 3 l 2 -3 l 2 3 l 2 -3 v 10 h -8 z"></path>
-		<rect x="1" y="11" width="8" height="1"></rect>
+		<path d="M 1 11 h 8 v 1 h -8 v -1 z"></path>
 	</symbol>
 	<symbol id="index" width="57" height="88">
 		<use xlink:href="#rank" x="6" y="6"></use>

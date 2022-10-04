@@ -27,6 +27,7 @@
     });
     return new TemplateMap(templates);
   }
+  let $ = 4;
   window.initTemplates = function() {
     window.Templates = new TemplateMap(Template.collect());
   }

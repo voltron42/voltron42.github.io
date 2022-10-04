@@ -16,6 +16,6 @@
 	<g style="fill: #000;">
 		<use xlink:href="#index"></use>
 		<use xlink:href="#index" transform="rotate(180, 28.5, 44)"></use>
-		<use xlink:href="#suit" transform="translate(20.5, 34) scale(2)"></use>
+		<use xlink:href="#suit" transform="translate(14.5, 26.5) scale(3.5)"></use>
 	</g>
 </svg>

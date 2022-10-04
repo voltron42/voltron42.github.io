@@ -9,8 +9,8 @@
 	<symbol id="special" width="10" height="12">
 		<path d="M 1 2 l 2 3 l 2 -3 l 2 3 l 2 -3 v 7 h -8 z"></path>
 		<path id="crown-dot" d="M 1 0 l 1 1 l -1 1 l -1 -1 z"></path>
-		<use xlink:href="#crown-dot" transform="translate(4, 0)"></use>
-		<use xlink:href="#crown-dot" transform="translate(8, 0)"></use>
+		<path d="M 5 0 l 1 1 l -1 1 l -1 -1 z"></path>
+		<path d="M 9 0 l 1 1 l -1 1 l -1 -1 z"></path>
 		<rect x="1" y="10" width="8" height="2"></rect>
 	</symbol>
 	<symbol id="index" width="57" height="88">
@@ -23,6 +23,6 @@
 	<g style="fill: #000;">
 		<use xlink:href="#index"></use>
 		<use xlink:href="#index" transform="rotate(180, 28.5, 44)"></use>
-		<use xlink:href="#special" transform="translate(18.5, 32) scale(2)"></use>
+		<use xlink:href="#special" transform="translate(16,29) scale(2.5)"></use>
 	</g>
 </svg>
