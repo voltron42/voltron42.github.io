@@ -140,7 +140,6 @@
             } else if (gameState.board.filter(col => col.stack.length > 0).length === 0 && ['drawPile','discard','hand'].reduce((out,obj) => out && gameState[obj].length === 0 , true)) {
                 gameState.winState = "auto";
             }
-            console.log({winState:gameState.winState});
         }
         this.move = function(from,to) {
             let fromType = getFromToType(from,true);
@@ -175,12 +174,6 @@
             updateWinState();
         };
         this.drawHand = function() {
-            console.log({
-                log:"start drawHand",
-                discard:gameState.discard,
-                drawPile:gameState.drawPile,
-                hand:gameState.hand
-            });
             if (gameState.drawPile.length === 0) {
                 gameState.drawPile = gameState.discard.concat(gameState.hand);
                 gameState.discard = [];
@@ -189,12 +182,6 @@
             let drawCount = Math.min(gameState.drawCount,gameState.drawPile.length);
             gameState.discard = gameState.discard.concat(gameState.hand);
             gameState.hand = gameState.drawPile.splice(0,drawCount);
-            console.log({
-                log:"end drawHand",
-                discard:gameState.discard,
-                drawPile:gameState.drawPile,
-                hand:gameState.hand
-            });
         };
         this.canDraw = function() {
             return gameState.drawPile.length > 0;

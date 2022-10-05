@@ -19,6 +19,16 @@
             body {
                 background-color: #35654d;
             }
+            .from, .from .cardFace:hover {
+                fill: blue;
+            }
+            .cardFace:hover, .cardBack:hover {
+                fill: yellow;
+            }
+            .ghostCard:hover, .emptyPile:hover {
+                stroke: yellow;
+                stroke-width: 4px;
+            }
         </style>
     </head>
     <body onload="init('deckDefs','deckDisplay')">

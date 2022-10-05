@@ -1,5 +1,6 @@
 (function (){
-    window.SolitaireCanvas = function(canvasId,deck) {
+    window.SolitaireCanvas = function(canvasId,deck,initDraw1Q) {
+        let me = this;
         let canvas = document.getElementById(canvasId);
         let canvasState = {};
         let applyAttrs = function(xml,attrs,linkAttrs) {
@@ -11,17 +12,6 @@
             } else {
                 return xml;
             }
-        }
-        let applyCoordinates = function(x,y,cardXml) {
-            cardXml[1].x = x;
-            cardXml[1].y = y;
-            return cardXml;
-        }
-        let applyLinkAndCoordinates = function(x,y,onclick,xml) {
-            xml[1].x = x;
-            xml[1].y = y;
-            xml[1].onclick = onclick
-            return xml;
         }
         let redraw = function() {
             let board = [];
@@ -39,35 +29,45 @@
             board.push(applyAttrs((canvasState.game.canDraw() ? deck.useCardBack() : deck.useEmptyPile()),{x:padding,y:padding}, {onclick:'draw(event)'}));
             let hand = canvasState.game.getHand();
             let discard = canvasState.game.getLastDiscard();
+            let handLinkAttrs = { onclick:'selectHand(event)' };
+            if (canvasState.from === -1) {
+                handLinkAttrs.class = "from";
+            }
             if (hand.length > 0) {
                 hand.forEach((card,index) => {
                     board.push(applyAttrs(deck.useCard(card),{
                         x:(handOffsetX + (index * cardOffsetX)),
                         y:padding
-                    }, {onclick:'selectHand(this,event)'}));
+                    }, handLinkAttrs));
                 });
             } else if (discard) {
-                board.push(applyAttrs(deck.useCard(discard),{x:handOffsetX,y:padding}, {onclick:'selectHand(this,event)'}));
+                board.push(applyAttrs(deck.useCard(discard),{x:handOffsetX,y:padding}, handLinkAttrs));
             }
             deck.getSuits().forEach((suit,index) => {
                 let rank = deck.getRanks()[canvasState.game.getGoals()[suit]];
+                let goalLinkAttrs = { onclick:`selectGoal('${suit}',event)` };
+                if (canvasState.from === suit) {
+                    goalLinkAttrs.class = "from";
+                }
                 board.push(applyAttrs((rank?deck.useCard(rank+suit):deck.useGhostCard(suit)),{
                     x:(goalOffsetX + index * stepX),y:padding
-                }, {
-                    onclick:`selectGoal('${suit}',this,event)`
-                }))
+                }, goalLinkAttrs));
             });
             canvasState.game.getBoard().forEach((column, columnIndex) => {
                 let x = (padding + (columnIndex * stepX));
                 let y = boardOffsetY;
-                let onclick = `selectColumn(${columnIndex},this,event)`;
+                let onclick = `selectColumn(${columnIndex},event)`;
+                let columnLinkAttrs = { onclick };
+                if (canvasState.from === columnIndex) {
+                    columnLinkAttrs.class = "from";
+                }
                 if (column.stackSize > 0 || column.chain.length > 0) {
                     for (let i = 0; i < column.stackSize; i++) {
                         board.push(applyAttrs(deck.useCardBack(),{x,y}, {onclick}));
                         y += stackOffsetY;
                     }
                     column.chain.forEach((chainLink) => {
-                        board.push(applyAttrs(deck.useCard(chainLink),{x,y}, {onclick}));
+                        board.push(applyAttrs(deck.useCard(chainLink),{x,y}, columnLinkAttrs));
                         y += chainOffsetY;
                     });
                 } else {
@@ -76,8 +76,7 @@
             });
             canvas.innerHTML = new jHiccup([
                 "svg",
-                { width: "100%", height: "200%", viewBox: `0 0 ${width} ${height}`},
-                ["rect", {width,height,fill:"none",stroke:"black","stroke-width":"4"}],
+                { width: "100%", height: "200%", viewBox: `0 0 ${ width } ${ height }` },
                 board
             ]).toString();
         }
@@ -90,51 +89,61 @@
             canvasState.game.drawHand();
             redraw();
         }
-        let selectOrMove = function(selection,target) {
-            if (canvasState.from) {
+        let selectOrMove = function(selection) {
+            if ((typeof canvasState.from) === "number" || (typeof canvasState.from) === "string") {
                 try {
-                    canvasState.game.move(canvasState.from.selection,selection);
+                    if (canvasState.from !== selection) {
+                        canvasState.game.move(canvasState.from,selection);
+                    }
                 } catch (e) {
                     console.log(e);
+                    alert("Illegal Move!")
                 } finally {
                     delete canvasState.from;
                 }
             } else {
-                canvasState.from = {selection,target};
+                canvasState.from = selection;
             }
             redraw();
+            if (canvasState.game.getWinState() === "won") {
+                alert("You've won!");
+                let newGameQ = confirm("Shall we play again?");
+                if (newGameQ) {
+                    me.newGame(initDraw1Q);
+                }
+            }
         }
-        this.selectHand = function(target) {
-            selectOrMove(-1,target);
+        this.selectHand = function() {
+            selectOrMove(-1);
         }
-        this.selectColumn = function(columnIndex,target) {
-            selectOrMove(columnIndex,target);
+        this.selectColumn = function(columnIndex) {
+            selectOrMove(columnIndex);
         }
-        this.selectGoal = function(suit,target) {
-            selectOrMove(suit,target);
+        this.selectGoal = function(suit) {
+            selectOrMove(suit);
         }
     }
     SolitaireCanvas.init = function(canvasId,deck,initDraw1Q) {
-        let solitaireCanvas = new SolitaireCanvas(canvasId,deck);
-        window.newGame = function(draw1Q,e) {
+        let solitaireCanvas = new SolitaireCanvas(canvasId,deck,initDraw1Q);
+        window.newGame = function(e) {
             if (e) e.preventDefault();
-            solitaireCanvas.newGame(draw1Q);
+            solitaireCanvas.newGame(initDraw1Q);
         }
         window.draw = function(e) {
             if (e) e.preventDefault();
             solitaireCanvas.draw();
         }
-        window.selectHand = function(target,e) {
+        window.selectHand = function(e) {
             if (e) e.preventDefault();
-            solitaireCanvas.selectHand(target);
+            solitaireCanvas.selectHand();
         }
-        window.selectColumn = function(columnIndex,target,e) {
+        window.selectColumn = function(columnIndex,e) {
             if (e) e.preventDefault();
-            solitaireCanvas.selectColumn(columnIndex,target);
+            solitaireCanvas.selectColumn(columnIndex);
         }
-        window.selectGoal = function(suit,target,e) {
+        window.selectGoal = function(suit,e) {
             if (e) e.preventDefault();
-            solitaireCanvas.selectGoal(suit,target);
+            solitaireCanvas.selectGoal(suit);
         }
         solitaireCanvas.newGame(initDraw1Q);
     }

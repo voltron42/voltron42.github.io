@@ -51,43 +51,32 @@
         let defssvg = [ 'svg', { width: 0, height: 0 }, defs ];
         return new jHiccup(defssvg).toString();
     }
-    let useCard = function(cardId) {
-        return [ "use", { "xlink:href": `#${cardId}` } ];
+    let useCard = function(cardId,addlAttrs) {
+        addlAttrs = addlAttrs || {};
+        let attrs = Object.entries(addlAttrs).reduce((out,[k,v]) => {
+            out[k] = v;
+            return out;
+        },{});
+        attrs["xlink:href"] = `#${cardId}`;
+        return [ "use", attrs ];
     }
     let buildCardId = function(rank,suit) {
         return `card${rank}${suit}`;
     }
     let useCardTpl = function(rank,suit) {
-        return useCard(buildCardId(rank,suit));
+        return useCard(buildCardId(rank,suit),{ class:"cardFace" });
     }
     let useGhostCard = function(suit) {
-        return useCard(`ghost${suit}`);
+        return useCard(`ghost${suit}`,{ class:"ghostCard" });
     }
     let useEmptyPile = function() {
-        return useCard("emptyPile");
+        return useCard("emptyPile",{ class:"emptyPile" });
     }
     let useCardBack = function() {
-        return useCard("cardBack");
-    }
-    let buildCard = function(cardId,[width,height]) {
-        let cardsvg = [
-            "svg", { width, height, class: "playing-card" },
-            useCard(cardId)
-        ];
-        return new jHiccup(cardsvg).toString();
-    }
-    let buildCardBack = function(schematic) {
-        return buildCard("cardBack",schematic.frames.card);
-    }
-    let buildCardTemplate = function(schematic) {
-        return function(rank,suit) {
-            return buildCard(buildCardId(rank,suit),schematic.frames.card);
-        }
+        return useCard("cardBack",{ class:"cardBack" });
     }
     window.DeckedOut = function(schematic){
         let defs = buildDefs(schematic);
-        let cardBack = buildCardBack(schematic);
-        let cardTpl = buildCardTemplate(schematic);
         this.getDefs = function(){
             return defs;
         };
@@ -96,12 +85,6 @@
         };
         this.getRanks = function(){
             return ranks;
-        };
-        this.drawCardBack = function(){
-            return cardBack;
-        };
-        this.drawCard = function(rank,suit){
-            return cardTpl(rank,suit);
         };
         this.useCardBack = useCardBack;
         this.useEmptyPile = useEmptyPile;
