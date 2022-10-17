@@ -48,13 +48,15 @@
                 }
                 let colors ={"green":415,"red":310,"yellow":252,"blue":209};
                 window.init = function() {
-                    let beeper = new Beeper({type:"sine",volume:""})
+                    let beeper = new Beeper({type:"triangle",volume:1})
                     let gameState = {
                         status: "turn"
                     };
                     let select = function(color,rect,link) {
                         if (gameState.status === "turn") {
-                            gameState.stopBeep = beeper.startBeep(colors[color]);
+                            let tone = colors[color];
+                            console.log({color,tone});
+                            gameState.stopBeep = beeper.startBeep(tone);
                             rect.classList.add("active");
                             console.log("activate "+color);
                         }
