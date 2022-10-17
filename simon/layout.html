@@ -20,33 +20,33 @@
         </style>
         <script type="text/javascript">
             (function(){
-                let Beeper = function(type) {
+                let startBeep = function(frequency,type) {
                     let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
                     let oscillator = audioCtx.createOscillator();
                     if (type){oscillator.type = type;}
-                    this.beep = function({duration,frequency,callback}){
-                        if (frequency){oscillator.frequency.value = frequency;}
-                        if (callback){oscillator.onended = callback;}
-                        oscillator.start(audioCtx.currentTime);
-                        oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
-                    }
-                    this.startBeep = function(frequency){
-                        oscillator.frequency.value = frequency;
-                        oscillator.start();
-                    }
-                    this.stopBeep = function(){
+                    if (frequency){oscillator.frequency.value = frequency;}
+                    oscillator.start();
+                    return function() {
                         oscillator.stop();
                     }
+                }
+                let beep = function({type,duration,frequency,callback}){
+                    let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+                    let oscillator = audioCtx.createOscillator();
+                    if (type){oscillator.type = type;}
+                    if (frequency){oscillator.frequency.value = frequency;}
+                    if (callback){oscillator.onended = callback;}
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
                 }
                 let colors ={"green":415,"red":310,"yellow":252,"blue":209};
                 window.init = function() {
                     let gameState = {
-                        status: "turn",
-                        beeper: new Beeper("sine")
+                        status: "turn"
                     };
                     let select = function(color,rect,link) {
                         if (gameState.status === "turn") {
-                            gameState.beeper.startBeep(colors[color]);
+                            gameState.stopBeep = startBeep(colors[color]);
                             rect.classList.add("active");
                             console.log("activate "+color);
                         }
@@ -55,7 +55,7 @@
                         if (gameState.status === "turn") {
                             rect.classList.remove("active");
                             console.log("deactivate "+color);
-                            gameState.beeper.stopBeep();
+                            gameState.stopBeep();
                         }
                     }
                     Object.keys(colors).forEach((colorName) => {
