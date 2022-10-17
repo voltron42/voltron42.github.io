@@ -76,7 +76,8 @@
             });
             canvas.innerHTML = new jHiccup([
                 "svg",
-                { width: "100%", height: "200%", viewBox: `0 0 ${ width } ${ height }` },
+                { width: "100%", height: "200%", viewBox: `0 0 ${ width } ${ height }`,
+                    preserveAspectRatio:"xMidYMin"},
                 board
             ]).toString();
         }
