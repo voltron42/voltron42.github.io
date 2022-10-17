@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <title>Simon</title>
+        <style type="text/css">
+            body {
+                background-color: black;
+            }
+            #green.active {
+                fill: lightgreen;
+            }
+            #red.active {
+                fill: #ffcccb;
+            }
+            #yellow.active {
+                fill: lightyellow;
+            }
+            #blue.active {
+                fill: lightblue;
+            }
+        </style>
+        <script type="text/javascript">
+            (function(){
+                let Beeper = function(type) {
+                    let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+                    let oscillator = audioCtx.createOscillator();
+                    if (type){oscillator.type = type;}
+                    this.beep = function({duration,frequency,callback}){
+                        if (frequency){oscillator.frequency.value = frequency;}
+                        if (callback){oscillator.onended = callback;}
+                        oscillator.start(audioCtx.currentTime);
+                        oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+                    }
+                    this.startBeep = function(frequency){
+                        oscillator.frequency.value = frequency;
+                        oscillator.start();
+                    }
+                    this.stopBeep = function(){
+                        oscillator.stop();
+                    }
+                }
+                let colors ={"green":415,"red":310,"yellow":252,"blue":209};
+                window.init = function() {
+                    let gameState = {
+                        status: "turn",
+                        beeper: new Beeper("sine")
+                    };
+                    let select = function(color,rect,link) {
+                        if (gameState.status === "turn") {
+                            gameState.beeper.startBeep(colors[color]);
+                            rect.classList.add("active");
+                            console.log("activate "+color);
+                        }
+                    }
+                    let deselect = function(color,rect,link) {
+                        if (gameState.status === "turn") {
+                            rect.classList.remove("active");
+                            console.log("deactivate "+color);
+                            gameState.beeper.stopBeep();
+                        }
+                    }
+                    Object.keys(colors).forEach((colorName) => {
+                        let linkId = colorName + "Link";
+                        let linkElement = document.getElementById(linkId);
+                        let rect = document.getElementById(colorName);
+                        linkElement.addEventListener("mousedown", () => { select(colorName,rect,linkElement); });
+                        linkElement.addEventListener("mouseup", () => { deselect(colorName,rect,linkElement); });
+                    });
+                }
+            })()
+        </script>
+    </head>
+    <body onload="init()">
+        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+            <a id="greenLink" href="#" onclick="event.preventDefault()">
+                <rect id="green" x="1" y="1" width="48" height="48" fill="green"/>
+            </a>
+            <a id="redLink" href="#" onclick="event.preventDefault()">
+                <rect id="red" x="51" y="1" width="48" height="48" fill="red"/>
+            </a>
+            <a id="yellowLink" href="#" onclick="event.preventDefault()">
+                <rect id="yellow" x="1" y="51" width="48" height="48" fill="yellow"/>
+            </a>
+            <a id="blueLink" href="#" onclick="event.preventDefault()">
+                <rect id="blue" x="51" y="51" width="48" height="48" fill="blue"/>
+            </a>
+        </svg>
+    </body>
+</html>
