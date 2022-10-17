@@ -20,27 +20,35 @@
         </style>
         <script type="text/javascript">
             (function(){
-                let startBeep = function(frequency,type) {
-                    let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
-                    let oscillator = audioCtx.createOscillator();
-                    if (type){oscillator.type = type;}
-                    if (frequency){oscillator.frequency.value = frequency;}
-                    oscillator.start();
-                    return function() {
-                        oscillator.stop();
+                let Beeper = function({type, volume}) {
+                    let makeBeeper = function({frequency,callback}) {
+                        let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+                        let oscillator = audioCtx.createOscillator();
+                        let gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        if (volume){gainNode.gain.value = volume;}
+                        if (type){oscillator.type = type;}
+                        if (frequency){oscillator.frequency.value = frequency;}
+                        if (callback){oscillator.onended = callback;}
+                        return oscillator;
                     }
-                }
-                let beep = function({type,duration,frequency,callback}){
-                    let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
-                    let oscillator = audioCtx.createOscillator();
-                    if (type){oscillator.type = type;}
-                    if (frequency){oscillator.frequency.value = frequency;}
-                    if (callback){oscillator.onended = callback;}
-                    oscillator.start(audioCtx.currentTime);
-                    oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+                    this.startBeep = function(args) {
+                        let oscillator = makeBeeper(args);
+                        oscillator.start();
+                        return function() {
+                            oscillator.stop();
+                        }
+                    }
+                    this.beep = function(args){
+                        let oscillator = makeBeeper(args);
+                        oscillator.start(audioCtx.currentTime);
+                        oscillator.stop(audioCtx.currentTime + ((args.duration || 500) / 1000));
+                    }
                 }
                 let colors ={"green":415,"red":310,"yellow":252,"blue":209};
                 window.init = function() {
+                    let beeper = new Beeper({type:"sine",volume:""})
                     let gameState = {
                         status: "turn"
                     };
