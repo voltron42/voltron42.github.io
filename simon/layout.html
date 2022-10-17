@@ -54,7 +54,7 @@
                     };
                     let select = function(color,rect,link) {
                         if (gameState.status === "turn") {
-                            gameState.stopBeep = startBeep(colors[color]);
+                            gameState.stopBeep = beeper.startBeep(colors[color]);
                             rect.classList.add("active");
                             console.log("activate "+color);
                         }
