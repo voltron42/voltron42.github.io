@@ -30,17 +30,18 @@
                     }
                 }
                 let config = {
+                    tones: { green:415, red:310, yellow:252, blue:209 },
                     loserTone:{
                         frequency: 42,
                         duration: 1.5
                     },
                     inGameTimeOut:3,
-                    victoryTone: {
+                    victoryTone: { // after each level is completed, use last color
                         delay:0.8,
                         times:[0.02,0.07,0.07,0.07,0.07,0.07],
                         rest:0.02
                     },
-                    finalVictory:{
+                    finalVictory:{ // after final level
                         signalDuration:0.1,
                         order: ["red","yellow","blue","green"],
                         steps: [{
@@ -75,36 +76,45 @@
                         ]
                     }
                 }
-                let colors = { "green":415, "red":310, "yellow":252, "blue":209 };
                 window.init = function() {
                     let beeper = new Beeper({type:"triangle",volume:1})
                     let gameState = {
-                        status: "open"
+                        status: "open",
+                        rects:{},
+                        links:{}
                     };
-                    let select = function(color,rect,link) {
+                    let pressColor = function(color) {
+                        gameState.stopBeep = beeper.startBeep({frequency:config.tones[color]});
+                        gameState.rects[color].classList.add("active");
+                    }
+                    let releaseColor = function(color) {
+                        gameState.rects[color].classList.remove("active");
+                        gameState.stopBeep();
+                    }
+                    let startNewGame = function() {
+                        console.log("start game");
+                        // todo
+                    }
+                    let select = function(color) {
                         if (gameState.status === "open") {
-                            gameState.stopBeep = beeper.startBeep({frequency:colors[color]});
-                            rect.classList.add("active");
+                            pressColor(color);
                         }
                     }
-                    let deselect = function(color,rect,link) {
+                    let deselect = function(color) {
                         if (gameState.status === "open") {
-                            rect.classList.remove("active");
-                            gameState.stopBeep();
+                            releaseColor(color);
                         }
                     }
-                    Object.keys(colors).forEach((colorName) => {
+                    Object.keys(config.tones).forEach((colorName) => {
                         let linkId = colorName + "Link";
                         let linkElement = document.getElementById(linkId);
-                        let rect = document.getElementById(colorName);
-                        linkElement.addEventListener("mousedown", () => { select(colorName,rect,linkElement); });
-                        linkElement.addEventListener("mouseup", () => { deselect(colorName,rect,linkElement); });
+                        gameState.links[colorName] = linkElement;
+                        gameState.rects[colorName] = document.getElementById(colorName);
+                        linkElement.addEventListener("mousedown", () => { select(colorName); });
+                        linkElement.addEventListener("mouseup", () => { deselect(colorName); });
                     });
-                    let startNewGame = function() {
-
-                    }
                     document.getElementById("bgLink").addEventListener("dblclick", () => {
-                        if (confirm("Start New Game?")) {
+                        if (gameState.status === "open" && confirm("Start New Game?")) {
                             startNewGame();
                         }
                     });
