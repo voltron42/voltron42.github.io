@@ -1,15 +1,13 @@
 (function(){
     let ceottk = [["D", 4], ["E", 4], ["C", 4], ["C", 3], ["G", 3]];
     let playBeeps = function(beeper,sequence,duration) {
-        beeper.beep({
-            frequency:sequence[0],
-            duration,
-            callback:() => {
-                if (sequence.length > 0) {
-                    playBeeps(beeper,sequence.slice(1),duration);
-                }
-            }
-        });
+        let args = {frequency:sequence[0],duration};
+        if (sequence.length > 1) {
+            args.callback = (() => {
+                playBeeps(beeper,sequence.slice(1),duration);
+            });
+        }
+        beeper.beep(args);
     };
     let config = {
         tones: { green:415, red:310, yellow:252, blue:209 },
@@ -75,8 +73,7 @@
         }
         let startNewGame = function() {
             console.log("start game");
-            
-            // todo
+            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),0.5);
         }
         let select = function(color) {
             if (gameState.status === "open") {
