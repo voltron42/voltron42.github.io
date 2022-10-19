@@ -1,23 +1,37 @@
 (function(){
     let ceottk = [["D", 4], ["E", 4], ["C", 4], ["C", 3], ["G", 3]];
-    let playBeeps = function(beeper,sequence,duration,rest,callback) {
-        [rest,callback] = [(rest || 0), (callback || function(){})]
-        let args = {frequency:sequence[0],duration};
-        if (sequence.length > 1) {
-            if ((typeof rest)=== 'number' && rest > 0) {
-                args.callback = (() => {
-                    setTimeout(() => {
-                        playBeeps(beeper,sequence.slice(1),duration);
-                    },rest * 1000);
-                })
-            } else {
-                args.callback = (() => {
-                    playBeeps(beeper,sequence.slice(1),duration);
-                });
-            }
-        } else {
-            args.callback = callback;
+    let playBeeps = function(beeper,sequence,defaults) {
+        let args = {};
+        let first = sequence[0];
+        let next = sequence.slice(1);
+        if ((typeof first) === 'number') {
+            first = { frequency: first };
         }
+        Object.entries(first).forEach(([k,v]) => {
+            args[k] = v;
+        });
+        Object.entries(defaults).forEach(([k,v]) => {
+            args[k] = v;
+        });
+        if (sequence.length <= 1) {
+            args.callback = callback;
+        } else {
+            args.callback = (() => {
+                playBeeps(beeper,sequence.slice(1),duration);
+            });
+        }
+        if (args.after) {
+            let callback = args.callback;
+            args.callback = (() => {
+                args.after();
+                callback();
+            });
+        }
+        if ((typeof args.rest)=== 'number' && args.rest > 0) {
+            let callback = args.callback;
+            args.callback = (() => { setTimeout(callback,args.rest * 1000); });
+        }
+        if (args.before) { args.before(); }
         beeper.beep(args);
     };
     let config = {
