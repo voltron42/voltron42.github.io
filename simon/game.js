@@ -78,8 +78,14 @@
             rects:{},
             links:{}
         };
+        let resetToOpen = function() {
+            delete gameState.sequence;
+            delete gameState.step;
+            gameState.status = 'open';
+        }
         let timeouter = new Timeouter(config.inGameTimeOut * 1000,() => {
-            // todo - what to do when the game times out?
+            alert("Game has timed out! You lose!");
+            resetToOpen();
         });
         let pressColor = function(color) {
             gameState.stopBeep = beeper.startBeep({frequency:config.tones[color]});
