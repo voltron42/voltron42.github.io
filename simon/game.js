@@ -1,11 +1,22 @@
 (function(){
     let ceottk = [["D", 4], ["E", 4], ["C", 4], ["C", 3], ["G", 3]];
-    let playBeeps = function(beeper,sequence,duration) {
+    let playBeeps = function(beeper,sequence,duration,rest,callback) {
+        [rest,callback] = [(rest || 0), (callback || function(){})]
         let args = {frequency:sequence[0],duration};
         if (sequence.length > 1) {
-            args.callback = (() => {
-                playBeeps(beeper,sequence.slice(1),duration);
-            });
+            if ((typeof rest)=== 'number' && rest > 0) {
+                args.callback = (() => {
+                    setTimeout(() => {
+                        playBeeps(beeper,sequence.slice(1),duration);
+                    },rest * 1000);
+                })
+            } else {
+                args.callback = (() => {
+                    playBeeps(beeper,sequence.slice(1),duration);
+                });
+            }
+        } else {
+            args.callback = callback;
         }
         beeper.beep(args);
     };
@@ -34,28 +45,32 @@
         },
         sequence: {
             maxLength: 31,
+            rest: 0.05,
             difficulties: [
                 {
                     minLength: 1,
                     maxLength: 5,
-                    duration: 0.42,
-                    rest: 0.05
+                    duration: 0.42
                 },
                 {
                     minLength: 6,
                     maxLength: 13,
-                    duration: 0.32,
-                    rest: 0.05
+                    duration: 0.32
                 },
                 {
                     minLength: 14,
                     maxLength: 31,
-                    duration: 0.22,
-                    rest: 0.05
+                    duration: 0.22
                 },
             ]
         }
     }
+    config.difficulties = config.sequence.difficulties.reduce((out,{minLength,maxLength,duration}) => {
+        for (let i = minLength; i <= maxLength; i++) {
+            out[i] = duration;
+        }
+        return out;
+    }, {});
     window.init = function() {
         let beeper = new Beeper({type:"triangle",volume:1})
         let gameState = {
@@ -63,6 +78,9 @@
             rects:{},
             links:{}
         };
+        let timeouter = new Timeouter(config.inGameTimeOut * 1000,() => {
+            // todo - what to do when the game times out?
+        });
         let pressColor = function(color) {
             gameState.stopBeep = beeper.startBeep({frequency:config.tones[color]});
             gameState.rects[color].classList.add("active");
@@ -71,18 +89,44 @@
             gameState.rects[color].classList.remove("active");
             gameState.stopBeep();
         }
+        let victory = function() {
+            // todo - build victory beeps, and set status to "open" on callback
+        }
+        let stepSequence = function() {
+            if (gameState.sequence.length >= config.sequence.maxLength) {
+                timeouter.clear();
+                victory();
+            } else {
+                gameState.status = "show";
+                gameState.sequence.push(Object.keys(config.tones)[Math.floor(4 * Math.random())]);
+                playBeeps(beeper,gameState.sequence.map((color) => config.tones),config.difficulties[gameState.sequence.length],config.sequence.rest,() => {
+                    timeouter.reset();
+                    gameState.status = "play";
+                    gameState.step = 0;
+                });
+            }
+        }
+        let validateChoice = function(color) {
+            // todo - check color against place in sequence and either error out or inc step (call "stepSequence" if step at length)
+        }
         let startNewGame = function() {
             console.log("start game");
-            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),0.5);
+            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),0.5,0,() => {
+                gameState.sequence = [];
+                stepSequence();
+            });
         }
         let select = function(color) {
-            if (gameState.status === "open") {
+            if (gameState.status === "open" || gameState.status === "play") {
                 pressColor(color);
             }
         }
         let deselect = function(color) {
             if (gameState.status === "open") {
                 releaseColor(color);
+            } else if (gameState.status === "play") {
+                releaseColor(color);
+                validateChoice(color);
             }
         }
         Object.keys(config.tones).forEach((colorName) => {
