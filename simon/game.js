@@ -1,5 +1,11 @@
 (function(){
     let ceottk = [["D", 4], ["E", 4], ["C", 4], ["C", 3], ["G", 3]];
+    let applyProperties = function(from,to) {
+        Object.entries(from).forEach(([k,v]) => {
+            to[k] = v;
+        });
+        return to;
+    }
     let playBeeps = function(beeper,sequence,defaults) {
         let args = {};
         let first = sequence[0];
@@ -7,35 +13,29 @@
         if ((typeof first) === 'number') {
             first = { frequency: first };
         }
-        Object.entries(first).forEach(([k,v]) => {
-            args[k] = v;
-        });
-        Object.entries(defaults).forEach(([k,v]) => {
-            args[k] = v;
-        });
-        if (sequence.length <= 1) {
-            args.callback = callback;
-        } else {
+        applyProperties(first,args);
+        applyProperties(defaults,args);
+        if (sequence.length > 1) {
             args.callback = (() => {
-                playBeeps(beeper,sequence.slice(1),duration);
+                playBeeps(beeper,next,defaults);
             });
-        }
-        if (args.after) {
-            let callback = args.callback;
-            args.callback = (() => {
-                args.after();
-                callback();
-            });
-        }
-        if ((typeof args.rest)=== 'number' && args.rest > 0) {
-            let callback = args.callback;
-            args.callback = (() => { setTimeout(callback,args.rest * 1000); });
+            if (args.after) {
+                let callback = args.callback;
+                args.callback = (() => {
+                    args.after();
+                    callback();
+                });
+            }
+            if ((typeof args.rest)=== 'number' && args.rest > 0) {
+                let callback = args.callback;
+                args.callback = (() => { setTimeout(callback,args.rest * 1000); });
+            }
         }
         if (args.before) { args.before(); }
         beeper.beep(args);
     };
     let config = {
-        tones: { green:415, red:310, yellow:252, blue:209 },
+        tones: { green: 415, red: 310, yellow: 252, blue: 209 },
         loserTone:{
             frequency: 42,
             duration: 1.5
@@ -47,13 +47,14 @@
             rest: 0.02
         },
         finalVictory:{ // after final level
-            signalDuration: 0.1,
+            duration: 0.1,
+            rest: 0.02,
             order: [ "red", "yellow", "blue", "green" ],
             steps: [{
-                tone: "${color}",
+                tone: "${config.tones[color]}",
                 count: 14,
             },{
-                tone: "razz",
+                tone: "${config.loserTone.frequency}",
                 count: 8
             }]
         },
@@ -85,6 +86,17 @@
         }
         return out;
     }, {});
+    config.finalVictory.sequence = (function(){
+        return config.finalVictory.steps.reduce((out,{ tone, count },index) => {
+            return out.concat("?".repeat(count).split("").map(() => {
+                return { tone, index };
+            }));
+        }, []).map(({ tone, index }, seqIndex) => {
+            let color = config.finalVictory.order[seqIndex % 4];
+            let frequency = eval('`' + tone + '`');
+            return { frequency, color, index };
+        });
+    })();
     window.init = function() {
         let beeper = new Beeper({type:"triangle",volume:1})
         let gameState = {
@@ -101,39 +113,83 @@
             alert("Game has timed out! You lose!");
             resetToOpen();
         });
-        let pressColor = function(color) {
-            gameState.stopBeep = beeper.startBeep({frequency:config.tones[color]});
+        let activate = function(color) {
             gameState.rects[color].classList.add("active");
         }
-        let releaseColor = function(color) {
+        let deactivate = function(color) {
             gameState.rects[color].classList.remove("active");
+        }
+        let pressColor = function(color) {
+            gameState.stopBeep = beeper.startBeep({ frequency: config.tones[color] });
+            activate(color);
+        }
+        let releaseColor = function(color) {
+            deactivate(color);
             gameState.stopBeep();
         }
-        let victory = function() {
-            // todo - build victory beeps, and set status to "open" on callback
+        let buildBeepArgsFrom = function(color,obj) {
+            obj = obj || {};
+            return applyProperties(obj,{
+                frequency: config.tones[color],
+                before: () => { activate(color); },
+                after: () => { deactivate(color); }
+            });
+        }
+        let victory = function(color,callback) {
+            let rest = config.victoryTone.rest;
+            playBeeps(beeper,config.victoryTone.times.map((duration) => buildBeepArgsFrom(color,{ duration })),{ rest, callback });
+        }
+        let finalVictory = function() {
+            let { duration, rest } = config.finalVictory;
+            let callback = (() => {
+                alert("YOU'VE BEATEN SIMON! YOU WIN!");
+                resetToOpen();
+            });
+            playBeeps(beeper,config.finalVictory.sequence.map(({ frequency, color, index }) => buildBeepArgsFrom(color, { frequency })),{ duration, rest, callback });
         }
         let stepSequence = function() {
             if (gameState.sequence.length >= config.sequence.maxLength) {
                 timeouter.clear();
-                victory();
+                finalVictory();
             } else {
                 gameState.status = "show";
                 gameState.sequence.push(Object.keys(config.tones)[Math.floor(4 * Math.random())]);
-                playBeeps(beeper,gameState.sequence.map((color) => config.tones),config.difficulties[gameState.sequence.length],config.sequence.rest,() => {
-                    timeouter.reset();
-                    gameState.status = "play";
-                    gameState.step = 0;
+                alert("Level " + gameState.sequence.length + ", pay attention to the pattern ...");
+                playBeeps(beeper,gameState.sequence.map((color) => buildBeepArgsFrom(color)),{
+                    duration: config.difficulties[gameState.sequence.length],
+                    rest: config.sequence.rest,
+                    callback: () => {
+                        timeouter.reset();
+                        gameState.status = "play";
+                        gameState.step = 0;
+                        alert("Can you repeat the pattern?");
+                    }
                 });
             }
         }
         let validateChoice = function(color) {
-            // todo - check color against place in sequence and either error out or inc step (call "stepSequence" if step at length)
+            gameState.status = "validating";
+            if (color !== gameState.sequence[gameState.step]) {
+                resetToOpen();
+            } else {
+                gameState.step++;
+                if (gameState.step >= gameState.sequence.length) {
+                    victory(color,() => {
+                        stepSequence();
+                    });
+                } else {
+                    gameState.status = "play";
+                }
+            }
         }
         let startNewGame = function() {
             console.log("start game");
-            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),0.5,0,() => {
-                gameState.sequence = [];
-                stepSequence();
+            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),{
+                duration: 0.5,
+                callback: () => {
+                    gameState.sequence = [];
+                    stepSequence();
+                }
             });
         }
         let select = function(color) {
