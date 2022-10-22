@@ -19,17 +19,17 @@
             args.callback = (() => {
                 playBeeps(beeper,next,defaults);
             });
-            if (args.after) {
-                let callback = args.callback;
-                args.callback = (() => {
-                    args.after();
-                    callback();
-                });
-            }
-            if ((typeof args.rest)=== 'number' && args.rest > 0) {
-                let callback = args.callback;
-                args.callback = (() => { setTimeout(callback,args.rest * 1000); });
-            }
+        }
+        if (args.after) {
+            let callback = args.callback;
+            args.callback = (() => {
+                args.after();
+                callback();
+            });
+        }
+        if (sequence.length > 1 && (typeof args.rest)=== 'number' && args.rest > 0) {
+            let callback = args.callback;
+            args.callback = (() => { setTimeout(callback,args.rest * 1000); });
         }
         if (args.before) { args.before(); }
         beeper.beep(args);
@@ -40,7 +40,7 @@
             frequency: 42,
             duration: 1.5
         },
-        inGameTimeOut:3,
+        inGameTimeOut:(3 * 60),
         victoryTone: { // after each level is completed, use last color
             delay: 0.8,
             times: [ 0.02, 0.07, 0.07, 0.07, 0.07, 0.07 ],
