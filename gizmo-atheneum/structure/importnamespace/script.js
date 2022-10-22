@@ -31,10 +31,14 @@
     register[name] = { service:service };
     return register[name].service;
   }
-  window.importNS = function(name){
+  window.importNamespace = function(name){
     return recurse(name, []);
   }
   window.namespace = function(name,dependencies,nsBuilder) {
+    if (!nsBuilder) {
+      nsBuilder = dependencies;
+      dependencies = {};
+    }
     if (register[name]) {
       throw new Error("Namespace '" + name + "' has already been registered.");
     }
@@ -45,5 +49,11 @@
       dependencies:dependencies,
       nsBuilder:nsBuilder
     };
+  }
+  window.imports = function(aliases) {
+    return Object.entries(aliases).reduce((out,[alias,ns]) => {
+      out[alias] = importNS(ns);
+      return out;
+    }, {});
   }
 })();
