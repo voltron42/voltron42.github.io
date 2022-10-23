@@ -43,7 +43,7 @@
       throw new Error("Namespace '" + name + "' has already been registered.");
     }
     if (Array.isArray(dependencies)) {
-      dependencies = dependencies.reduce((out,dep) => {out[dep] = dep;return out;},{})
+      dependencies = dependencies.reduce((out, dep) => { out[dep] = dep; return out; }, {});
     }
     register[name] = {
       dependencies:dependencies,
@@ -51,6 +51,9 @@
     };
   }
   window.imports = function(aliases) {
+    if (Array.isArray(aliases)) {
+      aliases = aliases.reduce((out, alias) => { out[alias] = alias; return alias; }, {});
+    }
     return Object.entries(aliases).reduce((out,[alias,ns]) => {
       out[alias] = importNS(ns);
       return out;
