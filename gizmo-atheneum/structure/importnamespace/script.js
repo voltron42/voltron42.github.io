@@ -55,7 +55,7 @@
       aliases = aliases.reduce((out, alias) => { out[alias] = alias; return alias; }, {});
     }
     return Object.entries(aliases).reduce((out,[alias,ns]) => {
-      out[alias] = importNS(ns);
+      out[alias] = importNamespace(ns);
       return out;
     }, {});
   }
