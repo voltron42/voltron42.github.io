@@ -52,7 +52,7 @@
   }
   window.imports = function(aliases) {
     if (Array.isArray(aliases)) {
-      aliases = aliases.reduce((out, alias) => { out[alias] = alias; return alias; }, {});
+      aliases = aliases.reduce((out, alias) => { out[alias] = alias; return out; }, {});
     }
     return Object.entries(aliases).reduce((out,[alias,ns]) => {
       out[alias] = importNamespace(ns);
