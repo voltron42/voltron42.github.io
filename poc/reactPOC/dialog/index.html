@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Dialog</title>
+
+        <!-- external dependencies -->
+        <script src="../../../gizmo-atheneum/structure/importnamespace/script.js"></script>
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <!-- utilities -->
+        <script type="text/javascript" src="dialog.js"></script>
+
+        <!-- local dependencies -->
+        <script type="text/babel" src="core.js"></script>
+        <script type="text/babel" src="modal.js"></script>
+
+        <!-- init script -->
+        <script type="text/babel">
+            (function(){
+                const { Core, Modal } = imports(["Core", "Modal"]);
+                const modalElem = document.getElementById("modal");
+                const myModal = new Dialog(modalElem);
+                const modals = { myModal }
+                ReactDOM.createRoot(document.getElementById('core')).render(<Core modals={modals}/>);
+                ReactDOM.createRoot(modalElem).render(<Modal dialog={myModal}/>);
+            })()
+        </script>
+    </head>
+    <body>
+        <div id="core"></div>
+        <dialog id="modal"></dialog>
+    </body>
+</html>

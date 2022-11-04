@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>React Solitaire</title>
+        <title>VS CPU Cribbage</title>
 
         <!-- external dependencies -->
         <script src="../../../gizmo-atheneum/structure/importnamespace/script.js"></script>
@@ -12,14 +12,14 @@
         <link rel="stylesheet" href="styles.css"/>
 
         <!-- local dependencies -->
+        <script type="text/babel" src="cribbage.js"></script>
         <script type="text/babel" src="gameLogic.js"></script>
-        <script type="text/babel" src="solitaire.js"></script>
 
         <!-- init script -->
         <script type="text/babel">
             (function(){
-                const Solitaire = importNamespace("Solitaire");
-                ReactDOM.createRoot(document.getElementById('game')).render(<Solitaire drawCount={3}/>);
+                const Cribbage = importNamespace("Cribbage");
+                ReactDOM.createRoot(document.getElementById('game')).render(<Cribbage/>);
             })()
         </script>
     </head>
