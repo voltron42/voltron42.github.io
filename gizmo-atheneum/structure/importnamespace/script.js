@@ -42,11 +42,11 @@
     }
     register[name] = { dependencies, factoryFn };
   }
-  window.imports = function(aliases) {
-    if (Array.isArray(aliases)) {
-      aliases = aliases.reduce((out, alias) => { out[alias] = alias; return out; }, {});
+  window.imports = function(namespaces) {
+    if (Array.isArray(namespaces)) {
+      namespaces = namespaces.reduce((out, ns) => { out[ns] = ns; return out; }, {});
     }
-    return Object.entries(aliases).reduce((out,[alias,ns]) => {
+    return Object.entries(namespaces).reduce((out,[ns,alias]) => {
       out[alias] = importNamespace(ns);
       return out;
     }, {});
