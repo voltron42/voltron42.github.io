@@ -19,10 +19,11 @@
         <script type="text/babel">
             (function(){
                 const Solitaire = importNamespace("Solitaire");
-                ReactDOM.createRoot(document.body).render(<Solitaire drawCount={3}/>);
+                ReactDOM.createRoot(document.getElementById("app-root")).render(<Solitaire drawCount={3}/>);
             })()
         </script>
     </head>
     <body>
+        <div id="app-root"></div>
     </body>
 </html>
