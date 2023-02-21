@@ -51,4 +51,9 @@
       return out;
     }, {});
   }
+  window.listUnusedNamespaces = function() {
+    const namespaces = Array.from(Object.entries(register).filter(([ns,{service}]) => !service).map(([ns]) => ns));
+    namespaces.sort();
+    return namespaces;
+  }
 })();
