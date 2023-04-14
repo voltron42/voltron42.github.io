@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Idiosynced!</title>
+        <!-- styles -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- external dependencies -->
+        <script src="../../gizmo-atheneum/structure/importnamespace/script.js"></script>
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <!-- local dependencies -->
+        <script type="text/babel" src="idiosynced.js"></script>
+
+        <!-- init script -->
+        <script type="text/babel">
+            let Idiosynced = importNamespace("voltron42.Idiosynced");
+            ReactDOM.createRoot(document.getElementById('appRoot')).render(<Idiosynced/>);
+        </script>
+    </head>
+    <body>
+        <div id="appRoot"></div>
+    </body>
+</html>
