@@ -25,7 +25,12 @@ namespace("v42.idiosynced.Idiosynced",{
             super(props);
             const localData = localStorage.getItem(localStorageKey);
             this.state = localData ? JSON.parse(localData) : {
-                view: "taskboard"
+                view: "taskboard",
+                tasks: [{
+                    title:"Pay xFinity",
+                    description: "Pay $250 to xFinity prior to 12th of month",
+                    stage: "ready"
+                }]
             };
             this.modals = Dialog.factory({
                 taskView: {
@@ -59,6 +64,13 @@ namespace("v42.idiosynced.Idiosynced",{
                     onClose: () => {}
                 }
             });
+            const viewTask = (taskIndex) => {
+                this.modals.taskView.open((taskIndex>=0)?{
+                    taskIndex,task:this.state.tasks[taskIndex]
+                }:{
+                    taskIndex:-1,task:{}
+                });
+            }
             const viewProject = (projectIndex) => {
                 this.modals.projectView.open({
                     projectIndex,project:this.state.projects[projectIndex]
@@ -76,10 +88,10 @@ namespace("v42.idiosynced.Idiosynced",{
             }
             this.rendersByView = {
                 taskboard:() => {
-                    return <TaskBoard/>;
+                    return <TaskBoard tasks={this.state.tasks} viewTask={viewTask}/>;
                 },
                 backlog:() => {
-                    return <Backlog/>
+                    return <Backlog tasks={this.state.tasks} viewTask={viewTask}/>
                 },
                 calendarMonth:() => {
                     return <MonthlyCalendar/>
