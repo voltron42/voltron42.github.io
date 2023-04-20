@@ -1,7 +1,13 @@
 <html>
     <head>
         <title>Idiosynced!</title>
-        <!-- styles -->
+        <!-- external styles -->
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        />
+
+        <!-- project styles -->
         <link rel="stylesheet" href="style.css">
 
         <!-- external dependencies -->
@@ -11,15 +17,30 @@
         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
         <!-- local dependencies -->
-        <script type="text/babel" src="idiosynced.js"></script>
+        <script type="text/babel" src="scripts/backlog.js"></script>
+        <script type="text/babel" src="scripts/dialog.js"></script>
+        <script type="text/babel" src="scripts/frequencyView.js"></script>
+        <script type="text/babel" src="scripts/habitView.js"></script>
+        <script type="text/babel" src="scripts/idiosynced.js"></script>
+        <script type="text/babel" src="scripts/monthlyCalendar.js"></script>
+        <script type="text/babel" src="scripts/projectList.js"></script>
+        <script type="text/babel" src="scripts/projectView.js"></script>
+        <script type="text/babel" src="scripts/routineList.js"></script>
+        <script type="text/babel" src="scripts/routineView.js"></script>
+        <script type="text/babel" src="scripts/taskBoard.js"></script>
+        <script type="text/babel" src="scripts/taskTemplateView.js"></script>
+        <script type="text/babel" src="scripts/taskView.js"></script>
+        <script type="text/babel" src="scripts/viewError.js"></script>
+        <script type="text/babel" src="scripts/weeklyCalendar.js"></script>
+        <script type="text/babel" src="scripts/workWeekCalendar.js"></script>
 
         <!-- init script -->
         <script type="text/babel">
-            let Idiosynced = importNamespace("voltron42.Idiosynced");
+            const Idiosynced = importNamespace("v42.idiosynced.Idiosynced");
             ReactDOM.createRoot(document.getElementById('appRoot')).render(<Idiosynced/>);
         </script>
     </head>
-    <body>
-        <div id="appRoot"></div>
+    <body class="bg-dark text-light">
+        <div id="appRoot" class="container"></div>
     </body>
 </html>
