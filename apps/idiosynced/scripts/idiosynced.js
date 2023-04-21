@@ -27,6 +27,7 @@ namespace("v42.idiosynced.Idiosynced",{
             this.state = localData ? JSON.parse(localData) : {
                 view: "taskboard",
                 tasks: [{
+                    id:"task-1234",
                     title:"Pay xFinity",
                     description: "Pay $250 to xFinity prior to 12th of month",
                     stage: "ready"
