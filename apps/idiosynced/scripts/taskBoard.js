@@ -25,6 +25,7 @@ namespace('v42.idiosynced.TaskBoard',{
       this.state = {
         tasks: props.tasks
       };
+      this.updateState = props.updateState;
     }
     componentDidUpdate() {
       console.log("componentDidUpdate");
@@ -64,7 +65,7 @@ namespace('v42.idiosynced.TaskBoard',{
             return task.id === taskId;
           })[0].index;
           tasks[taskIndex].stage = dropId;
-          me.setState({ tasks });
+          me.updateState({ tasks });
         }
       });
       $(".draggable").draggable({ 

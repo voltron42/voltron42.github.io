@@ -88,29 +88,52 @@ namespace("v42.idiosynced.Idiosynced",{
                 })
             }
             this.rendersByView = {
-                taskboard:() => {
-                    return <TaskBoard tasks={this.state.tasks} viewTask={viewTask}/>;
+                taskboard:{
+                    label: "Taskboard",
+                    render:() => {
+                        return <TaskBoard tasks={this.state.tasks} viewTask={viewTask} updateState={(updates) => {
+                            this.setState(updates);
+                        }}/>;
+                    }
                 },
-                backlog:() => {
-                    return <Backlog tasks={this.state.tasks} viewTask={viewTask}/>
+                backlog:{
+                    label: "Backlog",
+                    render:() => {
+                        return <Backlog tasks={this.state.tasks} viewTask={viewTask}/>;
+                    }
+                    /*
                 },
-                calendarMonth:() => {
-                    return <MonthlyCalendar/>
+                calendarMonth:{
+                    label: "Taskboard",
+                    render:() => {
+                        return <MonthlyCalendar/>;
+                    }
                 },
-                calendarWeek:() => {
-                    return <WeeklyCalendar/>
+                calendarWeek:{
+                    render:() => {
+                        return <WeeklyCalendar/>;
+                    }
                 },
-                calendarWorkWeek:() => {
-                    return <WorkWeekCalendar/>
+                calendarWorkWeek:{
+                    render:() => {
+                        return <WorkWeekCalendar/>;
+                    }
                 },
-                projectList:() => {
-                    return <ProjectList projects={this.state.projects} viewProject={viewProject}/>
+                projectList:{
+                    render:() => {
+                        return <ProjectList projects={this.state.projects} viewProject={viewProject}/>;
+                    }
                 },
-                routineList:() => {
-                    return <RoutineList routines={this.state.habits} viewRoutine={viewRoutine}/>
+                routineList:{
+                    render:() => {
+                        return <RoutineList routines={this.state.habits} viewRoutine={viewRoutine}/>;
+                    }
                 },
-                habitList:() => {
-                    return <HabitList habits={this.state.habits} viewHabit={viewHabit}/>
+                habitList:{
+                    render:() => {
+                        return <HabitList habits={this.state.habits} viewHabit={viewHabit}/>;
+                    }
+                    */
                 }
             }
         }
@@ -121,6 +144,14 @@ namespace("v42.idiosynced.Idiosynced",{
             } else {
                 return <ViewError badView={this.state.view}/>;
             }
+            return <>
+                <h1 className="text-center">Idiosynced!</h1>
+                <div className="d-flex justify-content-between">
+                    <button className="btn btn-success" onClick={() => {
+
+                    }}>Taskboard</button>
+                </div>
+            </>;
         }
     }
 });
