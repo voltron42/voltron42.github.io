@@ -19,6 +19,15 @@ namespace('v42.idiosynced.TaskBoard',{
       };
     }
     componentDidUpdate() {
+      console.log("componentDidUpdate");
+      this.afterRender();
+    }
+    componentDidMount(){
+      console.log("componentDidMount");
+      this.afterRender();
+    }
+    afterRender() {
+      console.log("afterRender");
       const me = this;
       $(".droppable").droppable({
         drop:(event,{ draggable, helper, position, offset }) => {
@@ -40,6 +49,7 @@ namespace('v42.idiosynced.TaskBoard',{
       });
       $(".draggable").draggable({ 
         helper: "clone",
+        zIndex:100,
         drag:(event, { helper, position, offset }) => {
           Array.from(document.querySelectorAll(".droppable")).forEach((droppable) => {
             droppable.classList.add("drop-target");
@@ -48,29 +58,31 @@ namespace('v42.idiosynced.TaskBoard',{
       });
     }
     render() {
-      return <div className="card">
+      return <div className="card bg-dark border border-light border-5 rounded">
         <div className="card-body">
-          <div className="d-flex justify-content-center">
+          <div className="row">
             { columns.map(({label,stage}) => {
-              return <div id={stage} className="card droppable">
-                <div className="card-body">
-                  <h2>{label}</h2>
-                  <div className="d-flex flex-column">
-                    { this.state.tasks.filter((task) => task.stage === stage).map((task) => {
-                      return <div id={ task.id } className="card draggable">
-                        <div className="card-body">
-                          <h3 className="card-title">{task.title}</h3>
-                          <p className="card-text">{task.description}</p>
-                        </div>
-                      </div>;
-                    }) }
-                  </div>
+              return <div className="col-4">
+                <div id={stage} className={"card droppable bg-dark border border-light border-5 rounded"}>
+                  <div className="card-body">
+                    <h2>{label}</h2>
+                    <div className="d-flex flex-column">
+                      { this.state.tasks.filter((task) => task.stage === stage).map((task) => {
+                        return <div id={ task.id } className="card draggable bg-dark border border-light border-5 rounded">
+                          <div className="card-body">
+                            <h3 className="card-title">{task.title}</h3>
+                            <p className="card-text">{task.description}</p>
+                          </div>
+                        </div>;
+                      }) }
+                    </div>
+                    </div>      
                 </div>      
               </div>;
             }) }
-          </div>;
+          </div>
         </div>
-      </div>
+      </div>;
     }
   }
 });
