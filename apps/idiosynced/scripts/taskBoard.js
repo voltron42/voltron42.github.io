@@ -86,30 +86,26 @@ namespace('v42.idiosynced.TaskBoard',{
       });
     }
     render() {
-      return <div className={`${cardClasses} border-light h-100`}>
-        <div className="card-body h-100">
-          <div className="row h-100">
-            { columns.map(({ label, stage, borderColor }) => {
-              return <div className="col-4 h-100">
-                <div id={stage} className={`${cardClasses} ${borderColor} droppable h-100`}>
-                  <div className="card-body h-100">
-                    <h2>{label}</h2>
-                    <div className="d-flex flex-column">
-                      { this.state.tasks.filter((task) => task.stage === stage).map((task) => {
-                        return <div id={ task.id } className={`${cardClasses} ${borderColor} draggable`}>
-                          <div className="card-body">
-                            <h3 className="card-title">{task.title}</h3>
-                            <p className="card-text">{task.description}</p>
-                          </div>
-                        </div>;
-                      }) }
-                    </div>
-                    </div>      
+      return <div className="row h-100">
+        { columns.map(({ label, stage, borderColor }) => {
+          return <div className="col-4 h-100">
+            <div id={stage} className={`${cardClasses} ${borderColor} droppable h-100`}>
+              <div className="card-body h-100">
+                <h2>{label}</h2>
+                <div className="d-flex flex-column">
+                  { this.state.tasks.filter((task) => task.stage === stage).map((task) => {
+                    return <div id={ task.id } className={`${cardClasses} ${borderColor} draggable`}>
+                      <div className="card-body">
+                        <h3 className="card-title">{task.title}</h3>
+                        <p className="card-text">{task.description}</p>
+                      </div>
+                    </div>;
+                  }) }
+                </div>
                 </div>      
-              </div>;
-            }) }
-          </div>
-        </div>
+            </div>      
+          </div>;
+        }) }
       </div>;
     }
   }

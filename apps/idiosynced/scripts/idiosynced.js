@@ -15,9 +15,7 @@ namespace("v42.idiosynced.Idiosynced",{
     "v42.idiosynced.WeeklyCalendar":"WeeklyCalendar",
     "v42.idiosynced.WorkWeekCalendar":"WorkWeekCalendar",
 },({
-    Backlog, Dialog, FrequencyView, HabitView, MonthlyCalendar, ProjectList,
-    ProjectView, RoutineList, RoutineView, TaskBoard, TaskTemplateView,
-    TaskView, ViewError, WeeklyCalendar, WorkWeekCalendar
+    Backlog, Dialog, FrequencyView, HabitView, ProjectView, RoutineView, TaskBoard, TaskTemplateView, TaskView, ViewError
 }) => {
     const localStorageKey = "v42.idiosynced.Idiosynced.localData";
     return class extends React.Component {
@@ -99,7 +97,9 @@ namespace("v42.idiosynced.Idiosynced",{
                 backlog:{
                     label: "Backlog",
                     render:() => {
-                        return <Backlog tasks={this.state.tasks} viewTask={viewTask}/>;
+                        return <Backlog tasks={this.state.tasks} viewTask={viewTask} updateState={(updates) => {
+                            this.setState(updates);
+                        }}/>;
                     }
                     /*
                 },
@@ -139,18 +139,16 @@ namespace("v42.idiosynced.Idiosynced",{
         }
         render() {
             const renderer = this.rendersByView[this.state.view];
-            if (renderer) {
-                return renderer();
-            } else {
-                return <ViewError badView={this.state.view}/>;
-            }
             return <>
                 <h1 className="text-center">Idiosynced!</h1>
-                <div className="d-flex justify-content-between">
-                    <button className="btn btn-success" onClick={() => {
-
-                    }}>Taskboard</button>
+                <div className="m-2 d-flex justify-content-center">
+                    { Object.entries(this.rendersByView).map(([view, { label }]) => {
+                        return <button className={`btn ${ this.state.view === view ? 'btn-light' : 'btn-info' }`} disabled={this.state.view === view} onClick={() => {
+                            this.setState({ view });
+                        }}>{ label }</button>;
+                    })}
                 </div>
+                { renderer ? renderer.render() : <ViewError badView={this.state.view}/> }
             </>;
         }
     }
