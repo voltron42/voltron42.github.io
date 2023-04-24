@@ -49,7 +49,7 @@ namespace("v42.idiosynced.Idiosynced",{
                         return acc;
                     }, out);
                 }, {}));
-                console.log(`javascript:localStorage.setItem("${localStorageKey}", '${data}')`);
+                console.log(`javascript:localStorage.setItem("${localStorageKey}", \`${data}\`)`);
                 localStorage.setItem(localStorageKey, data);
                 me.setState(updates);
             }
