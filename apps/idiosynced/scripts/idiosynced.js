@@ -1,21 +1,11 @@
 namespace("v42.idiosynced.Idiosynced",{
     "v42.idiosynced.Backlog":"Backlog",
     "v42.idiosynced.Dialog":"Dialog",
-    "v42.idiosynced.FrequencyView":"FrequencyView",
-    "v42.idiosynced.HabitView":"HabitView",
-    "v42.idiosynced.MonthlyCalendar":"MonthlyCalendar",
-    "v42.idiosynced.ProjectList":"ProjectList",
-    "v42.idiosynced.ProjectView":"ProjectView",
-    "v42.idiosynced.RoutineList":"RoutineList",
-    "v42.idiosynced.RoutineView":"RoutineView",
     "v42.idiosynced.TaskBoard":"TaskBoard",
-    "v42.idiosynced.TaskTemplateView":"TaskTemplateView",
     "v42.idiosynced.TaskView":"TaskView",
     "v42.idiosynced.ViewError":"ViewError",
-    "v42.idiosynced.WeeklyCalendar":"WeeklyCalendar",
-    "v42.idiosynced.WorkWeekCalendar":"WorkWeekCalendar",
 },({
-    Backlog, Dialog, FrequencyView, HabitView, ProjectView, RoutineView, TaskBoard, TaskTemplateView, TaskView, ViewError
+    Backlog, Dialog, TaskBoard, TaskView, ViewError
 }) => {
     const localStorageKey = "v42.idiosynced.Idiosynced.localData";
     return class extends React.Component {
@@ -34,107 +24,46 @@ namespace("v42.idiosynced.Idiosynced",{
             this.modals = Dialog.factory({
                 taskView: {
                     templateClass: TaskView,
-                    attrs: { class: "" },
-                    onClose: () => {}
-                },
-                taskTemplateView: {
-                    templateClass: TaskTemplateView,
-                    attrs: { class: "" },
-                    onClose: () => {}
-                },
-                projectView: {
-                    templateClass: ProjectView,
-                    attrs: { class: "" },
-                    onClose: () => {}
-                },
-                routineView: {
-                    templateClass: RoutineView,
-                    attrs: { class: "" },
-                    onClose: () => {}
-                },
-                habitView: {
-                    templateClass: HabitView,
-                    attrs: { class: "" },
-                    onClose: () => {}
-                },
-                frequencyView: {
-                    templateClass: FrequencyView,
-                    attrs: { class: "" },
-                    onClose: () => {}
+                    attrs: { class: "bg-dark text-light border border-5 rounded-3" },
+                    onClose: ({task,index}) => {
+                        const tasks = Array.from(this.state.tasks);
+                        if (index < 0) {
+                            tasks.push(task);
+                        } else {
+                            tasks[index] = task;
+                        }
+                        this.setState({ tasks });
+                    }
                 }
             });
-            const viewTask = (taskIndex) => {
-                this.modals.taskView.open((taskIndex>=0)?{
-                    taskIndex,task:this.state.tasks[taskIndex]
-                }:{
-                    taskIndex:-1,task:{}
-                });
+            const viewTask = (index) => {
+                this.modals.taskView.open((index>=0)?{
+                    index,task:this.state.tasks[index]
+                }:{});
             }
-            const viewProject = (projectIndex) => {
-                this.modals.projectView.open({
-                    projectIndex,project:this.state.projects[projectIndex]
-                });
-            }
-            const viewRoutine = (routineIndex) => {
-                this.modals.routineView.open({
-                    routineIndex,routine:this.state.routines[routineIndex]
-                });
-            }
-            const viewHabit = (habitIndex) => {
-                this.modals.habitView.open({
-                    habitIndex,habit:this.state.habits[habitIndex]
-                })
+            const me = this;
+            this.updateState = (updates) => {
+                localStorage.setItem(localStorageKey, JSON.stringify([this.state,updates].reduce((out,obj) => {
+                    return Object.entries(obj).reduce((acc,[k,v]) => {
+                        acc[k] = v;
+                        return acc;
+                    }, out);
+                }, {})));
+                me.setState(updates);
             }
             this.rendersByView = {
-                taskboard:{
-                    label: "Taskboard",
-                    render:() => {
-                        return <TaskBoard tasks={this.state.tasks} viewTask={viewTask} updateState={(updates) => {
-                            this.setState(updates);
-                        }}/>;
-                    }
-                },
                 backlog:{
                     label: "Backlog",
                     render:() => {
-                        return <Backlog tasks={this.state.tasks} viewTask={viewTask} updateState={(updates) => {
-                            this.setState(updates);
-                        }}/>;
+                        return <Backlog tasks={this.state.tasks} viewTask={viewTask} updateState={this.updateState}/>;
                     }
-                    /*
                 },
-                calendarMonth:{
+                taskboard:{
                     label: "Taskboard",
                     render:() => {
-                        return <MonthlyCalendar/>;
+                        return <TaskBoard tasks={this.state.tasks} viewTask={viewTask} updateState={this.updateState}/>;
                     }
                 },
-                calendarWeek:{
-                    render:() => {
-                        return <WeeklyCalendar/>;
-                    }
-                },
-                calendarWorkWeek:{
-                    render:() => {
-                        return <WorkWeekCalendar/>;
-                    }
-                },
-                projectList:{
-                    render:() => {
-                        return <ProjectList projects={this.state.projects} viewProject={viewProject}/>;
-                    }
-                },
-                routineList:{
-                    render:() => {
-                        return <RoutineList routines={this.state.habits} viewRoutine={viewRoutine}/>;
-                    }
-                },
-                habitList:{
-                    render:() => {
-                        return <HabitList habits={this.state.habits} viewHabit={viewHabit}/>;
-                    }
-                    */
-                }
             }
         }
         render() {
@@ -144,7 +73,7 @@ namespace("v42.idiosynced.Idiosynced",{
                 <div className="m-2 d-flex justify-content-center">
                     { Object.entries(this.rendersByView).map(([view, { label }]) => {
                         return <button className={`btn ${ this.state.view === view ? 'btn-light' : 'btn-info' }`} disabled={this.state.view === view} onClick={() => {
-                            this.setState({ view });
+                            this.updateState({ view });
                         }}>{ label }</button>;
                     })}
                 </div>

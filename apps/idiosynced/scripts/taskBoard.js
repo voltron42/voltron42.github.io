@@ -28,15 +28,12 @@ namespace('v42.idiosynced.TaskBoard',{
       this.updateState = props.updateState;
     }
     componentDidUpdate() {
-      console.log("componentDidUpdate");
       this.afterRender();
     }
     componentDidMount(){
-      console.log("componentDidMount");
       this.afterRender();
     }
     afterRender() {
-      console.log("afterRender");
       const me = this;
       const dragDropState = {};
       $(".droppable").droppable({
@@ -58,7 +55,6 @@ namespace('v42.idiosynced.TaskBoard',{
           const tasks = Array.from(me.state.tasks);
           const dropId = event.target.id;
           const taskId = draggable[0].id;
-          console.log({dropId,taskId});
           const taskIndex = tasks.map((task,index) => {
             return {task,index};
           }).filter(({task}) => {
@@ -74,7 +70,6 @@ namespace('v42.idiosynced.TaskBoard',{
         start:(event, ui) => {
           const draggable = event.target;
           const helper = ui.helper[0];
-          console.log({ draggable, helper });
           helper.style.width = draggable.clientWidth;
           helper.style.height = draggable.clientHeight;
         },
@@ -85,16 +80,28 @@ namespace('v42.idiosynced.TaskBoard',{
         }
       });
     }
+    clearStage(stage) {
+      const tasks = Array.from(this.state.tasks);
+      const activeTasks = tasks.filter((task) => task.stage !== stage);
+      console.log({ stage, tasks, activeTasks });
+      this.updateState({ tasks: activeTasks });
+      this.setState({ tasks: activeTasks });
+    }
     render() {
       return <div className="row h-100">
         { columns.map(({ label, stage, borderColor }) => {
           return <div className="col-4 h-100">
-            <div id={stage} className={`${cardClasses} ${borderColor} droppable h-100`}>
+            <div id={stage} key={`stage-card-${stage}`} className={`${cardClasses} ${borderColor} droppable h-100`}>
               <div className="card-body h-100">
-                <h2>{label}</h2>
+                <div className="d-flex">
+                  <h2 className="flex-grow-1">{label}</h2>
+                  { stage === 'done' && <button className="btn btn-info" onClick={() => {
+                    this.clearStage(stage);
+                  }}>Clear</button>}
+                </div>
                 <div className="d-flex flex-column">
                   { this.state.tasks.filter((task) => task.stage === stage).map((task) => {
-                    return <div id={ task.id } className={`${cardClasses} ${borderColor} draggable`}>
+                    return <div id={ task.id } key={`task-card-${task.id}`} className={`${cardClasses} ${borderColor} draggable`}>
                       <div className="card-body">
                         <h3 className="card-title">{task.title}</h3>
                         <p className="card-text">{task.description}</p>
