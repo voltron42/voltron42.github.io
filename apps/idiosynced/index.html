@@ -26,24 +26,18 @@
         <!-- local dependencies -->
         <script type="text/babel" src="scripts/backlog.js"></script>
         <script type="text/babel" src="scripts/dialog.js"></script>
-        <script type="text/babel" src="scripts/frequencyView.js"></script>
-        <script type="text/babel" src="scripts/habitView.js"></script>
         <script type="text/babel" src="scripts/idiosynced.js"></script>
-        <script type="text/babel" src="scripts/monthlyCalendar.js"></script>
-        <script type="text/babel" src="scripts/projectList.js"></script>
-        <script type="text/babel" src="scripts/projectView.js"></script>
-        <script type="text/babel" src="scripts/routineList.js"></script>
-        <script type="text/babel" src="scripts/routineView.js"></script>
         <script type="text/babel" src="scripts/taskBoard.js"></script>
-        <script type="text/babel" src="scripts/taskTemplateView.js"></script>
         <script type="text/babel" src="scripts/taskView.js"></script>
         <script type="text/babel" src="scripts/viewError.js"></script>
-        <script type="text/babel" src="scripts/weeklyCalendar.js"></script>
-        <script type="text/babel" src="scripts/workWeekCalendar.js"></script>
 
         <!-- init script -->
         <script type="text/babel">
             const Idiosynced = importNamespace("v42.idiosynced.Idiosynced");
+            const unusedNamespaces = listUnusedNamespaces();
+            if (unusedNamespaces.length > 0) {
+                console.warn({ unusedNamespaces });
+            }
             ReactDOM.createRoot(document.getElementById('appRoot')).render(<Idiosynced/>);
         </script>
     </head>
