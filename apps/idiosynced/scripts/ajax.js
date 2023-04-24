@@ -56,5 +56,11 @@ namespace("v42.idiosynced.Ajax",{},() => {
             xhttp.send();
         }
     };
-    return { getLocalStaticFileAsText }
+    const methods = ['GET','POST','PUT','PATCH'];
+    const retval = methods.reduce(( out, method ) => {
+        out[method.toLowerCase()] = ((filepath, payload, callbacks) => {
+            return request(method, filepath, payload, callbacks);
+        });
+    }, { request });
+    return retval;
   });

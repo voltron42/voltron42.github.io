@@ -43,12 +43,14 @@ namespace("v42.idiosynced.Idiosynced",{
             }
             const me = this;
             this.updateState = (updates) => {
-                localStorage.setItem(localStorageKey, JSON.stringify([this.state,updates].reduce((out,obj) => {
+                const data = JSON.stringify([this.state,updates].reduce((out,obj) => {
                     return Object.entries(obj).reduce((acc,[k,v]) => {
                         acc[k] = v;
                         return acc;
                     }, out);
-                }, {})));
+                }, {}));
+                console.log(`javascript:localStorage.setItem("${localStorageKey}", '${data}')`);
+                localStorage.setItem(localStorageKey, data);
                 me.setState(updates);
             }
             this.rendersByView = {
