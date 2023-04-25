@@ -1,6 +1,8 @@
 namespace("v42.idiosynced.Idiosynced",{
     "v42.idiosynced.Backlog":"Backlog",
     "v42.idiosynced.Dialog":"Dialog",
+    "v42.idiosynced.FileDownload":"FileDownload",
+    "v42.idiosynced.LoadFile":"LoadFile",
     "v42.idiosynced.TaskBoard":"TaskBoard",
     "v42.idiosynced.TaskView":"TaskView",
     "v42.idiosynced.ViewError":"ViewError",
@@ -68,10 +70,45 @@ namespace("v42.idiosynced.Idiosynced",{
                 },
             }
         }
+        download() {
+            FileDownload.triggerJSONDownload("idiosynced","idiosynced",this.state);
+        }
+        upload() {
+            LoadFile(
+                false,
+                'text',
+                (fileContent) => {
+                  const jsonData = JSON.parse(fileContent);
+                  const error = Schema.validate(jsonData);
+                  if (error) {
+                    throw error;
+                  }
+                  this.setState(jsonData);
+                },
+                (fileName, error) => {
+                  console.log({ fileName, error });
+                  alert(fileName + ' failed to load. See console for error.');
+                }
+            );
+        }
         render() {
             const renderer = this.rendersByView[this.state.view];
             return <>
-                <h1 className="text-center">Idiosynced!</h1>
+                <h1 className="text-center">
+                    <a href="#" 
+                        onClick={(e) => {
+                            e.preventDefault();
+                        }} 
+                        onDoubleClick={(e) => {
+                            e.preventDefault();
+                            this.download();
+                        }}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            this.upload();
+                        }}
+                    >Idiosynced!</a>
+                </h1>
                 <div className="m-2 d-flex justify-content-center">
                     { Object.entries(this.rendersByView).map(([view, { label }]) => {
                         return <button className={`btn ${ this.state.view === view ? 'btn-light' : 'btn-info' }`} disabled={this.state.view === view} onClick={() => {
