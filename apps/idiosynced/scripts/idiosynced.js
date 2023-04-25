@@ -7,7 +7,7 @@ namespace("v42.idiosynced.Idiosynced",{
     "v42.idiosynced.TaskView":"TaskView",
     "v42.idiosynced.ViewError":"ViewError",
 },({
-    Backlog, Dialog, TaskBoard, TaskView, ViewError
+    Backlog, Dialog, FileDownload, LoadFile, TaskBoard, TaskView, ViewError
 }) => {
     const localStorageKey = "v42.idiosynced.Idiosynced.localData";
     return class extends React.Component {
@@ -90,7 +90,12 @@ namespace("v42.idiosynced.Idiosynced",{
             const renderer = this.rendersByView[this.state.view];
             return <>
                 <h1 className="text-center">
-                    <a href="#" 
+                    <a  href="#" 
+                        style={{
+                            color: "white",
+                            textDecoration: "none",
+                            cursor: "default"
+                        }}
                         onClick={(e) => {
                             e.preventDefault();
                         }} 
