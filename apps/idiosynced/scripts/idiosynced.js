@@ -16,12 +16,7 @@ namespace("v42.idiosynced.Idiosynced",{
             const localData = localStorage.getItem(localStorageKey);
             this.state = localData ? JSON.parse(localData) : {
                 view: "taskboard",
-                tasks: [{
-                    id:"task-1234",
-                    title:"Pay xFinity",
-                    description: "Pay $250 to xFinity prior to 12th of month",
-                    stage: "ready"
-                }]
+                tasks: []
             };
             this.modals = Dialog.factory({
                 taskView: {
@@ -51,7 +46,7 @@ namespace("v42.idiosynced.Idiosynced",{
                         return acc;
                     }, out);
                 }, {}));
-                console.log(`javascript:localStorage.setItem("${localStorageKey}", '${data}')`);
+                console.log(`javascript:localStorage.setItem("${localStorageKey}", \`${data}\`)`);
                 localStorage.setItem(localStorageKey, data);
                 me.setState(updates);
             }

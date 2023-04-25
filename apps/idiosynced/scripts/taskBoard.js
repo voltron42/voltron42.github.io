@@ -87,6 +87,14 @@ namespace('v42.idiosynced.TaskBoard',{
       this.updateState({ tasks: activeTasks });
       this.setState({ tasks: activeTasks });
     }
+    revertStage(from,to) {
+      this.setState({ tasks: this.state.tasks.map((task) => {
+        if (task.stage === from) {
+          task.stage = to;
+        }
+        return task;
+      })})
+    }
     render() {
       return <div className="row h-100">
         { columns.map(({ label, stage, borderColor }) => {
@@ -95,6 +103,9 @@ namespace('v42.idiosynced.TaskBoard',{
               <div className="card-body h-100">
                 <div className="d-flex">
                   <h2 className="flex-grow-1">{label}</h2>
+                  { stage === 'ready' && <button className="btn btn-info" onClick={() => {
+                    this.revertStage("ready","backlog");
+                  }}>Revert</button> }
                   { stage === 'done' && <button className="btn btn-info" onClick={() => {
                     this.clearStage(stage);
                   }}>Clear</button>}
