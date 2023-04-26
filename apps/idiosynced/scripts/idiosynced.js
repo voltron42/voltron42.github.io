@@ -6,10 +6,9 @@ namespace("v42.idiosynced.Idiosynced",{
     "v42.idiosynced.TaskBoard":"TaskBoard",
     "v42.idiosynced.TaskView":"TaskView",
     "v42.idiosynced.ViewError":"ViewError",
-},({
-    Backlog, Dialog, FileDownload, LoadFile, TaskBoard, TaskView, ViewError
-}) => {
+},({ Backlog, Dialog, FileDownload, LoadFile, TaskBoard, TaskView, ViewError }) => {
     const localStorageKey = "v42.idiosynced.Idiosynced.localData";
+    const validateJSON = ((json) => {});
     return class extends React.Component {
         constructor(props) {
             super(props);
@@ -74,7 +73,7 @@ namespace("v42.idiosynced.Idiosynced",{
                 'text',
                 (fileContent) => {
                   const jsonData = JSON.parse(fileContent);
-                  const error = Schema.validate(jsonData);
+                  const error = validateJSON(jsonData);
                   if (error) {
                     throw error;
                   }
@@ -90,23 +89,23 @@ namespace("v42.idiosynced.Idiosynced",{
             const renderer = this.rendersByView[this.state.view];
             return <>
                 <h1 className="text-center">
-                    <a  href="#" 
-                        style={{
-                            color: "white",
-                            textDecoration: "none",
-                            cursor: "default"
-                        }}
-                        onClick={(e) => {
-                            e.preventDefault();
-                        }} 
-                        onDoubleClick={(e) => {
-                            e.preventDefault();
-                            this.download();
-                        }}
-                        onContextMenu={(e) => {
-                            e.preventDefault();
-                            this.upload();
-                        }}
+                    <a href="#" 
+                       style={{
+                        color: "white",
+                        textDecoration: "none",
+                        cursor: "default"
+                       }}
+                       onClick={(e) => {
+                        e.preventDefault();
+                       }} 
+                       onDoubleClick={(e) => {
+                        e.preventDefault();
+                        this.download();
+                       }}
+                       onContextMenu={(e) => {
+                        e.preventDefault();
+                        this.upload();
+                       }}
                     >Idiosynced!</a>
                 </h1>
                 <div className="m-2 d-flex justify-content-center">
