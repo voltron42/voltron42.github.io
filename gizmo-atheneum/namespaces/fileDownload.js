@@ -1,4 +1,4 @@
-namespace('v42.idiosynced.FileDownload',{
+namespace('gizmo-atheneum.namespaces.FileDownload',{
 }, ({ }) => {
     const normalizeFilename = function (filename, ext, defaultFilename) {
         filename = filename || defaultFilename;

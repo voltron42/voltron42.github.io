@@ -1,4 +1,4 @@
-namespace("v42.idiosynced.Ajax",{},() => {
+namespace("gizmo-atheneum.namespaces.Ajax",{},() => {
     const callbackEvents = {
       success: 'AjaxSuccess',
       failure: 'AjaxFailure',

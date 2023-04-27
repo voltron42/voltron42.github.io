@@ -1,4 +1,4 @@
-namespace('v42.idiosynced.LoadFile', () => {
+namespace('gizmo-atheneum.namespaces.LoadFile', () => {
     let fileLoaderFns = {
       text: (reader, file) => {
         return reader.readAsText(file);
