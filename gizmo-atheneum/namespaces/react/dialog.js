@@ -1,4 +1,4 @@
-namespace('gizmo-atheneum.namespaces.Dialog', () => {
+namespace('gizmo-atheneum.namespaces.react.Dialog', () => {
     const Dialog = function (dialogName, TemplateClass, onClose, attrs, addlProps) {
       attrs = attrs || {};
       const modalOpenEvent = 'modal.' + dialogName + '.open';

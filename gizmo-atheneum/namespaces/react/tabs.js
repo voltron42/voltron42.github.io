@@ -1,4 +1,4 @@
-namespace("tabs.Tabs",{},() => {
+namespace("gizmo-atheneum.namespaces.react.Tabs",{},() => {
     const buildTab = function(tab, onFocusGetter) {
         const setOnBlurGetter = (getter) => {
             tab.onBlurGetter = getter;
