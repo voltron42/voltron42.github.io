@@ -1,0 +1,52 @@
+.today {
+    color: lightgreen
+}
+.this-month {
+    color: lightblue
+}
+.not-this-month {
+    color: lightgrey
+}
+@media print {
+    * {
+        -webkit-print-color-adjust: exact;
+    }
+    html,
+    body,
+    #app-root {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: hidden !important;
+    }
+    @page {
+        margin: 0;
+        size: portrait;
+    }
+    .calendar-body {
+        padding: 0.25in;
+        margin: 0in;
+        height: 10in;
+        width: 8in;
+        border: 1px solid black
+    }
+    .arrow-button {
+        display: none;
+    }
+    .bg-dark {
+        background-color: white;
+    }
+    .text-light {
+        color: black!important;
+    }
+    .today {
+        color: green
+    }
+    .this-month {
+        color: blue
+    }
+    .not-this-month {
+        color: black
+    }       
+}
