@@ -61,18 +61,18 @@ namespace("calendar.Calendar",{},() => {
                     </div>
                 </div>
                 <div className="d-flex justify-content-center w-100 h-75 m-2">
-                    <table className="border w-100 h-100">
+                    <table className="w-100 h-100">
                         <tbody className="w-100 h-100">
                             <tr style={{ height: "1.5em" }}>
                                 { weekdays.map((weekday) => {
-                                    return <th className="text-center border" style={{ width: "14.28%" }}>{ weekday }</th>
+                                    return <th className="text-center" style={{ width: "14.28%" }}>{ weekday }</th>
                                 }) }
                             </tr>
                             { this.state.calendar.map((week) => {
                                 return <tr className="w-100" style={{ height: "12.5%" }}>
                                     { week.map((day) => {
                                         return <td 
-                                            className={ `border align-top ${day.isThisMonth?(day.isToday?'today':'this-month'):'not-this-month'}`}
+                                            className={ `align-top ${day.isThisMonth?(day.isToday?'today':'this-month'):'not-this-month'}`}
                                             style={{
                                                 width: "14.28%",
                                                 height: "14.28%"

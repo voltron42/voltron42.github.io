@@ -7,6 +7,9 @@
 .not-this-month {
     color: lightgrey
 }
+table, th, td {
+    border: 1px solid white;
+}
 @media print {
     * {
         -webkit-print-color-adjust: exact;
@@ -49,4 +52,7 @@
     .not-this-month {
         color: black
     }       
+    table, th, td {
+        border: 2px solid black;
+    }
 }
