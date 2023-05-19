@@ -66,7 +66,7 @@ namespace('bottles.BottleGame',{},() => {
         const out = [];
         while(shuffle.length > 0) {
             out.push(shuffle.slice(0,4));
-            levelColors.splice(0,4);
+            shuffle.splice(0,4);
         }
         out.push([]);
         out.push([]);
@@ -81,42 +81,62 @@ namespace('bottles.BottleGame',{},() => {
                 levelNum: 1,
                 level: generateLevel(1)
             };
-            console.log({ state: this.state });
         }
-        animateMoveRecursive(moveStep,fromIndex,srcPos,toIndex,destPos,onComplete,percentComplete) {
+        animateMoveRecursive(color,moveStep,fromIndex,srcPos,toIndex,destPos,onComplete,percentComplete) {
             if (moveStep <= 0 || destPos >= 4) {
+                console.log("on complete");
                 onComplete();
             } else if (percentComplete > 100) {
-                this.animateMoveRecursive(moveStep-1,fromIndex,srcPos-1,toIndex,destPos+1,onComplete,0);
+                console.log("completed percent");
+                this.animateMoveRecursive(color,moveStep-1,fromIndex,srcPos-1,toIndex,destPos+1,onComplete,0);
             } else {
+                console.log("animating move");
                 const fromId = `${fromIndex}_${srcPos}`;
                 const toId = `${toIndex}_${destPos}`;
                 const fromPercent = `${100 - percentComplete}%`;
                 const toPercent  = `${percentComplete}%`;
-                document.getElementById(fromId).style.width = fromPercent;
-                document.getElementById(toId).style.width = toPercent;
+                console.log({ fromId, toId, fromPercent, toPercent });
+                const fromStyle = document.getElementById(fromId).style;
+                fromStyle.width = fromPercent;
+                fromStyle.color = color;
+                fromStyle.backgroundColor = color;
+                const toStyle = document.getElementById(toId).style
+                toStyle.width = toPercent;
+                toStyle.color = color;
+                toStyle.backgroundColor = color;
+                console.log("setting timeout");
                 setTimeout(() => {
-                    this.animateMoveRecursive(moveStep, fromIndex, srcPos, toIndex, destPos, onComplete, percentComplete + frameSize);
+                    console.log({ percentComplete });
+                    this.animateMoveRecursive(color,moveStep, fromIndex, srcPos, toIndex, destPos, onComplete, percentComplete + frameSize);
                 }, delay);
             }
         }
-        animateMove(moveCount,fromIndex,srcPos,toIndex,destPos,onComplete) {
-            this.animateMoveRecursive(moveCount,fromIndex,srcPos,toIndex,destPos,onComplete,0);
+        animateMove(color,moveCount,fromIndex,srcPos,toIndex,destPos,onComplete) {
+            console.log("animate move recursive");
+            this.animateMoveRecursive(color,moveCount,fromIndex,srcPos,toIndex,destPos,onComplete,0);
         }
         clickBottle(index) {
-            if (!this.state.fromIndex && this.state.level[index].length > 0) {
+            const fromIndex = this.state.fromIndex;
+            const level = Array.from(this.state.level);
+            const src = level[fromIndex];
+            const dest = level[index];
+            console.log({ index, fromIndex, level, src, dest });
+            if (!fromIndex && level[index].length > 0) {
+                console.log("set from");
                 this.setState({ fromIndex: index });
-            } else if (this.state.fromIndex && this.state.level[index].length < 4) {
-                const level = Array.from(this.state.level);
-                const src = level[fromIndex];
-                const dest = level[index];
+                console.log({ state: this.state });
+            } else if (fromIndex && level[index].length < 4 && fromIndex != index) {
+                console.log("move");
+                console.log({ state: this.state });
                 const srcColor = src[src.length-1];
                 const destColor = dest[dest.length-1];
-                if (srcColor !== destColor) {
-                    this.setState({ fromIndex: undefined })
+                if (srcColor !== destColor && dest.length > 0) {
+                    console.log("unmatched - resetting");
+                    this.setState({ fromIndex: undefined });
                 } else {
+                    console.log("matched - proceeding");
                     const destSpace = 4 - dest.length;
-                    const srcColorCount = 1;
+                    let srcColorCount = 1;
                     for (let i = src.length - 2; i >= 0; i--) {
                         if (src[i] !== srcColor) {
                             break;
@@ -124,13 +144,18 @@ namespace('bottles.BottleGame',{},() => {
                         srcColorCount++;
                     }
                     const moveCount = Math.min(destSpace,srcColorCount);
-                    this.animateMove(moveCount,fromIndex,src.length - 1,index,dest.length,() => {
+                    console.log("animate move");
+                    this.animateMove(srcColor,moveCount,fromIndex,src.length - 1,index,dest.length,() => {
                         for (let i = 0; i < moveCount; i++) {
                             dest.push(src.pop());
                         }
-                        this.setState({ level });
+                        this.setState({ level, fromIndex: undefined });
                     });
                 }
+            } else {
+                console.log("error");
+                console.log({ state: this.state });
+                this.setState({ fromIndex: undefined });
             }
         }
         render() {
@@ -140,12 +165,13 @@ namespace('bottles.BottleGame',{},() => {
                     { this.state.level.map((bottle,index) => {
                         return <button className="btn btn-link" onClick={() => { this.clickBottle(index) }}>
                             <div className="row">
-                                { colorIndicies.map((color) => {
+                                { colorIndicies.map((c,color) => {
                                     const style = {
                                         width: bottle[color] ? "100%" : "0%"
                                     }
                                     if (bottle[color]) {
                                         style.color = bottle[color];
+                                        style.backgroundColor = bottle[color];
                                     }
                                     return <div className="col-3 m-0 p-0">
                                         <div className="progress w-100">
