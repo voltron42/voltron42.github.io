@@ -75,6 +75,39 @@ namespace('bottles.BottleGame',{},() => {
         out.push([]);
         return out;
     }
+    const getAvailableMoves = function(level) {
+        const bottles = level.map((bottle,index) => { return { bottle, index }; });
+        const empties = bottles.filter(({ bottle }) => bottle.length === 0).map(({ index }) => index );
+        const targets = bottles.filter(({ bottle }) => bottle.length > 0 && bottle.length < 4).map(({bottle,index}) => {
+            return {
+                index,
+                count: 4 - bottle.length,
+                color: bottle[bottle.length-1]
+            }
+        });
+        const sourcedTargets = bottles.filter(({ bottle }) => bottle.length > 0).map(({ bottle, index }) => {
+            const color = bottle[bottle.length-1]
+            let count = 1;
+            for(let i = bottle.length - 2; i >= 0; i--) {
+                if (bottle[i] !== color) {
+                    break;
+                }
+                count++;
+            }
+            const myTargets = targets.filter(target => target.index !== index && target.color === color);
+            const targetCountTotal = myTargets.reduce((sum,target) => {
+                return sum + target.count;
+            }, 0)
+            return { count, targetCountTotal, myTargets };
+        }).filter(({ count, targetCountTotal }) => targetCountTotal >= count).map(({ myTargets }) => {
+            return myTargets[0].index;
+        });
+        const allTargets = [].concat(sourcedTargets, empties);
+        if (allTargets.length === 1) {
+            return allTargets[0];
+        }
+        return allTargets.length > 1;
+    }
     const frameSize = 10;
     const delay = 25;
     return class extends React.Component {
@@ -160,12 +193,16 @@ namespace('bottles.BottleGame',{},() => {
                                 dest.push(src.pop());
                             }
                             if (this.isLevelComplete(level)) {
-                                const newState = {
-                                    levelCompleted: true
-                                };
-                                this.setState(newState);
+                                this.setState({ 
+                                    levelCompleted: true,
+                                    fromIndex: undefined 
+                                });
                             } else {
-                                this.setState({ level, fromIndex: undefined });
+                                this.setState({ 
+                                    level, 
+                                    fromIndex: undefined, 
+                                    availableMoves: getAvailableMoves(level)
+                                });
                             }
                         });
                     }
@@ -194,7 +231,7 @@ namespace('bottles.BottleGame',{},() => {
                         { hasNextLevel(this.state.levelNum) ? <button className="btn btn-success" onClick={() => { this.playNextLevel() }}>Play Next Level</button> : <h3 className="text-center">Game Completed!!</h3>}
                     </> : this.state.level.map((bottle,index) => {
                         return <button 
-                            className={`btn btn-link ${index === this.state.fromIndex && 'border border-light'}`} 
+                            className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success'}`} 
                             onClick={() => { this.clickBottle(index) }}>
                             <div className="row">
                                 { colorIndicies.map((c,color) => {
