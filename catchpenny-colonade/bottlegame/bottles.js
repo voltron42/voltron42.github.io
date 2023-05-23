@@ -76,6 +76,7 @@ namespace('bottles.BottleGame',{},() => {
         return out;
     }
     const getAvailableMoves = function(level) {
+        console.log("get available moves");
         const bottles = level.map((bottle,index) => { return { bottle, index }; });
         const empties = bottles.filter(({ bottle }) => bottle.length === 0).map(({ index }) => index );
         const targets = bottles.filter(({ bottle }) => bottle.length > 0 && bottle.length < 4).map(({bottle,index}) => {
@@ -103,6 +104,7 @@ namespace('bottles.BottleGame',{},() => {
             return myTargets[0].index;
         });
         const allTargets = [].concat(sourcedTargets, empties);
+        console.log({ allTargets });
         if (allTargets.length === 1) {
             return allTargets[0];
         }
@@ -110,12 +112,13 @@ namespace('bottles.BottleGame',{},() => {
     }
     const frameSize = 10;
     const delay = 25;
+    const initLevel = 60;
     return class extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
-                levelNum: 1,
-                level: generateLevel(1)
+                levelNum: initLevel,
+                level: generateLevel(initLevel)
             };
         }
         animateMoveRecursive(color,moveStep,fromIndex,srcPos,toIndex,destPos,onComplete,percentComplete) {
@@ -229,32 +232,38 @@ namespace('bottles.BottleGame',{},() => {
                     { this.state.levelCompleted ? <>
                         <h3 className="text-center">Level { this.state.levelNum } Completed</h3>
                         { hasNextLevel(this.state.levelNum) ? <button className="btn btn-success" onClick={() => { this.playNextLevel() }}>Play Next Level</button> : <h3 className="text-center">Game Completed!!</h3>}
-                    </> : this.state.level.map((bottle,index) => {
-                        return <button 
-                            className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success'}`} 
-                            onClick={() => { this.clickBottle(index) }}>
-                            <div className="row">
-                                { colorIndicies.map((c,color) => {
-                                    const style = {
-                                        width: bottle[color] ? "100%" : "0%"
-                                    }
-                                    if (bottle[color]) {
-                                        style.color = bottle[color];
-                                        style.backgroundColor = bottle[color];
-                                    }
-                                    return <div className="col-3 m-0 p-0">
-                                        <div className="progress w-100 m-1">
-                                            <div 
-                                                className="progress-bar"
-                                                id={ `${index}_${color}` }
-                                                style={ style }
-                                            ></div>
-                                        </div>
-                                    </div>;
-                                }) }
-                            </div>
-                        </button>;
-                    }) }
+                    </> : ( isNaN(this.state.availableMoves) && !this.state.availableMoves ? <>
+                        <h3>No Moves Remaining</h3>
+                        <button class="btn btn-danger" onClick={() => {
+                            // reset level
+                        }}>Retry Level</button>
+                    </> : <>{
+                        this.state.level.map((bottle,index) => {
+                            return <button 
+                                className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success'}`}                             onClick={() => { this.clickBottle(index) }}>
+                                <div className="row">
+                                    { colorIndicies.map((c,color) => {
+                                        const style = {
+                                            width: bottle[color] ? "100%" : "0%"
+                                        }
+                                        if (bottle[color]) {
+                                            style.color = bottle[color];
+                                            style.backgroundColor = bottle[color];
+                                        }
+                                        return <div className="col-3 m-0 p-0">
+                                            <div className="progress w-100 m-1">
+                                                <div 
+                                                    className="progress-bar"
+                                                    id={ `${index}_${color}` }
+                                                    style={ style }
+                                                ></div>
+                                            </div>
+                                        </div>;
+                                    }) }
+                                </div>
+                            </button>;
+                        })
+                    }</> ) }
                 </div>
             </>;
         }
