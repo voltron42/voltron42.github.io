@@ -232,9 +232,9 @@ namespace('bottles.BottleGame',{},() => {
                     { this.state.levelCompleted ? <>
                         <h3 className="text-center">Level { this.state.levelNum } Completed</h3>
                         { hasNextLevel(this.state.levelNum) ? <button className="btn btn-success" onClick={() => { this.playNextLevel() }}>Play Next Level</button> : <h3 className="text-center">Game Completed!!</h3>}
-                    </> : ( isNaN(this.state.availableMoves) && !this.state.availableMoves ? <>
+                    </> : ( this.state.availableMoves === false ? <>
                         <h3>No Moves Remaining</h3>
-                        <button class="btn btn-danger" onClick={() => {
+                        <button className="btn btn-danger" onClick={() => {
                             // reset level
                         }}>Retry Level</button>
                     </> : <>{
