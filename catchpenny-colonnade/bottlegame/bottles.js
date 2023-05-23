@@ -198,7 +198,8 @@ namespace('bottles.BottleGame',{},() => {
                             if (this.isLevelComplete(level)) {
                                 this.setState({ 
                                     levelCompleted: true,
-                                    fromIndex: undefined 
+                                    fromIndex: undefined,
+                                    availableMoves: undefined 
                                 });
                             } else {
                                 this.setState({ 
@@ -210,19 +211,21 @@ namespace('bottles.BottleGame',{},() => {
                         });
                     }
                 } else {
-                    this.setState({ fromIndex: undefined });
+                    this.setState({ 
+                        fromIndex: undefined
+                    });
                 }
             }
         }
         playNextLevel(){
             const levelNum = this.state.levelNum + 1;
-            const newState = {
+            this.setState({
                 levelNum,
                 level: generateLevel(levelNum),
                 fromIndex: undefined,
-                levelCompleted: undefined
-            };
-            this.setState(newState);
+                levelCompleted: undefined,
+                availableMoves: undefined 
+            });
         }
         render() {
             return <>
@@ -235,7 +238,12 @@ namespace('bottles.BottleGame',{},() => {
                     </> : ( this.state.availableMoves === false ? <>
                         <h3>No Moves Remaining</h3>
                         <button className="btn btn-danger" onClick={() => {
-                            // reset level
+                            this.setState({
+                                level: generateLevel(this.state.levelNum),
+                                fromIndex: undefined,
+                                levelCompleted: undefined,
+                                availableMoves: undefined 
+                            });
                         }}>Retry Level</button>
                     </> : <>{
                         this.state.level.map((bottle,index) => {
