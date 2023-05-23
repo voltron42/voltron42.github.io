@@ -112,7 +112,7 @@ namespace('bottles.BottleGame',{},() => {
     }
     const frameSize = 10;
     const delay = 25;
-    const initLevel = 60;
+    const initLevel = 1;
     return class extends React.Component {
         constructor(props) {
             super(props);
