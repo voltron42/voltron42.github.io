@@ -55,7 +55,7 @@ namespace('minesweeper.DigitalDisplay',{},() => {
     const defaultBgColor = "#900";
     const defaultDispColor = "#f00";
     const drawPoly = function(direction, offsetIndex, charIndex, dispColor) {
-        return <polygon points={ points } stroke="none" fill={ dispColor || defaultDispColor};
+        return <polygon points={ points } stroke="none" fill={ dispColor || defaultDispColor}/>;
     }
     return function({ value, digitCount, bgColor, dispColor }) {
         let valueStr = value.toString();
