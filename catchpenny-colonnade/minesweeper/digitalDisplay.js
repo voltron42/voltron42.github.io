@@ -55,9 +55,14 @@ namespace('minesweeper.DigitalDisplay',{},() => {
     const defaultBgColor = "#900";
     const defaultDispColor = "#f00";
     const drawPoly = function(direction, offsetIndex, charIndex, dispColor) {
-        return <polygon points={ points } stroke="none" fill={ dispColor || defaultDispColor}/>;
+        const { points, offsets } = digit[direction];
+        const [ offX, offY ] = offsets[offsetIndex];
+        const charOff = charIndex * digit.dim[0];
+        const polyPoints = points.map(([x,y]) => [ x + offX + charOff, y + offY ]);
+        return <polygon points={ polyPoints } stroke="none" fill={ dispColor || defaultDispColor}/>;
     }
     return function({ value, digitCount, bgColor, dispColor }) {
+        console.log({ value, digitCount, bgColor, dispColor });
         let valueStr = value.toString();
         if (digitCount < valueStr.length) {
             valueStr = valueStr.slice(valueStr.length - digitCount);
@@ -65,17 +70,19 @@ namespace('minesweeper.DigitalDisplay',{},() => {
             valueStr = "0".repeat(Math.max(0,digitCount - valueStr.length)) + valueStr;
         }
         const digits = valueStr.split("");
-        const totalWidth = digit.dim[0] * digitCount;
-        const height = digit.dim[1];
-        return <svg width="100%" height="100%" viewBox={`0 0 ${totalWidth} ${height}`}>
-            <rect width={totalWidth} height={totalHeight} stroke="none" fill={bgColor || defaultBgColor}/>
-            { digits.map((d,index) => {
-                const { horiz, vert } = digit.digitOffsets[d]
-                return <>
-                    { horiz.map((i) => drawPoly("horiz", i, index, dispColor)) }
-                    { vert.map((i) => drawPoly("vert", i, index, dispColor)) }
-                </>;
-            }) }
-        </svg>
+        const [ width, height ] = digit.dim;
+        const totalWidth = width * digitCount;
+        return <div style={{height: "2em"}}>
+            <svg width="100%" height="100%" viewBox={`0 0 ${totalWidth} ${height}`}>
+                <rect width={totalWidth} height={height} stroke="none" fill={bgColor || defaultBgColor}/>
+                { digits.map((d,index) => {
+                    const { horiz, vert } = digit.digitOffsets[d]
+                    return <>
+                        { horiz.map((i) => drawPoly("horiz", i, index, dispColor)) }
+                        { vert.map((i) => drawPoly("vert", i, index, dispColor)) }
+                    </>;
+                }) }
+            </svg>
+        </div>
     }
 });

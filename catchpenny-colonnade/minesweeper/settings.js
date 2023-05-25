@@ -12,8 +12,8 @@ namespace("minesweeper.Settings",{},() => {
                 this.setState({ width, height, count })
             });
         }
-        input(label,field) {
-            return <div className="input-group">
+        input(field,label) {
+            return <div className="input-group p-3">
                 <label htmlFor={field} className="input-group-text">{label}</label>
                 <input
                     id={field}
@@ -31,13 +31,13 @@ namespace("minesweeper.Settings",{},() => {
             </div>;
         }
         render() {
-            return <div className="d-flex flex-column">
+            return <div className="d-flex flex-column p-3">
                 { this.input('width',"Width:") }
                 { this.input('height',"Height:") }
-                { this.input('count',"conunt:") }
-                <div className="d-flex justify-content-end">
-                    <button className="btn btn-success" onClick={() => { this.onClose(this.state); }}>Confirm</button>
-                    <button className="btn btn-danger" onClick={() => { this.onClose(); }}>Cancel</button>
+                { this.input('count',"Count:") }
+                <div className="d-flex justify-content-end p-3">
+                    <button className="btn btn-success m-2" onClick={() => { this.onClose(this.state); }}>Confirm</button>
+                    <button className="btn btn-danger m-2" onClick={() => { this.onClose(); }}>Cancel</button>
                 </div>
             </div>;
         }
