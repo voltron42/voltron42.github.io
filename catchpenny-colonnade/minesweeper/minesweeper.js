@@ -33,6 +33,13 @@ namespace("minesweeper.Minesweeper",{
         [ -1, 1 ],
         [ -1, 0 ]
     ];
+    const getNeighbors = function(x,y,width,height) {
+        return neighbors.map(([xOff, yOff]) => {
+            return [ x + xOff, y + yOff ];
+        }).filter(([x1, y1]) => {
+            return x1 >= 0 && x1 < width && y1 >= 0 && y1 < height;
+        });
+    }
     return class extends React.Component {
         constructor(props) {
             super(props);
@@ -73,20 +80,19 @@ namespace("minesweeper.Minesweeper",{
                 board[y][x].bomb = true;
             });
             board.forEach(( row, y ) => {
-                row.forEach(({ bomb }, x ) => {
-                    if (!bomb) {
-                        const neighborCount = neighbors.map(([ xOff, yOff ]) => {
-                            return [ x + xOff, y + yOff ];
-                        }).filter(([ x1, y1 ]) => {
-                            return x1 >= 0 && x1 < width && y1 >= 0 && y1 < height;
-                        }).reduce((out, [ x1, y1 ]) => {
-                            return out + board[y1][x1].bomb?1:0;
+                row.forEach((cell, x ) => {
+                    console.log({ cell, y, x });
+                    if (!cell.bomb) {
+                        const myNeighbors = getNeighbors(x,y,width,height);
+                        const neighborCount = myNeighbors.reduce((sum, [ x1, y1 ]) => {
+                            return sum + ((board[y1][x1].bomb)?1:0);
                         }, 0);
+                        console.log({ myNeighbors, actualNeighbors, neighborCount });
                         board[y][x].neighborCount = neighborCount;
                     }
                 });
             });
-            this.setState({ board, startTime: Date.now() });
+            this.setState({ board, winState: undefined, startTime: Date.now() });
         }
         getFlagCount() {
             if (this.state.board) {
@@ -151,6 +157,7 @@ namespace("minesweeper.Minesweeper",{
                         board[y][x].clickState = "boom";
                     } else {
                         board[y][x].clickState = "show";
+                        // todo - recurse outward
                     }
                 }
                 this.setState({ board, winState });
@@ -208,7 +215,10 @@ namespace("minesweeper.Minesweeper",{
                                                 cell = <button className="btn btn-dark border border-light border-1 rounded" onClick={() => { this.click(x,y) }}>{ icon }</button>;
                                             }
                                         }
-                                        return <td>{ cell }</td>;
+                                        return <td className="text-center" style={{
+                                            width: "2em",
+                                            height: "2em"
+                                        }}>{ cell }</td>;
                                     }) }
                                 </tr>;
                             }) }
