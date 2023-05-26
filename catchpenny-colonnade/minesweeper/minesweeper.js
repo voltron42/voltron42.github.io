@@ -87,7 +87,7 @@ namespace("minesweeper.Minesweeper",{
                         const neighborCount = myNeighbors.reduce((sum, [ x1, y1 ]) => {
                             return sum + ((board[y1][x1].bomb)?1:0);
                         }, 0);
-                        console.log({ myNeighbors, actualNeighbors, neighborCount });
+                        console.log({ myNeighbors, neighborCount });
                         board[y][x].neighborCount = neighborCount;
                     }
                 });
@@ -156,8 +156,32 @@ namespace("minesweeper.Minesweeper",{
                         winState = false;
                         board[y][x].clickState = "boom";
                     } else {
-                        board[y][x].clickState = "show";
-                        // todo - recurse outward
+                        const { width, height } = this.state;
+                        let step = [[x,y]];
+                        const showMap = {};
+                        showMap[[x,y].join(",")] = true;
+                        let toRecurse = step.filter(([x1,y1]) => {
+                            return board[y1][x1].neighborCount === 0;
+                        });
+                        while(toRecurse.length > 0) {
+                            step = toRecurse.reduce((out,[x1,y1]) => {
+                                return out.concat(getNeighbors(x1,y1,width,height));
+                            },[]).filter(([x1,y1]) => {
+                                return !isNaN(board[y1][x1].neighborCount) && !showMap[[x1,y1].join(",")];
+                            });
+                            step.forEach(([x1,y1]) => {
+                                showMap[[x1,y1].join(",")] = true;
+                            });
+                            toRecurse = step.filter(([x1,y1]) => {
+                                return board[y1][x1].neighborCount === 0;
+                            });
+                        }
+                        Object.keys(showMap).forEach((key) => {
+                            let [x1,y1] = key.split(",").map((n) => {
+                                return parseInt(n);
+                            });
+                            board[y1][x1].clickState = "show";
+                        });
                     }
                 }
                 this.setState({ board, winState });
