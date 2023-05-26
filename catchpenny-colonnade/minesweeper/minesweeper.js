@@ -40,6 +40,26 @@ namespace("minesweeper.Minesweeper",{
             return x1 >= 0 && x1 < width && y1 >= 0 && y1 < height;
         });
     }
+    const getFlagCount = function(board) {
+        if (board) {
+            return board.reduce((out,row) => {
+                return row.reduce((sum, { clickState }) => {
+                    return sum + ((clickState === "flag") ? 1 : 0);
+                }, out);
+            }, 0);
+        }
+        return 0;
+    }
+    const checkFlags = function(board, bombCount) {
+        const remaining = board.reduce((out,row) => {
+            return out.concat(row);
+        }, []).filter((cell) => {
+            return cell.clickState !== "show";
+        });
+        return remaining.reduce((out,cell) => {
+            return out && cell.bomb
+        }, true) && remaining.length === bombCount;
+    }
     return class extends React.Component {
         constructor(props) {
             super(props);
@@ -95,14 +115,7 @@ namespace("minesweeper.Minesweeper",{
             this.setState({ board, winState: undefined, startTime: Date.now() });
         }
         getFlagCount() {
-            if (this.state.board) {
-                return this.state.board.reduce((out,row) => {
-                    return row.reduce((sum, { clickState }) => {
-                        return sum + ((clickState === "flag") ? 1 : 0);
-                    }, out);
-                }, 0);
-            }
-            return 0;
+            return getFlagCount(this.state.board);
         }
         getGameStateIcon() {
             if ( this.state.winState === true ) {
@@ -147,7 +160,7 @@ namespace("minesweeper.Minesweeper",{
                         } else {
                             delete board[y][x].clickState;
                         }
-                        if (checkFlags(board)) {
+                        if (checkFlags(board, this.state.count)) {
                             winState = true;
                         }
                     }
@@ -182,6 +195,9 @@ namespace("minesweeper.Minesweeper",{
                             });
                             board[y1][x1].clickState = "show";
                         });
+                        if (checkFlags(board, this.state.count)) {
+                            winState = true;
+                        }
                     }
                 }
                 this.setState({ board, winState });
@@ -227,7 +243,7 @@ namespace("minesweeper.Minesweeper",{
                                                     cell = this.getNeighborCountIcon(neighborCount);
                                                 }
                                             } else {
-                                                const icon = <span className="text-dark">_</span>;
+                                                let icon = <span className="text-dark">_</span>;
                                                 switch (clickState) {
                                                     case "flag":
                                                         icon = icons.flag;
