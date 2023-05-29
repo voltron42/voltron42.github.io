@@ -1,9 +1,10 @@
 namespace("minesweeper.Minesweeper",{
     "minesweeper.DigitalDisplay":"DigitalDisplay",
-    "minesweeper.TimeDisplay":"TimeDisplay",
+    "minesweeper.StopwatchDisplay":"Stopwatch",
     "minesweeper.Settings":"Settings",
     "gizmo-atheneum.namespaces.react.Dialog":"Dialog"
-},({ DigitalDisplay, TimeDisplay, Settings, Dialog }) => {
+},({ DigitalDisplay, Stopwatch, Settings, Dialog }) => {
+    const StopwatchDisplay = Stopwatch.Display;
     const icons = {
         "explosion":<i className="fas fa-sun"></i>,
         "bomb":<i className="fas fa-bomb text-info"></i>,
@@ -68,6 +69,7 @@ namespace("minesweeper.Minesweeper",{
                 width: 10,
                 count: 10
             }
+            this.stopwatch = new Stopwatch("Minesweeper" + Date.now(), 1000);
             this.modals = Dialog.factory({
                 settings:{
                     templateClass: Settings,
@@ -79,6 +81,7 @@ namespace("minesweeper.Minesweeper",{
             });
         }
         restart() {
+            this.stopwatch.reset();
             const { height, width, count } = this.state;
             const board = [];
             const deck = [];
@@ -112,7 +115,8 @@ namespace("minesweeper.Minesweeper",{
                     }
                 });
             });
-            this.setState({ board, winState: undefined, startTime: Date.now() });
+            this.setState({ board, winState: undefined });
+            this.stopwatch.start();
         }
         getFlagCount() {
             return getFlagCount(this.state.board);
@@ -200,6 +204,9 @@ namespace("minesweeper.Minesweeper",{
                         }
                     }
                 }
+                if (winState !== undefined) {
+                    this.stopwatch.stop();
+                }
                 this.setState({ board, winState });
             }
         }
@@ -221,7 +228,7 @@ namespace("minesweeper.Minesweeper",{
                                             <button className="btn btn-dark border border-light" onClick={() => this.restart()}>{this.getGameStateIcon()}</button>
                                             <button className="btn btn-dark border border-light" onClick={() => this.toggleFlag()}>{this.state.useFlag?icons.flag:icons.bomb}</button>
                                         </div>
-                                        { this.state.board ? <TimeDisplay startTime={this.state.startTime} digitCount={3}></TimeDisplay> : <DigitalDisplay value={0} digitCount={3}></DigitalDisplay>}
+                                        <StopwatchDisplay stopwatch={this.stopwatch} digitCount={3}></StopwatchDisplay>
                                     </div>
                                 </td>
                             </tr>

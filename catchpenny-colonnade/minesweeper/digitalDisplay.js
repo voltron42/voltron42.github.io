@@ -62,7 +62,6 @@ namespace('minesweeper.DigitalDisplay',{},() => {
         return <polygon points={ polyPoints } stroke="none" fill={ dispColor || defaultDispColor}/>;
     }
     return function({ value, digitCount, bgColor, dispColor }) {
-        console.log({ value, digitCount, bgColor, dispColor });
         let valueStr = value.toString();
         if (digitCount < valueStr.length) {
             valueStr = valueStr.slice(valueStr.length - digitCount);
