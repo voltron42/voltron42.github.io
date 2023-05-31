@@ -24,7 +24,7 @@ namespace("minesweeper.Settings",{},() => {
                     value={ this.state[field] }
                     onChange={(e) => {
                         const update = {};
-                        update[field] = e.target.value;
+                        update[field] = parseInt(e.target.value);
                         this.setState(update);
                     }}
                 />

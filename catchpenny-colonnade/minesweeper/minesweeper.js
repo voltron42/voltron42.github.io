@@ -52,11 +52,14 @@ namespace("minesweeper.Minesweeper",{
         return 0;
     }
     const checkFlags = function(board, bombCount) {
-        const remaining = board.reduce((out,row) => {
-            return out.concat(row);
+        const remaining = board.reduce((out,row,y) => {
+            return out.concat(row.map(({clickState,bomb},x) => {
+                return {clickState,bomb,x,y};
+            }));
         }, []).filter((cell) => {
             return cell.clickState !== "show";
         });
+        console.log({ remaining, bombCount });
         return remaining.reduce((out,cell) => {
             return out && cell.bomb
         }, true) && remaining.length === bombCount;
@@ -104,13 +107,11 @@ namespace("minesweeper.Minesweeper",{
             });
             board.forEach(( row, y ) => {
                 row.forEach((cell, x ) => {
-                    console.log({ cell, y, x });
                     if (!cell.bomb) {
                         const myNeighbors = getNeighbors(x,y,width,height);
                         const neighborCount = myNeighbors.reduce((sum, [ x1, y1 ]) => {
                             return sum + ((board[y1][x1].bomb)?1:0);
                         }, 0);
-                        console.log({ myNeighbors, neighborCount });
                         board[y][x].neighborCount = neighborCount;
                     }
                 });
@@ -199,13 +200,16 @@ namespace("minesweeper.Minesweeper",{
                             });
                             board[y1][x1].clickState = "show";
                         });
-                        if (checkFlags(board, this.state.count)) {
-                            winState = true;
-                        }
                     }
+                }
+                if (winState === undefined && checkFlags(board, this.state.count)) {
+                    winState = true;
                 }
                 if (winState !== undefined) {
                     this.stopwatch.stop();
+                    if (winState) {
+                        alert(`You finished in ${Math.floor(this.stopwatch.timeFromStart()/1000)} seconds!`);
+                    }
                 }
                 this.setState({ board, winState });
             }
@@ -259,19 +263,24 @@ namespace("minesweeper.Minesweeper",{
                                                         icon = <span>?</span>;
                                                         break;
                                                 }
-                                                cell = <button className="btn btn-dark border border-light border-1 rounded" onClick={() => { this.click(x,y) }}>{ icon }</button>;
+                                                cell = <button 
+                                                    className="btn btn-dark border border-light border-1 rounded"
+                                                    style={{width:"100%",height:"100%"}}
+                                                    onClick={() => { this.click(x,y) }}
+                                                    >{ icon }</button>;
                                             }
                                         }
                                         return <td className="text-center" style={{
-                                            width: "2em",
-                                            height: "2em"
+                                            width: "2.5em",
+                                            height: "2.5em",
+                                            minWidth: "2.5em",
+                                            minHeight: "2.5em",
                                         }}>{ cell }</td>;
                                     }) }
                                 </tr>;
                             }) }
                         </tbody>
                     </table>
-
                 </div>
             </>;
         }
