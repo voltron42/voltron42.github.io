@@ -39,7 +39,7 @@ namespace('snake.Snake',{},() => {
     const buildCoords = function(width, height) {
         const coords = {};
         for(let x = 0; x < width; x++) {
-            for(let x = 0; x < width; x++) {
+            for(let y = 0; y < height; y++) {
                 coords[coordKey(x,y)] = [x,y];
             }
         }
@@ -73,15 +73,17 @@ namespace('snake.Snake',{},() => {
         return { snake, direction: startingDirection }
     }
     const getSnakeHead = function(directionKey) {
+        console.log({ directionKey });
         return matrixMath(config.head.points,config.head.matricies[directionKey]);
     }
     return class extends React.Component {
         constructor(props) {
             super(props);
             const [ width, height, snakeLength, timeDelay] = [ 10, 10, 5, 1000 ];
-            const coords = buildCoords(width, height)
-            const { snake, direction } = buildSnake(width, height, snakeLength);
-            const apple = placeApple(coords, snake);
+            this.coords = buildCoords(width, height)
+            const { snake, direction } = buildSnake(width, height, this.coords, snakeLength);
+            const apple = placeApple(this.coords, snake);
+            console.log({ apple, snake, timeDelay });
             this.state = {
                 width,
                 height,
@@ -108,29 +110,55 @@ namespace('snake.Snake',{},() => {
             this.afterRender();
         }
         afterRender() {
-            // todo
-            // enqueue direction plus peek first
-            // check collision with apple
-            // if apple decriment delay
-            // if no apple then drop last
-            // check collision with walls 
-            // if walls then wrap
-            // check collision with snake body
-            // if collision then end game
-            // else setTimeout for setState
+            if (this.state.endGame) {
+                alert("GAME OVER!")
+            } else {
+                let { apple, timeDelay } = this.state;
+                const { width, height, direction } = this.state 
+                const snake = Array.from(this.state.snake);
+                const [dx,dy] = directions[direction];
+                const [x0,y0] = snake[0];
+                const newHead = [x0+dx,y0+dy];
+                let endGame = false;
+                if (newHead[0] < 0 || newHead >= width || newHead[1] < 0 || newHead[1] >= height) {
+                    endGame = true;
+                } else if (snake.slice(1).filter(([x1,y1]) => {
+                    return x1 === newHead[0] && y1 === newHead[1];
+                }).length > 0) {
+                    endGame = true;
+                }
+                if (endGame) {
+                    if (!this.state.endGame) {
+                        this.setState({ endGame });
+                    }
+                } else { 
+                    snake.unshift(newHead);
+                    if (newHead[0] === apple[0] && newHead[1] === apple[1]) {
+                        timeDelay--;
+                        apple = placeApple(coords,snake);
+                    } else {
+                        snake.pop();
+                    }
+                    let me = this
+                    this.timeout = setTimeout(() => {
+                        me.setState({ apple, timeDelay, snake });
+                    }, this.timeDelay);
+                }
+            }
         }
         render() {
             const halfCell = config.cellSize / 2;
             const { width, height } = this.state;
             const [fullWidth, fullHeight] = [width, height].map(n => n * config.cellSize)
+            const [hx,hy] = this.state.snake[0];
             return <div className="d-flex flex-column justify-content-center">
                 <h1 className="text-center">Snake</h1>
                 <div className="d-flex justify-content-center">
                     <svg width="60%" height="60%" viewBox={`0 0 ${fullWidth} ${fullHeight}`}>
                         <rect width={fullWidth} height={fullHeight} fill={config.colors.bg} stroke="none"/>
-                        <polyline points={this.state.snake.map(([x,y]) =>  coordKey(x + halfCell, y + halfCell )).join(" ")} stroke={config.colors.snake} stroke-width={halfCell} fill="none"/>
-                        <circle cx={this.state.apple[0]} cy={this.state.apple[1]} r={halfCell} fill={config.colors.apple} stroke="none"/>
-                        <polygon points={getSnakeHead(this.state.direction)} fill={config.colors.snake} stroke="none"/>
+                        <polyline points={this.state.snake.map(([x,y]) => coordKey(x * config.cellSize + halfCell, y * config.cellSize + halfCell )).join(" ")} stroke={config.colors.snake} strokeWidth={halfCell} strokeLinecap="round" fill="none"/>
+                        <circle cx={this.state.apple[0] * config.cellSize + halfCell} cy={this.state.apple[1] * config.cellSize + halfCell} r={halfCell} fill={config.colors.apple} stroke="none"/>
+                        <polygon points={getSnakeHead(this.state.direction).map(([x,y]) => coordKey(hx * config.cellSize + x, hy * config.cellSize + y )).join(" ")} fill={config.colors.snake} stroke="none"/>
                     </svg>
                 </div>
             </div>;
