@@ -10,24 +10,27 @@
         <script src="../../../gizmo-atheneum/structure/importnamespace/script.js"></script>
         <!-- key event wrapper -->
         <script src="../../../gizmo-atheneum/util/keyeventwrapper.js"></script>
+        <!-- React -->
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
         <!-- local styles -->
         <link rel="stylesheet" href="styles.css"/>
 
         <!-- local namespaces -->
-        <script type="text/javascript" src="snakeApp.js"></script>
+        <script type="text/babel" src="snake.js"></script>
 
         <!-- init script -->
-        <script type="text/javascript">
-            const initApp = function(){
+        <script type="text/babel">
+            (function(){
                 initKeyEventWrapper();
-                const SnakeApp = importNamespace("snake.SnakeApp");
-                const app = new SnakeApp(document.getElementById("app-root"));
-                app.init();
-            }
+                const Snake = importNamespace("snake.Snake");
+                ReactDOM.createRoot(document.getElementById("app-root")).render(<Snake/>);
+            })()
         </script>
     </head>
-    <body class="container bg-dark text-light" onload="initApp()">
+    <body class="container bg-dark text-light">
         <div id="app-root"></div>
     </body>
 </html>

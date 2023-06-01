@@ -7,7 +7,7 @@ namespace("snake.SnakeApp",{},() => {
                 up:[[1,0,0],[0,1,0]],
                 down:[[1,0,0],[0,-1,20]],
                 right:[[0,1,0],[1,0,0]],
-                left:[[0,1,0],[-1,0,20]],
+                left:[[0,-1,20],[1,0,0]],
             }
         },
         colors: {
@@ -92,6 +92,7 @@ namespace("snake.SnakeApp",{},() => {
             apple
         };
         document.addEventListener("keyhold",(({ detail }) => {
+            console.log({detail});
             const direction = directionKeys[detail.code];
             if (direction) {
                 if (state.timeout) {
@@ -105,43 +106,43 @@ namespace("snake.SnakeApp",{},() => {
             if (state.endGame) {
                 alert("GAME OVER!")
             } else {
-                let { apple, timeDelay } = state;
-                const { width, height, direction } = state 
-                const snake = Array.from(state.snake);
-                const [dx,dy] = directions[direction];
-                const [x0,y0] = snake[0];
-                const newHead = [x0+dx,y0+dy];
-                let endGame = false;
-                if (newHead[0] < 0 || newHead >= width || newHead[1] < 0 || newHead[1] >= height) {
-                    console.log({ newHead, snake, endGame: "walls" });
-                    endGame = true;
-                } else if (snake.filter(([x1,y1]) => {
-                    return x1 === newHead[0] && y1 === newHead[1];
-                }).length > 0) {
-                    console.log({ newHead, snake, endGame: "snake" });
-                    endGame = true;
-                }
-                if (endGame) {
-                    if (!state.endGame) {
-                        state.endGame = endGame;
-                        redraw();
+                state.timeout = setTimeout(() => {
+                    let { apple, timeDelay } = state;
+                    const { width, height, direction } = state 
+                    const snake = Array.from(state.snake);
+                    const [dx,dy] = directions[direction];
+                    const [x0,y0] = snake[0];
+                    const newHead = [x0+dx,y0+dy];
+                    let endGame = false;
+                    if (newHead[0] < 0 || newHead >= width || newHead[1] < 0 || newHead[1] >= height) {
+                        console.log({ newHead, snake, endGame: "walls" });
+                        endGame = true;
+                    } else if (snake.filter(([x1,y1]) => {
+                        return x1 === newHead[0] && y1 === newHead[1];
+                    }).length > 0) {
+                        console.log({ newHead, snake, endGame: "snake" });
+                        endGame = true;
                     }
-                } else { 
-                    snake.unshift(newHead);
-                    if (newHead[0] === apple[0] && newHead[1] === apple[1]) {
-                        timeDelay--;
-                        apple = placeApple(coords,snake);
-                    } else {
-                        snake.pop();
-                    }
-                    state.timeout = setTimeout(() => {
+                    if (endGame) {
+                        if (!state.endGame) {
+                            state.endGame = endGame;
+                            redraw();
+                        }
+                    } else { 
+                        snake.unshift(newHead);
+                        if (newHead[0] === apple[0] && newHead[1] === apple[1]) {
+                            timeDelay--;
+                            apple = placeApple(coords,snake);
+                        } else {
+                            snake.pop();
+                        }
                         console.log({ apple, snake, timeDelay });
                         Object.entries({ apple, timeDelay, snake }).forEach(([k,v]) => {
                             state[k] = v;
                         });
                         redraw();
-                    }, state.timeDelay);
-                }
+                    }
+                }, state.timeDelay);
             }
         }
         const redraw = function() {

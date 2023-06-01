@@ -7,7 +7,7 @@ namespace('snake.Snake',{},() => {
                 up:[[1,0,0],[0,1,0]],
                 down:[[1,0,0],[0,-1,20]],
                 left:[[0,1,0],[1,0,0]],
-                right:[[0,1,0],[-1,0,20]],
+                right:[[0,-1,20],[1,0,0]],
             }
         },
         colors: {
@@ -22,8 +22,8 @@ namespace('snake.Snake',{},() => {
         })
     }
     const directions = {
-        right: [-1, 0, "left"],
-        left: [1, 0, "right"],
+        right: [1, 0, "left"],
+        left: [-1, 0, "right"],
         up: [0, -1, "down"],
         down: [0, 1, "up"],
     }
@@ -79,7 +79,7 @@ namespace('snake.Snake',{},() => {
     return class extends React.Component {
         constructor(props) {
             super(props);
-            const [ width, height, snakeLength, timeDelay] = [ 10, 10, 5, 1000 ];
+            const [ width, height, snakeLength, timeDelay] = [ 10, 10, 5, 500 ];
             this.coords = buildCoords(width, height)
             const { snake, direction } = buildSnake(width, height, this.coords, snakeLength);
             const apple = placeApple(this.coords, snake);
@@ -94,6 +94,7 @@ namespace('snake.Snake',{},() => {
                 apple
             };
             document.addEventListener("keyhold",(({ detail }) => {
+                console.log({detail});
                 const direction = directionKeys[detail.code];
                 if (direction) {
                     if (this.timeout) {
@@ -113,37 +114,36 @@ namespace('snake.Snake',{},() => {
             if (this.state.endGame) {
                 alert("GAME OVER!")
             } else {
-                let { apple, timeDelay } = this.state;
-                const { width, height, direction } = this.state 
-                const snake = Array.from(this.state.snake);
-                const [dx,dy] = directions[direction];
-                const [x0,y0] = snake[0];
-                const newHead = [x0+dx,y0+dy];
-                let endGame = false;
-                if (newHead[0] < 0 || newHead >= width || newHead[1] < 0 || newHead[1] >= height) {
-                    endGame = true;
-                } else if (snake.slice(1).filter(([x1,y1]) => {
-                    return x1 === newHead[0] && y1 === newHead[1];
-                }).length > 0) {
-                    endGame = true;
-                }
-                if (endGame) {
-                    if (!this.state.endGame) {
-                        this.setState({ endGame });
-                    }
-                } else { 
+                this.timeout = setTimeout(() => {
+                    let { apple, timeDelay } = this.state;
+                    const { width, height, direction } = this.state 
+                    const snake = Array.from(this.state.snake);
+                    const [dx,dy] = directions[direction];
+                    const [x0,y0] = snake[0];
+                    const newHead = [x0+dx,y0+dy];
                     snake.unshift(newHead);
-                    if (newHead[0] === apple[0] && newHead[1] === apple[1]) {
-                        timeDelay--;
-                        apple = placeApple(coords,snake);
-                    } else {
-                        snake.pop();
+                    let endGame = false;
+                    if (newHead[0] < 0 || newHead >= width || newHead[1] < 0 || newHead[1] >= height) {
+                        endGame = true;
+                    } else if (snake.slice(1).filter(([x1,y1]) => {
+                        return x1 === newHead[0] && y1 === newHead[1];
+                    }).length > 0) {
+                        endGame = true;
                     }
-                    let me = this
-                    this.timeout = setTimeout(() => {
-                        me.setState({ apple, timeDelay, snake });
-                    }, this.timeDelay);
-                }
+                    if (endGame) {
+                        if (!this.state.endGame) {
+                            this.setState({ endGame });
+                        }
+                    } else { 
+                        if (newHead[0] === apple[0] && newHead[1] === apple[1]) {
+                            timeDelay-=10;
+                            apple = placeApple(this.coords,snake);
+                        } else {
+                            snake.pop();
+                        }
+                        this.setState({ apple, timeDelay, snake });
+                    }
+                }, this.state.timeDelay);
             }
         }
         render() {
