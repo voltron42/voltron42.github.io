@@ -1,12 +1,26 @@
 namespace('snake.Snake',{},() => {
     const config = {
         cellSize: 20,
+        head:{
+            points:[[10,0],[2,20],[10,15],[18,20]],
+            matricies:{
+                up:[[1,0,0],[0,1,0]],
+                down:[[1,0,0],[0,-1,20]],
+                left:[[0,1,0],[1,0,0]],
+                right:[[0,1,0],[-1,0,20]],
+            }
+        },
         colors: {
             bg: "green",
             snake: "blue",
             apple: "red"
         }
     };
+    const matrixMath = function(points,[[xx,yx,px],[xy,yy,py]]) {
+        return points.map(([x,y]) => {
+            return [((xx * x) + (yx * y) + px),((xy * x) + (yy * y) + py)];
+        })
+    }
     const directions = {
         right: [-1, 0, "left"],
         left: [1, 0, "right"],
@@ -37,10 +51,29 @@ namespace('snake.Snake',{},() => {
         return coords[openCoords[Math.floor(Math.random() * openCoords.length)]];
     }
     const buildSnake = function(width, height, coords, snakeLength) {
-        // todo
+        const head = placeApple(coords,[]);
+        const dirDists = {
+            up:head[1],
+            left:head[0],
+            down:(height - head[1]),
+            right:(width - head[0])
+        }
+        const [tailDirection, startingDirection] = Object.entries(dirDists).reduce((out,[dir,dist]) => {
+            if (dist > snakeLength) {
+                out.push(dir);
+            }
+            return out;
+        }, []);
+        const snake = [head];
+        const [tx,ty] = directions[tailDirection];
+        while(snake.length < snakeLength) {
+            let [x,y] = snake[snake.length - 1];
+            snake.push([ x + tx, y + ty ])
+        }
+        return { snake, direction: startingDirection }
     }
-    const getSnakeHead = function([dx,dy]) {
-        // todo
+    const getSnakeHead = function(directionKey) {
+        return matrixMath(config.head.points,config.head.matricies[directionKey]);
     }
     return class extends React.Component {
         constructor(props) {
@@ -59,12 +92,12 @@ namespace('snake.Snake',{},() => {
                 apple
             };
             document.addEventListener("keyhold",(({ detail }) => {
-                const dirKey = directionKeys[detail.code];
-                if (dirKey) {
+                const direction = directionKeys[detail.code];
+                if (direction) {
                     if (this.timeout) {
                         clearTimeout(this.timeout);
                     }
-                    this.setState({ direction: directions[dirKey] });
+                    this.setState({ direction });
                 }
             }));
         }
@@ -76,6 +109,15 @@ namespace('snake.Snake',{},() => {
         }
         afterRender() {
             // todo
+            // enqueue direction plus peek first
+            // check collision with apple
+            // if apple decriment delay
+            // if no apple then drop last
+            // check collision with walls 
+            // if walls then wrap
+            // check collision with snake body
+            // if collision then end game
+            // else setTimeout for setState
         }
         render() {
             const halfCell = config.cellSize / 2;
