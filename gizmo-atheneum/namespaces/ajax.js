@@ -56,11 +56,19 @@ namespace("gizmo-atheneum.namespaces.Ajax",{},() => {
             xhttp.send();
         }
     };
-    const methods = ['GET','POST','PUT','PATCH'];
+    const poll = function(method, filepath, interval, payload, callbacks) {
+        const polling = setInterval(() => {
+            request(method, filepath, payload, callbacks);
+        },interval);
+        return () => {
+            clearInterval(polling);
+        }
+    }
+    const methods = ['GET','POST','PUT','PATCH','DELETE','HEAD','OPTION'];
     const retval = methods.reduce(( out, method ) => {
         out[method.toLowerCase()] = ((filepath, payload, callbacks) => {
             return request(method, filepath, payload, callbacks);
         });
-    }, { request });
+    }, { request, poll });
     return retval;
   });
