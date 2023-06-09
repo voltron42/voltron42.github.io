@@ -13,17 +13,21 @@ namespace("gizmo-atheneum.namespaces.Ajax",{},() => {
       },
       {}
     );
-    const request = function(method, filepath, payload, callbacks) {
+    const wranglePayloadAndCallbacks = function(payload, callbacks) {
         [payload, callbacks] = callbacks?[payload,callbacks]:[undefined,payload];
         if (typeof callbacks == 'function') {
             callbacks = {
-            success: callbacks,
+                success: callbacks,
             };
         }
         callbacks = Object.entries(callbacks).reduce((out, [k, v]) => {
             out[k] = v;
             return out;
         }, defaultCallbacks);
+        return { payload, callbacks };
+    }
+    const request = function(method, filepath, payload, callbacks) {
+        { payload, callbacks } = wranglePayloadAndCallbacks(payload, callbacks);
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4) {
@@ -57,11 +61,27 @@ namespace("gizmo-atheneum.namespaces.Ajax",{},() => {
         }
     };
     const poll = function(method, filepath, interval, payload, callbacks) {
-        const polling = setInterval(() => {
+        { payload, callbacks } = wranglePayloadAndCallbacks(payload, callbacks);
+        const polling = {
+            errorCount:0
+        };
+        callbacks = {
+            success:(respText) => {
+                polling.errorCount = 0;
+                callbacks.success(respText)
+            },
+            stateChange: callbacks.stateChange,
+            failure: (error) => {
+                polling.errorCount++;
+                error.pollingErrorCount = polling.errorCount;
+                callbacks.failure(error);
+            }
+        }
+        polling.interval = setInterval(() => {
             request(method, filepath, payload, callbacks);
         },interval);
         return () => {
-            clearInterval(polling);
+            clearInterval(polling.interval);
         }
     }
     const methods = ['GET','POST','PUT','PATCH','DELETE','HEAD','OPTION'];
