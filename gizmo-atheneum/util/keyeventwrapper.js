@@ -1,13 +1,13 @@
 (function(){
   
-  let keyEventFields = [ 
+  const keyEventFields = [ 
     "altKey", "code", "ctrlKey", "shiftKey", 
     "key", "keyCode", "target", "type"
   ];
 
-  let keyHolds = {};
+  const keyHolds = {};
   
-  let eventMap = {
+  const eventMap = {
     "keyup": {
       "hold": false,
       "event": "keyrelease",
@@ -20,19 +20,28 @@
     }
   };
 
-  let handleKeyEvent = ((e) => {
-    let event = keyEventFields.reduce((out,field) => {
+  const getKeyState = ((detail) => {
+    return detail.altKey?"alt":"" + detail.ctrlKey?"ctrl":"" + detail.shiftKey?"shift":"";
+  });
+
+  const handleKeyEvent = ((e) => {
+    const detail = keyEventFields.reduce((out,field) => {
       out[field] = e[field];
       return out;
     },{});
-    if (event.type in eventMap) {
-      let mapped = eventMap[event.type]
-      if (keyHolds[event.keyCode] != mapped.hold) {
-        let keyEvent = event.code.toLowerCase() + mapped.suffix;
-        document.dispatchEvent(new CustomEvent(mapped.event, { detail: event }));
-        document.dispatchEvent(new CustomEvent(keyEvent, { detail: event }));
+    if (detail.type in eventMap) {
+      const mapped = eventMap[detail.type]
+      if (keyHolds[detail.keyCode] != mapped.hold) {
+        const keyState = getKeyState(detail);
+        const keyEvent = detail.code.toLowerCase() + mapped.suffix;
+        document.dispatchEvent(new CustomEvent(mapped.event, { detail }));
+        document.dispatchEvent(new CustomEvent(keyEvent, { detail }));
+        if (keyState.length > 0 && keyState != detail.key.toLowerCase() && !(keyState == "ctrl" && detail.key == "Control")) {
+          document.dispatchEvent(new CustomEvent(mapped.event + keyState, { detail }));
+          document.dispatchEvent(new CustomEvent(keyEvent + keyState, { detail }));
+        }
       }
-      keyHolds[event.keyCode] = mapped.hold;
+      keyHolds[detail.keyCode] = mapped.hold;
     }
   });
 
