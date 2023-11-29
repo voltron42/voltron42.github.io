@@ -116,9 +116,10 @@ namespace('bottles.BottleGame',{},() => {
     return class extends React.Component {
         constructor(props) {
             super(props);
+            const levelNum = parseInt(props.level) || initLevel;
             this.state = {
-                levelNum: initLevel,
-                level: generateLevel(initLevel)
+                levelNum,
+                level: generateLevel(levelNum)
             };
         }
         animateMoveRecursive(color,moveStep,fromIndex,srcPos,toIndex,destPos,onComplete,percentComplete) {

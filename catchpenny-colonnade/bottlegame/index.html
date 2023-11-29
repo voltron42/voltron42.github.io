@@ -21,7 +21,7 @@
         <script type="text/babel">
             (function(){
                 const BottleGame = importNamespace("bottles.BottleGame"); // bottles.js
-                ReactDOM.createRoot(document.getElementById("app-root")).render(<BottleGame/>);
+                ReactDOM.createRoot(document.getElementById("app-root")).render(<BottleGame level={(new URL(location)).searchParams.get("level")}/>);
             })()
         </script>
     </head>
