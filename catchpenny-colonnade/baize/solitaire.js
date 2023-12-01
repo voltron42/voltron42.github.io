@@ -141,17 +141,21 @@
                 gameState.winState = "auto";
             }
         }
-        this.getNextGoalAndChain = function() {
-          const indexes = gameState.board.map((column,index) => {
+        let getNextGoalAndChain = function() {
+          let indexes = gameState.board.map((column,index) => {
             return { column, index };
           }).filter(({ column }) => {
-            const [rank, suit] = splitCard(column.chain[column.chain.length - 1]);
+            let lastCard = column.chain[column.chain.length - 1];
+            console.log({ column, lastCard });
+            let [rank, suit] = splitCard(lastCard);
             return rank - 1 === gameState.goals[suit];
           }).map(({ index }) => index);
           if (indexes.length > 0) {
-            const chain = indexes[0];
-            const column = gameState.board[chain];
-            const [_, goal] = splitCard(column.chain[column.chain.length - 1]);
+            let chain = indexes[0];
+            let column = gameState.board[chain];
+            let lastCard = column.chain[column.chain.length - 1];
+            console.log({ column, lastCard });
+            let [_, goal] = splitCard(lastCard);
             return { goal, chain };
           }
         }
@@ -223,5 +227,6 @@
         this.getWinState = function() {
             return gameState.winState;
         };
+        this.getNextGoalAndChain = getNextGoalAndChain;
     };
 })();
