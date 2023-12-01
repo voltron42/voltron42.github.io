@@ -141,6 +141,20 @@
                 gameState.winState = "auto";
             }
         }
+        this.getNextGoalAndChain = function() {
+          const indexes = gameState.board.map((column,index) => {
+            return { column, index };
+          }).filter(({ column }) => {
+            const [rank, suit] = splitCard(column.chain[column.chain.length - 1]);
+            return rank - 1 === gameState.goals[suit];
+          }).map(({ index }) => index);
+          if (indexes.length > 0) {
+            const chain = indexes[0];
+            const column = gameState.board[chain];
+            const [_, goal] = splitCard(column.chain[column.chain.length - 1]);
+            return { goal, chain };
+          }
+        }
         this.move = function(from,to) {
             let fromType = getFromToType(from,true);
             let toType = getFromToType(to);
