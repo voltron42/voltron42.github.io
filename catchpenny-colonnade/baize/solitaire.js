@@ -146,15 +146,15 @@
             return { column, index };
           }).filter(({ column }) => {
             let lastCard = column.chain[column.chain.length - 1];
-            console.log({ column, lastCard });
-            let [rank, suit] = splitCard(lastCard);
-            return rank - 1 === gameState.goals[suit];
+            if (lastCard) {
+                let [rank, suit] = splitCard(lastCard);
+                return rank - 1 === gameState.goals[suit];
+            }
           }).map(({ index }) => index);
           if (indexes.length > 0) {
             let chain = indexes[0];
             let column = gameState.board[chain];
             let lastCard = column.chain[column.chain.length - 1];
-            console.log({ column, lastCard });
             let [_, goal] = splitCard(lastCard);
             return { goal, chain };
           }
