@@ -16,7 +16,7 @@ namespace('bottles.BottleGame',{},() => {
         return level < levelColorCounts.length || levelColorCounts[level-1] < colors.length;
     }
     const shuffleColors = function(colorCount) {
-        const { deck, drawpile } = Array(colorCount).reduce(({ deck, drawpile }, _ ) => {
+        const { drawpile } = Array(colorCount).reduce(({ deck, drawpile }, _ ) => {
             const drawIndex = Math.floor(Math.random() * deck.length);
             const drawColor = deck[drawIndex];
             deck.splice(drawIndex, 1);
@@ -28,6 +28,7 @@ namespace('bottles.BottleGame',{},() => {
             drawpile: [],
             deck: Array.from(colors)
         });
+        return drawpile;
     }
     const generateLevel = function(levelNum) {
         const levelColorCount = getLevelColorCount(levelNum);
