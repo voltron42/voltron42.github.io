@@ -1,43 +1,6 @@
 namespace('bottles.BottleGame',{},() => {
     const colorIndicies = [0,1,2,3];
-    const colors = [
-        "#f00",
-        "#0f0",
-        "#00f",
-        "#ff0",
-        "#0ff",
-        "#f0f",
-        "#fa0",
-        "#0fa",
-        "#f0a",
-        "#af0",
-        "#0af",
-        "#a0f",
-        "#ff5",
-        "#5ff",
-        "#f5f",
-        "#fa5",
-        "#5fa",
-        "#f5a",
-        "#af5",
-        "#5af",
-        "#a5f",
-        "#f50",
-        "#0f5",
-        "#f05",
-        "#5f0",
-        "#05f",
-        "#50f",
-        "#ffa",
-        "#aff",
-        "#faf",
-        "#faa",
-        "#afa",
-        "#faa",
-        "#5f5",
-        "#55f",
-        "#55f",
-    ]
+    const colors = ["#000","#00f","#005","#00a","#0f0","#0ff","#0f5","#0fa","#050","#05f","#055","#05a","#0a0","#0af","#0a5","#0aa","#f00","#f0f","#f05","#f0a","#ff0","#fff","#ff5","#ffa","#f50","#f5f","#f55","#f5a","#fa0","#faf","#fa5","#faa","#500","#50f","#505","#50a","#5f0","#5ff","#5f5","#5fa","#550","#55f","#555","#55a","#5a0","#5af","#5a5","#5aa","#a00","#a0f","#a05","#a0a","#af0","#aff","#af5","#afa","#a50","#a5f","#a55","#a5a","#aa0","#aaf","#aa5","#aaa"];
     const levelColorCounts = [3,3];
     const getLevelColorCount = function(level) {
         while(levelColorCounts.length < level) {
@@ -52,9 +15,23 @@ namespace('bottles.BottleGame',{},() => {
     const hasNextLevel = function(level) {
         return level < levelColorCounts.length || levelColorCounts[level-1] < colors.length;
     }
+    const shuffleColors = function(colorCount) {
+        const { deck, drawpile } = Array(colorCount).reduce(({ deck, drawpile }, _ ) => {
+            const drawIndex = Math.floor(Math.random() * deck.length);
+            const drawColor = deck[drawIndex];
+            deck.splice(drawIndex, 1);
+            return {
+                drawpile: [].concat(drawpile, [ drawColor ]),
+                deck
+            };
+        }, {
+            drawpile: [],
+            deck: Array.from(colors)
+        });
+    }
     const generateLevel = function(levelNum) {
         const levelColorCount = getLevelColorCount(levelNum);
-        const levelColors = colors.slice(0,levelColorCount).reduce((out, color) => {
+        const levelColors = shuffleColors(levelColorCount).reduce((out, color) => {
             colorIndicies.forEach(() => {
                 out.push(color)
             })
@@ -249,7 +226,8 @@ namespace('bottles.BottleGame',{},() => {
                     </> : <>{
                         this.state.level.map((bottle,index) => {
                             return <button 
-                                className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success'}`}                             onClick={() => { this.clickBottle(index) }}>
+                                    className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light border-3' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success border-3'}`}
+                                    onClick={() => { this.clickBottle(index) }}>
                                 <div className="row">
                                     { colorIndicies.map((c,color) => {
                                         const style = {
@@ -265,7 +243,7 @@ namespace('bottles.BottleGame',{},() => {
                                                     className="progress-bar"
                                                     id={ `${index}_${color}` }
                                                     style={ style }
-                                                ></div>
+                                                >{color}</div>
                                             </div>
                                         </div>;
                                     }) }
