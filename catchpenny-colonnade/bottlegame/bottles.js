@@ -2,6 +2,28 @@ namespace('bottles.BottleGame',{},() => {
     const colorIndicies = [0,1,2,3];
     const colors = ["#000","#00f","#005","#00a","#0f0","#0ff","#0f5","#0fa","#050","#05f","#055","#05a","#0a0","#0af","#0a5","#0aa","#f00","#f0f","#f05","#f0a","#ff0","#fff","#ff5","#ffa","#f50","#f5f","#f55","#f5a","#fa0","#faf","#fa5","#faa","#500","#50f","#505","#50a","#5f0","#5ff","#5f5","#5fa","#550","#55f","#555","#55a","#5a0","#5af","#5a5","#5aa","#a00","#a0f","#a05","#a0a","#af0","#aff","#af5","#afa","#a50","#a5f","#a55","#a5a","#aa0","#aaf","#aa5","#aaa"];
     const levelColorCounts = [3,3];
+    const rgbFromHex = function (hex) {
+      if (typeof hex === 'string' && hex.length > 0) {
+        if (typeof hex === 'string' && hex.length > 0) {
+          const [red, green, blue] = [1, 2, 3].map((i) =>
+            parseInt(hex.charAt(i).repeat(2), 16)
+          );
+          return { red, green, blue };
+        }
+      }
+    };
+      const getForegroundColor = function (hex,defaultColor) {
+      const rgb = rgbFromHex(hex);
+      if (!rgb) {
+        return defaultColor;
+      }
+      const luminosity = Math.sqrt(
+        Math.pow(rgb['red'], 2) * 0.299 +
+          Math.pow(rgb['green'], 2) * 0.587 +
+          Math.pow(rgb['blue'], 2) * 0.114
+      );
+      return luminosity > 186 ? 'black' : 'white';
+    };
     const getLevelColorCount = function(level) {
         while(levelColorCounts.length < level) {
             let count = levelColorCounts[levelColorCounts.length - 1];
@@ -16,7 +38,7 @@ namespace('bottles.BottleGame',{},() => {
         return level < levelColorCounts.length || levelColorCounts[level-1] < colors.length;
     }
     const shuffleColors = function(colorCount) {
-        const { drawpile } = Array(colorCount).reduce(({ deck, drawpile }, _ ) => {
+        const { drawpile } = Array(colorCount).fill("").reduce(({ deck, drawpile }, _ ) => {
             const drawIndex = Math.floor(Math.random() * deck.length);
             const drawColor = deck[drawIndex];
             deck.splice(drawIndex, 1);
@@ -235,7 +257,7 @@ namespace('bottles.BottleGame',{},() => {
                                             width: bottle[color] ? "100%" : "0%"
                                         }
                                         if (bottle[color]) {
-                                            style.color = bottle[color];
+                                            style.color = getForegroundColor(bottle[color]);
                                             style.backgroundColor = bottle[color];
                                         }
                                         return <div className="col-3 m-0 p-0">
@@ -244,7 +266,7 @@ namespace('bottles.BottleGame',{},() => {
                                                     className="progress-bar"
                                                     id={ `${index}_${color}` }
                                                     style={ style }
-                                                >{color}</div>
+                                                >{bottle[color]}</div>
                                             </div>
                                         </div>;
                                     }) }
