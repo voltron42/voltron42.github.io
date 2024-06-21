@@ -24,8 +24,8 @@ namespace("infinitic.Infinitic",{},() => {
       this.setState({ spaces, turn: !this.state.turn });
     }
     render() {
-      return (<div className="d-flex justify-content-center align-items-center h-100">
-        <table className="game-board w-75">
+      return (<div className="d-flex justify-content-center align-items-center">
+        <table className="game-board">
           <tbody>
             { [0,1,2].map(row => {
               return <tr key={`row${row}`}>
