@@ -24,7 +24,7 @@ namespace("infinitic.Infinitic",{},() => {
     } else {
       possibles = places.map(p => places.join("").replaceAll(p.toString(), ""));
     }
-    let wins = possibles.map(p => winners.indexOf(p)).filter(w => w > 0);
+    let wins = possibles.map(p => winners.indexOf(p)).filter(w => w >= 0);
     if (wins.length > 0) {
       return winners[wins[0]];
     }
