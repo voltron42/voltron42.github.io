@@ -1,18 +1,24 @@
 namespace("infinitic.Infinitic",{},() => {
+  let lastOpacity = 0.6;
   let colors = {
     dark: "#212529"
   };
-  let winners = [
-    "012",
-    "345",
-    "678",
-    "036",
-    "147",
-    "258",
-    "246",
-    "048"
-  ]
-  let hasWinner = function(spaces, turn) {
+  let winners = {
+    "012":{ start:{ x: 2, y: 10 }, end:{ x: 62, y: 10 } },
+    "345":{ start:{ x: 2, y: 32 }, end:{ x: 62, y: 32 } },
+    "678":{ start:{ x: 2, y: 54 }, end:{ x: 62, y: 54 } },
+    "036":{ start:{ x:10, y:2 }, end:{ x:10, y:62 } },
+    "147":{ start:{ x:32, y:2 }, end:{ x:32, y:62 } },
+    "258":{ start:{ x:54, y:2 }, end:{ x:54, y:62 } },
+    "246":{ start:{ x:2, y:62 }, end:{ x:62, y:2 } },
+    "048":{ start:{ x:2, y:2 }, end:{ x:62, y:62 } }
+  };
+  let initState = {
+    turn: true,
+    spaces: [],
+    winner: undefined
+  }
+  let getWinner = function(spaces) {
     let places = spaces.filter((_,i) => i % 2 === 0);
     if (places.length < 3) {
       return ;
@@ -24,66 +30,87 @@ namespace("infinitic.Infinitic",{},() => {
     } else {
       possibles = places.map(p => places.join("").replaceAll(p.toString(), ""));
     }
-    let wins = possibles.map(p => winners.indexOf(p)).filter(w => w >= 0);
+    let wins = possibles.map(p => winners[p]).filter(w => w);
     if (wins.length > 0) {
-      return winners[wins[0]];
+      return wins[0];
     }
   }
   return class extends React.Component {
     constructor(props){
       super(props);
-      this.state = {
-        turn: true,
-        spaces: []
-      }
+      this.state = initState;
     }
     getIcon(space) {
-      let index = this.state.spaces.indexOf(space);
-      return (index < 0)?"":(((index % 2 == 0) == this.state.turn)?"X":"O");
+      let { spaces, turn } = this.state;
+      let index = spaces.indexOf(space);
+      return (index < 0)?"":(((index % 2 === 0)!=turn)?"X":"O");
+    }
+    isLast(space) {
+      return this.state.spaces.indexOf(space) === 5;
     }
     clickCell(space) {
       let icon = this.getIcon(space);
-      if (icon != "") {
+      if (icon === "") {
         let spaces = Array.from(this.state.spaces);
         spaces.unshift(space);
-        let winner = getWinner(spaces);
-        if (spaces.length > 6) {
+        let line = getWinner(spaces);
+        if (spaces.length > 6 && !line) {
           spaces.pop();
         }
-        console.log(this.state);
         let update = { spaces, turn: !this.state.turn };
-        if (winner) {
-          update.winner = winner;
+        if (line) {
+          update.winner = { icon, line };
         }
-        this.setState();
+        this.setState(update);
       }
     }
     render() {
-      return (<div className="d-flex justify-content-center align-items-center">
-        <table className="game-board">
-          <tbody>
-            { [0,1,2].map(row => {
-              return <tr key={`row${row}`}>
-                { [0,1,2].map(cell => {
-                  let space = row * 3 + cell;
-                  let icon = this.getIcon(space);
-                  return <td key={`cell${space}`} id={`cell${space}`}>
-                    <button onClick={() => { this.clickCell(space) }} className="btn btn-dark game-space h-100 w-100">
-                      <svg width="100%" height="100%" viewBox="0 0 100 100">
-                        <rect width="100" height="100" fill={colors.dark}/>
-                        { icon=="O" && <circle cx="50" cy="50" r="40" strokeWidth="10" stroke="blue" fill="none"/> }
-                        { icon=="X" && <g>
-                          <line x1="10" y1="10" x2="90" y2="90" strokeWidth="10" stroke="red"/>
-                          <line x1="10" y1="90" x2="90" y2="10" strokeWidth="10" stroke="red"/>
-                        </g> }
-                      </svg>
-                    </button>
-                  </td>;
-                })}
-              </tr>;
-            })}
-          </tbody>
-        </table>
+      let winner = this.state.winner;
+      return (<div className="d-flex justify-content-center align-items-center w-100 h-100">
+        <svg width="100%" height="100%" viewBox="0 0 64 64">
+          { [0,1,2].map(row => {
+            return [0,1,2].map(column => {
+              let space = row * 3 + column;
+              let icon = this.getIcon(space);
+              let isLast = this.isLast(space);
+              let offsetX = 22 * column;
+              let offsetY = 22 * row;
+              return <a key={`space${space}`} href="#" onClick={(e) => {
+                e.preventDefault();
+                this.clickCell(space);
+              }}>
+                <rect x={ offsetX } y={ offsetY } width="20" height="20" fill={ colors.dark }/>
+                { icon==="O" && <circle cx={ offsetX + 10 } cy={ offsetY + 10 } r="8" strokeWidth="2" stroke="blue" fill="none" opacity={ (isLast && !winner)?lastOpacity:1 }/> }
+                { icon==="X" && <g transform={`translate(${offsetX}, ${offsetY})`}>
+                  <polygon points="3,1 10,8 17,1 19,3 12,10 19,17 17,19 10,12 3,19 1,17 8,10 1,3" fill="red" opacity={ (isLast && !winner)?lastOpacity:1 }/>
+                </g> }
+              </a>;
+            });
+          }) }
+          <g>
+            <rect x="0" y="20" width="64" height="2" fill="white"/>
+            <rect x="0" y="42" width="64" height="2" fill="white"/>
+            <rect x="20" y="0" width="2" height="64" fill="white"/>
+            <rect x="42" y="0" width="2" height="64" fill="white"/>
+          </g>
+          { winner && <>
+            <line 
+              x1={ winner.line.start.x }
+              y1={ winner.line.start.y }
+              x2={ winner.line.end.x }
+              y2={ winner.line.end.y }
+              stroke="green"
+              strokeWidth="1"
+              />
+            <a href="#" onClick={(e) => {
+              e.preventDefault();
+              confirm(`${winner.icon} is the winner! Play again?`);
+              this.setState(initState);
+            }}>
+              <rect width="64" height="64" fill={ colors.dark } opacity="0.1"/>
+            </a>
+          </>}
+        </svg>
       </div>);
     }
   }
