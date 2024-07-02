@@ -263,7 +263,7 @@ namespace('bottles.BottleGame',{},() => {
                                         return <div className="col-3 m-0 p-0">
                                             <div className="progress w-100 m-1">
                                                 <div 
-                                                    className="progress-bar"
+                                                    className="progress-bar h-3"
                                                     id={ `${index}_${color}` }
                                                     style={ style }
                                                 >{bottle[color]}</div>

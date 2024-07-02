@@ -61,7 +61,7 @@ namespace("liteBrite.LiteBrite",{},() => {
       }
     }
     render() {
-      return <div className="d-flex justify-content-center">
+      return <div className="d-flex justify-content-center align-items-center w-100 h-100">
         <svg width="75%" height="75%" viewBox={`0 0 ${width} ${height}`}>
           { Object.entries(this.state.dots).map(([coord, color]) => {
             let [ col, row ] = parseCoordinate(coord);
