@@ -184,7 +184,7 @@
         }
         let startNewGame = function() {
             console.log("start game");
-            playBeeps(beeper,ceottk.map(note => HertzDonut.apply(null,note)),{
+            playBeeps(beeper, ceottk.map(note => HertzDonut.apply(null,note)),{
                 duration: 0.5,
                 callback: () => {
                     gameState.sequence = [];
