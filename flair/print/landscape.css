@@ -38,9 +38,9 @@ body {
     page-break-after: auto;
   }
   .canvas {
-    width: 10in;
-    height: 8in;
-    margin: 0.2in 0in 0in 0.2in;
+    width: 10in!important;
+    height: 8in!important;
+    margin: 0in!important;
   }
   .canvas.data-url {
     background-size: contain;
