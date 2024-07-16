@@ -40,7 +40,7 @@ body {
   .canvas {
     width: 10in;
     height: 8in;
-    margin: 0.23in;
+    margin: 0.2in 0in 0in 0.2in;
   }
   .canvas.data-url {
     background-size: contain;
