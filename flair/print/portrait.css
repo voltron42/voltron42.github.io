@@ -26,13 +26,17 @@ body {
   body,
   .page {
     background-color: white;
-    width: 8.5in!important;
-    height: 11in!important;
     padding: 0!important;
     margin: 0!important;
     overflow: hidden !important;
   }
+  html,body {
+    width: 100%!important;
+    height: auto!important;
+  }
   .page {
+    width: 8.5in!important;
+    height: 11in!important;
     border: 0px;
     page-break-after: always;
   }
