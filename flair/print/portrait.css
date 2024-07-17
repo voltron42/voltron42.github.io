@@ -39,9 +39,12 @@ body {
     page-break-after: auto;
   }
   .canvas {
-    width: 8.5in!important;
-    height: 11in!important;
-    margin: 0in!important;
+    width: 8in!important;
+    height: 10in!important;
+    margin-top: 0.25in!important;
+    margin-left: 0.25in!important;
+    margin-bottom: 0!important;
+    margin-right: 0!important;
     padding: 0!important;
   }
   .canvas.data-url {
@@ -51,7 +54,7 @@ body {
   }
   @page {
     margin: 0!important;
-    pading: 0!important;
+    padding: 0!important;
     size: 8.5in 11in;
   }
 }
