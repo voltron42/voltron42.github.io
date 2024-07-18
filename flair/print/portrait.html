@@ -3,7 +3,14 @@
     <title>Print Cobblestone</title>
     <link rel="stylesheet" href="./portrait.css">
   </head>
-  <body>
+  <script type="text/javascript">
+    function promptPrint() {
+      if(confirm("Use 'Print' menu to 'Save as PDF', then print from Adobe Acrobat Reader with the 'Actual Size' option (instead of 'Fit to page').")){
+        print();
+      }
+    }
+  </script>
+  <body onload="setTimeout(promptPrint,500)" onclick="promptPrint()" oncontextmenu="promptPrint()">
     <svg width="0" height="0">
       <defs>
         <image id="spritely (4).png."
@@ -14,33 +21,33 @@
     <div class="page">
       <div class="canvas">
         <svg viewBox="0 0 800 1000">
-          <use x="0" y="0" href="#spritely (4).png."></use>
-          <use x="700" y="0" href="#spritely (4).png."></use>
-          <use x="700" y="900" href="#spritely (4).png."></use>
-          <use x="0" y="900" href="#spritely (4).png."></use>
           <rect x="0" y="0" width="800" height="1000" fill="none" stroke="#0000FF" stroke-width="6"></rect>
+          <use x="0" y="0" href="#spritely (4).png."></use>
+          <use x="700" y="0" href="#spritely (4).png."></use>
+          <use x="700" y="900" href="#spritely (4).png."></use>
+          <use x="0" y="900" href="#spritely (4).png."></use>
         </svg>
       </div>
     </div>
     <div class="page">
       <div class="canvas">
         <svg viewBox="0 0 800 1000">
-          <use x="0" y="0" href="#spritely (4).png."></use>
-          <use x="700" y="0" href="#spritely (4).png."></use>
-          <use x="700" y="900" href="#spritely (4).png."></use>
-          <use x="0" y="900" href="#spritely (4).png."></use>
           <rect x="0" y="0" width="800" height="1000" fill="none" stroke="#FF0000" stroke-width="6"></rect>
+          <use x="0" y="0" href="#spritely (4).png."></use>
+          <use x="700" y="0" href="#spritely (4).png."></use>
+          <use x="700" y="900" href="#spritely (4).png."></use>
+          <use x="0" y="900" href="#spritely (4).png."></use>
         </svg>
       </div>
     </div>
     <div class="page">
       <div class="canvas">
         <svg viewBox="0 0 800 1000">
+          <rect x="0" y="0" width="800" height="1000" fill="none" stroke="#00FF00" stroke-width="6"></rect>
           <use x="0" y="0" href="#spritely (4).png."></use>
           <use x="700" y="0" href="#spritely (4).png."></use>
           <use x="700" y="900" href="#spritely (4).png."></use>
           <use x="0" y="900" href="#spritely (4).png."></use>
-          <rect x="0" y="0" width="800" height="1000" fill="none" stroke="#00FF00" stroke-width="6"></rect>
         </svg>
       </div>
     </div>

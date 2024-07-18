@@ -1,22 +1,26 @@
-body {
-  background-color: gray;
-}
-.page {
-  background-color: white;
-  border: 1px solid black;
-  width: 4.25in;
-  height: 5.5in;
-}
-.canvas {
-  width: 4in;
-  height: 5in;
-  margin: 0.125in;
-}
 .canvas.data-url {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
+@media screen {
+  body {
+    background-color: gray;
+  }
+  .page {
+    float: left;
+    background-color: white;
+    border: 1px solid black;
+    width: 4.25in;
+    height: 5.5in;
+    margin: 0.125in;
+  }
+  .canvas {
+    width: 4in;
+    height: 5in;
+    margin: 0.125in;
+  }
+  }
 @media print {
   * {
     -webkit-print-color-adjust: exact;
