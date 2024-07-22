@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Luigi's Music</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
+        <!-- Import Namespace -->
+        <script src="https://voltron42.github.io/gizmo-atheneum/structure/importnamespace/script.js"></script>
+
+        <!-- local styles -->
+        <link rel="stylesheet" href="styles.css"/>
+
+        <!-- local namespaces -->
+        <script type="text/javascript" src="beeper.js"></script>
+        <script type="text/javascript" src="hertz.js"></script>
+        <script type="text/javascript" src="luigisMusic.js"></script>
+        <script type="text/javascript" src="musicPlayer.js"></script>
+        <script type="text/javascript" src="player.js"></script>
+
+        <!-- init script -->
+        <script type="text/javascript">
+            function playMusic(){
+                const LuigisMusic = importNamespace("luigis-music.LuigisMusic");
+                const music = new LuigisMusic();
+                music.play();
+            }
+        </script>
+    </head>
+    <body class="container-fluid bg-dark text-light">
+        <div id="d-flex justify-content-center">
+            <button onclick="playMusic()">Play Music!</button>
+        </div>
+    </body>
+</html>
