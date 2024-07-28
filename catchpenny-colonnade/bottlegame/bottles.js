@@ -219,14 +219,9 @@ namespace('bottles.BottleGame',{},() => {
             }
         }
         playNextLevel(){
-            const levelNum = this.state.levelNum + 1;
-            this.setState({
-                levelNum,
-                level: generateLevel(levelNum),
-                fromIndex: undefined,
-                levelCompleted: undefined,
-                availableMoves: undefined 
-            });
+          let url = location.href.split("?")[0];
+          let nextLevel = this.state.levelNum + 1;
+          location.assign(`${url}?level=${nextLevel}`);
         }
         render() {
             return <>
