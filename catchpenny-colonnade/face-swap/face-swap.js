@@ -4,11 +4,11 @@ namespace("face-swap.FaceSwap", {}, () => {
   const icons = {
     "happy":<i className="fas fa-face-grin color-yellow" style={{ fontSize }}></i>,
     "angry":<i className="fas fa-face-angry color-red" style={{ fontSize }}></i>,
-    "wacky":<i className="fas fa-face-grin-tongue-wink color-purple" style={{ fontSize }}></i>,
+    "wacky":<i className="fas fa-face-grin-tongue-wink color-orange" style={{ fontSize }}></i>,
     "sad":<i className="fas fa-face-sad-tear color-blue" style={{ fontSize }}></i>,
     "lovey":<i className="fas fa-face-grin-hearts color-pink" style={{ fontSize }}></i>,
     "sick":<i className="fas fa-face-dizzy color-green" style={{ fontSize }}></i>,
-    "tense":<i className="fas fa-face-grimace color-orange" style={{ fontSize }}></i>,
+    "tense":<i className="fas fa-face-grimace color-grey" style={{ fontSize }}></i>,
     "atom":<i className="fas fa-atom color-white" style={{ fontSize }}></i>,
     "lightbulb":<i className="fas fa-lightbulb" style={{ fontSize }}></i>,
     "sun":<i className="fas fa-sun" style={{ fontSize }}></i>,
@@ -18,20 +18,56 @@ namespace("face-swap.FaceSwap", {}, () => {
   const faces = {
     "happy": "yellow", 
     "angry": "red",
-    "wacky": "purple",
+    "wacky": "orange",
     "sad": "blue",
     "lovey": "pink",
     "sick": "green",
-    "tense": "orange",
+    "tense": "grey",
   };
   const getMatches = function(grid, face, r, c) {
-    // move out from point to get all adjacent matches, vertical then horizontal
-    // return union of sets of size greater than 2
+    const vertical = [[r,c]];
+    for (let y = r - 1; y >= 0; y--) {
+      if (grid[y][c] == face) {
+        vertical.push([y,c]);
+      } else {
+        break;
+      }
+    }
+    for (let y = r + 1; y < 8; y++) {
+      if (grid[y][c] == face) {
+        vertical.push([y,c]);
+      } else {
+        break;
+      }
+    }
+    const horizontal = [[r,c]];
+    for (let x = c - 1; x >= 0; x--) {
+      if (grid[r][x] == face) {
+        horizontal.push([r, x]);
+      } else {
+        break;
+      }
+    }
+    for (let x = c + 1; x < 8; x++) {
+      if (grid[r][x] == face) {
+        horizontal.push([r, x]);
+      } else {
+        break;
+      }
+    }
+    if (horizontal.lengh >= 3 || vertical.lengh >= 3) {
+      return horizontal.concat(vertical);
+    }
     return [];
   }
   const resolveMatches = function(grid, matches) {
     // remove faces from given matched spaces
     // shift all faces down the grid
+    let newGrid = grid.map(row => row.map(cell => Array.from(cell)))
+    for(let c = 0; c < 8; c++) {
+      // todo
+    }
+    return newGrid;
   }
   const getFirstMatches = function(grid) {
     for (let r = 7; r >= 0; r--) {
@@ -42,6 +78,7 @@ namespace("face-swap.FaceSwap", {}, () => {
         } 
       }
     }
+    return [];
   }
   const resolve = function(grid) {
     const matches = getFirstMatches(grid);
