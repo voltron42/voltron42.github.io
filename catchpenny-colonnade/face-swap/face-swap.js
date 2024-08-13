@@ -48,13 +48,18 @@ namespace("face-swap.FaceSwap", {}, () => {
       if (grid[r][x].face != face) break;
       horizontal.push([r, x]);
     }
-    if (horizontal.length >= 3 || vertical.length >= 3) {
-      return horizontal.concat(vertical);
+    let results = [];
+    if (horizontal.length >= 3) {
+      results = results.concat(horizontal);
     }
-    return [];
+    if (vertical.length >= 3) {
+      results = results.concat(vertical);
+    }
+    return results;
   }
   const resolveMatches = function(grid, matches) {
-    let newGrid = grid.map(row => row.map(cell => Array.from(cell)))
+    const newGrid = grid.map((row) => row.map(({ face }) => { return { face }; }));
+    console.log({ grid, newGrid, matches });
     for(let col = 0; col < 8; col++) {
       let columnMatches = matches.filter(([_, c]) => col == c).map(([r, _]) => r);
       let max = columnMatches.sort().reverse()[0];
@@ -62,14 +67,14 @@ namespace("face-swap.FaceSwap", {}, () => {
       let offset = max - span;
       for(let row = offset; row >= 0; row--) {
         newGrid[row + span][col].face = newGrid[row][col].face;
-        const cell = newGrid[row][col];
-        delete cell.face;
+        delete newGrid[row][col].face;
       }
-      console.log({ column: Array(8).fill("").map((_, i) => newGrid[i][col]) });
-      for(let row = 0; (typeof newGrid[row][col].face) != "undefined"; row++) {
+      console.log({ column: Array(8).fill("").map((_,i) => newGrid[i][col]) });
+      for(let row = 0; row < span; row++) {
         newGrid[row][col].face = getNewFace();
       }
     }
+    console.log({ newGrid })
     return newGrid;
   }
   const getFirstMatches = function(grid) {
@@ -86,19 +91,41 @@ namespace("face-swap.FaceSwap", {}, () => {
     if (firstMatches.length == 0) return grid;
     return resolve(resolveMatches(grid, firstMatches));
   };
+  const getNextStateFromGrid = function(grid) {
+    const state = { grid, selected: undefined };
+    const firstMatches = getFirstMatches(grid);
+    if (firstMatches.length > 0) {
+      state.firstMatches = firstMatches;
+    }
+    return state;
+  }
   const buildInitState = function() {
     const grid = Array(8).fill(Array(8).fill({})).map((row) => {
       return row.map(($) => {
         return { face: getNewFace() };
       });
     });
-    return { grid: resolve(grid) };
+    return getNextStateFromGrid(grid);
   };
   return class extends React.Component {
     constructor(props) {
       super(props);
       this.state = buildInitState();
       console.log({ state: this.state });
+    }
+    componentDidMount() {
+      this.afterRender();
+    }
+    componentDidUpdate() {
+      this.afterRender();
+    }
+    afterRender() {
+      const { grid, firstMatches } = this.state;
+      if (firstMatches) {
+        setTimeout(() => {
+          this.setState(getNextStateFromGrid(resolveMatches(grid, firstMatches)));
+        }, 2000);
+      }
     }
     areAdjacent([r1,c1],[r2,c2]) {
       const rDiff = Math.abs(r1 - r2);
@@ -117,17 +144,19 @@ namespace("face-swap.FaceSwap", {}, () => {
         const temp = grid[r1][c1];
         grid[r1][c1] = grid[r2][c2];
         grid[r2][c2] = temp;
-        const resolved = resolve(resolveMatches(grid, matches));
-        this.setState({ grid: resolved, selected: undefined });
+        const resolved = resolveMatches(grid, matches);
+        this.setState(getNextStateFromGrid(resolved));
       }
     }
     click(r, c) {
-      if((typeof this.state.selected) == "undefined") {
-        this.setState({ selected: [r,c] });
-      } else if (!this.areAdjacent(this.state.selected, [r,c])) {
-        this.setState({ selected: undefined });
-      } else {
-        this.swapAndResolve(this.state.selected, [r,c]);
+      if(!this.state.firstMatches) {
+        if((typeof this.state.selected) == "undefined") {
+          this.setState({ selected: [r,c] });
+        } else if (!this.areAdjacent(this.state.selected, [r,c])) {
+          this.setState({ selected: undefined });
+        } else {
+          this.swapAndResolve(this.state.selected, [r,c]);
+        }
       }
     }
     isSelected(r,c) {
@@ -135,29 +164,36 @@ namespace("face-swap.FaceSwap", {}, () => {
     }
     render() {
       if (this.state.grid) {
-        return (<table>
-          <tbody>
-            { this.state.grid.map((row,r) => {
-              return <tr key={`row${r}`}>
-                { row.map(($,c) => {
-                  return <td key={`cell${r}x${c}`} className="text-center" style={{
-                    width: size,
-                    height: size,
-                    minWidth: size,
-                    minHeight: size,
-                }}>
-                  <button 
-                    key={`button${r}x${c}`} 
-                    className={`btn btn-dark border rounded ${ this.isSelected(r,c)?"border-info border-4":"border-dark border-1"}`}
-                    style={{width:"100%",height:"100%"}}
-                    onClick={() => this.click(r,c)}
-                    >{ icons[$.face] }</button>
-                </td>;
+        return (<div className="d-flex flex-column justify-content-center">
+          <div className="d-flex justify-content-center">
+            <button className="btn btn-primary" onClick={() => { this.setState({ firstMatches: undefined })}}>Stop</button>
+          </div>
+          <div className="d-flex justify-content-center">
+            <table>
+              <tbody>
+                { this.state.grid.map((row,r) => {
+                  return <tr key={`row${r}`}>
+                    { row.map(($,c) => {
+                      return <td key={`cell${r}x${c}`} className="text-center" style={{
+                        width: size,
+                        height: size,
+                        minWidth: size,
+                        minHeight: size,
+                    }}>
+                      <button 
+                        key={`button${r}x${c}`} 
+                        className={`btn btn-dark border rounded ${ this.isSelected(r,c)?"border-info border-4":"border-dark border-1"}`}
+                        style={{width:"100%",height:"100%"}}
+                        onClick={() => this.click(r,c)}
+                        >{ icons[$.face] }</button>
+                    </td>;
+                    })}
+                  </tr>;
                 })}
-              </tr>;
-            })}
-          </tbody>
-        </table>);
+              </tbody>
+            </table>
+          </div>
+        </div>)
       } else {
         return <></>;
       }
