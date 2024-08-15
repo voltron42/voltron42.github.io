@@ -2,6 +2,8 @@ namespace("face-swap.FaceSwap", {}, () => {
   const fontSize = "2.5em";
   const size = "4em";
   const iconStyle = { fontSize };
+  const delay = 750;
+  const clearIcon = "atom";
   const icons = {
     "happy":<i className="fas fa-face-grin color-yellow" style={ iconStyle }></i>,
     "angry":<i className="fas fa-face-angry color-red" style={ iconStyle }></i>,
@@ -25,6 +27,15 @@ namespace("face-swap.FaceSwap", {}, () => {
     "sick": "green",
     "tense": "grey",
   };
+  const copyGrid = function(grid) {
+    return grid.map(row => row.map(({ face }) => {
+      var cell = {};
+      if (face) {
+        cell.face = face;
+      }
+      return cell;
+    }));
+  }
   const getNewFace = function() {
     const keys = Object.keys(faces);
     return keys[Math.floor(Math.random() * keys.length)];
@@ -57,56 +68,90 @@ namespace("face-swap.FaceSwap", {}, () => {
     }
     return results;
   }
-  const resolveMatches = function(grid, matches) {
-    const newGrid = grid.map((row) => row.map(({ face }) => { return { face }; }));
-    console.log({ grid, newGrid, matches });
-    for(let col = 0; col < 8; col++) {
-      let columnMatches = matches.filter(([_, c]) => col == c).map(([r, _]) => r);
-      let max = columnMatches.sort().reverse()[0];
-      let span = columnMatches.length;
-      let offset = max - span;
-      for(let row = offset; row >= 0; row--) {
-        newGrid[row + span][col].face = newGrid[row][col].face;
-        delete newGrid[row][col].face;
-      }
-      console.log({ column: Array(8).fill("").map((_,i) => newGrid[i][col]) });
-      for(let row = 0; row < span; row++) {
-        newGrid[row][col].face = getNewFace();
-      }
-    }
-    console.log({ newGrid })
-    return newGrid;
-  }
   const getFirstMatches = function(grid) {
     for (let r = 7; r >= 0; r--) {
       for (let c = 0; c < 8; c++) {
-        const matches = getMatches(grid, grid[r][c].face, r, c);
-        if(matches.length > 0) return matches;
+        const face = grid[r][c].face;
+        const matches = getMatches(grid, face, r, c);
+        if(matches.length > 0) return { face, matches };
       }
     }
-    return [];
   }
-  const resolve = function(grid) {
-    const firstMatches = getFirstMatches(grid);
-    if (firstMatches.length == 0) return grid;
-    return resolve(resolveMatches(grid, firstMatches));
-  };
-  const getNextStateFromGrid = function(grid) {
-    const state = { grid, selected: undefined };
-    const firstMatches = getFirstMatches(grid);
-    if (firstMatches.length > 0) {
-      state.firstMatches = firstMatches;
+  const clearMatches = function(grid, { face, matches }) {
+    const mutator = ((face == clearIcon)?(cell) => { delete cell.face }:(cell) => { cell.face = clearIcon });
+    Array.from(matches).forEach(([r,c]) => {
+      mutator(grid[r][c]);
+    });
+    return { grid, selected: undefined };
+  }
+  const getOpenSpots = function(grid) {
+    const open = grid.reduce((acc, row, r) => {
+      return acc.concat(row.map((_, c) => {
+        return { r, c };
+      }));
+    },[]).filter(({ r, c }) => !grid[r][c].face);
+    const zeros = open.filter(({r}) => r === 0);
+    const shifters = open.filter(({ r, c }) => r > 0 && grid[r-1][c].face);
+    if (zeros.length > 0 || shifters.length > 0) {
+      return { zeros, shifters };
     }
-    return state;
+  };
+  const shiftDown = function(grid, { shifters, zeros } ) {
+    shifters.forEach(({ r, c }) => {
+      grid[r][c].face = grid[r - 1][c].face;
+      delete grid[r - 1][c].face;
+    });
+    zeros.forEach(({ r, c }) => {
+      grid[r][c].face = getNewFace();
+    });
+    return { grid };
   }
+  const areAdjacent = function([r1,c1],[r2,c2]) {
+    const rDiff = Math.abs(r1 - r2);
+    if(rDiff > 1) return false;
+    const cDiff = Math.abs(c1 - c2);
+    if(cDiff > 1) return false;
+    if(rDiff == cDiff) return false;
+    return true;
+  }
+  const swapAndResolve = function(grid, [r1,c1], [r2,c2]) {
+    grid = grid.map(row => row.map((cell) => {
+      const newCell = {};
+      if (cell.face) {
+        newCell.face = cell.face;
+      }
+      return newCell;
+    }));
+    const face1 = grid[r1][c1].face;
+    const face2 = grid[r2][c2].face;
+    const matches = getMatches(grid, face1, r2, c2).concat(getMatches(grid, face2, r1, c1));
+    if (matches.length > 0) {
+      const temp = grid[r1][c1];
+      grid[r1][c1] = grid[r2][c2];
+      grid[r2][c2] = temp;
+      return { grid, selected: undefined, hold: true };
+    }
+  };
   const buildInitState = function() {
     const grid = Array(8).fill(Array(8).fill({})).map((row) => {
       return row.map(($) => {
         return { face: getNewFace() };
       });
     });
-    return getNextStateFromGrid(grid);
+    return { grid, selected: undefined, hold: true };
   };
+  const isSelected = function(selected, r, c) {
+    if (Array.isArray(selected) && selected.length == 2) {
+      const [ sr, sc ] = selected;
+      return sr == r && sc == c;
+    }
+  }
+  const stepUpdate = function(eventName, setState, wrapper) {
+    return function() {
+      console.log({ when: eventName, newState: wrapper.newState });
+      setState(wrapper.newState);
+    }
+  }
   return class extends React.Component {
     constructor(props) {
       super(props);
@@ -120,54 +165,42 @@ namespace("face-swap.FaceSwap", {}, () => {
       this.afterRender();
     }
     afterRender() {
-      const { grid, firstMatches } = this.state;
-      if (firstMatches) {
-        setTimeout(() => {
-          this.setState(getNextStateFromGrid(resolveMatches(grid, firstMatches)));
-        }, 2000);
-      }
-    }
-    areAdjacent([r1,c1],[r2,c2]) {
-      const rDiff = Math.abs(r1 - r2);
-      if(rDiff > 1) return false;
-      const cDiff = Math.abs(c1 - c2);
-      if(cDiff > 1) return false;
-      if(rDiff == cDiff) return false;
-      return true;
-    }
-    swapAndResolve([r1,c1],[r2,c2]) {
-      const grid = this.state.grid;
-      const face1 = grid[r1][c1].face;
-      const face2 = grid[r2][c2].face;
-      const matches = getMatches(grid, face1, r2, c2).concat(getMatches(grid, face2, r1, c1));
-      if (matches.length > 0) {
-        const temp = grid[r1][c1];
-        grid[r1][c1] = grid[r2][c2];
-        grid[r2][c2] = temp;
-        const resolved = resolveMatches(grid, matches);
-        this.setState(getNextStateFromGrid(resolved));
-      }
-    }
-    click(r, c) {
-      if(!this.state.firstMatches) {
-        if((typeof this.state.selected) == "undefined") {
-          this.setState({ selected: [r,c] });
-        } else if (!this.areAdjacent(this.state.selected, [r,c])) {
-          this.setState({ selected: undefined });
+      const me = this;
+      const setState = function(newState){me.setState(newState)};
+      const grid = copyGrid(this.state.grid);
+      const empties = getOpenSpots(grid);
+      console.log({ when: "afterRender", grid, empties });
+      if (empties) {
+        const wrapper = {};
+        setTimeout(stepUpdate("empties", setState, wrapper), delay);
+        wrapper.newState = shiftDown(grid, empties);
+      } else {
+        const firstMatches = getFirstMatches(grid);
+        console.log({ when: "afterRender else", firstMatches });
+        if (firstMatches) {
+          const wrapper = {};
+          setTimeout(stepUpdate("first matches", setState, wrapper), delay);
+          wrapper.newState = clearMatches(grid, firstMatches);
         } else {
-          this.swapAndResolve(this.state.selected, [r,c]);
+          this.setState({ hold: undefined });
         }
       }
     }
-    isSelected(r,c) {
-      return Array.isArray(this.state.selected) && this.state.selected.length == 2 && this.state.selected[0] == r && this.state.selected[1] == c;
+    click(r, c) {
+      if(!this.state.hold) {
+        if((typeof this.state.selected) == "undefined") {
+          this.setState({ selected: [r,c] });
+        } else if (!areAdjacent(this.state.selected, [r,c])) {
+          this.setState({ selected: undefined });
+        } else {
+          let newState = swapAndResolve(this.state.grid, this.state.selected, [r,c]);
+          if (newState) this.setState(newState);
+        }
+      }
     }
     render() {
       if (this.state.grid) {
         return (<div className="d-flex flex-column justify-content-center">
-          <div className="d-flex justify-content-center">
-            <button className="btn btn-primary" onClick={() => { this.setState({ firstMatches: undefined })}}>Stop</button>
-          </div>
           <div className="d-flex justify-content-center">
             <table>
               <tbody>
@@ -182,7 +215,7 @@ namespace("face-swap.FaceSwap", {}, () => {
                     }}>
                       <button 
                         key={`button${r}x${c}`} 
-                        className={`btn btn-dark border rounded ${ this.isSelected(r,c)?"border-info border-4":"border-dark border-1"}`}
+                        className={`btn btn-dark border rounded ${ isSelected(this.state.selected,r,c)?"border-info border-4":"border-dark border-1"}`}
                         style={{width:"100%",height:"100%"}}
                         onClick={() => this.click(r,c)}
                         >{ icons[$.face] }</button>
