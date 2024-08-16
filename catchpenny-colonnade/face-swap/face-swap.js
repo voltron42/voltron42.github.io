@@ -1,4 +1,5 @@
 namespace("face-swap.FaceSwap", {}, () => {
+  const frameId = "animation-frame-id-"+(new Date()).getTime();
   const fontSize = "2.5em";
   const size = "4em";
   const iconStyle = { fontSize };
@@ -18,6 +19,13 @@ namespace("face-swap.FaceSwap", {}, () => {
     "bolt":<i className="fas fa-bolt" style={ iconStyle }></i>,
     "bomb":<i className="fas fa-bomb" style={ iconStyle }></i>
   };
+  const drawIcon = function(icon) {
+    if (icon) {
+      return `<i class="${ icon.props.className }" style="font-size: ${ icon.props.style.fontSize };"></i>`;
+    } else {
+      return "";
+    }
+  }
   const faces = {
     "happy": "yellow", 
     "angry": "red",
@@ -69,8 +77,10 @@ namespace("face-swap.FaceSwap", {}, () => {
     return results;
   }
   const getFirstMatches = function(grid) {
+    console.log({ fn: "getFirstMatches", grid});
     for (let r = 7; r >= 0; r--) {
       for (let c = 0; c < 8; c++) {
+        console.log({ grid, r, c });
         const face = grid[r][c].face;
         const matches = getMatches(grid, face, r, c);
         if(matches.length > 0) return { face, matches };
@@ -82,10 +92,11 @@ namespace("face-swap.FaceSwap", {}, () => {
     Array.from(matches).forEach(([r,c]) => {
       mutator(grid[r][c]);
     });
-    return { grid, selected: undefined };
+    return grid;
   }
   const getOpenSpots = function(grid) {
-    const open = grid.reduce((acc, row, r) => {
+    console.log({ fn: "getOpenSpots", grid});
+    const open = Array.from(grid).reduce((acc, row, r) => {
       return acc.concat(row.map((_, c) => {
         return { r, c };
       }));
@@ -104,7 +115,7 @@ namespace("face-swap.FaceSwap", {}, () => {
     zeros.forEach(({ r, c }) => {
       grid[r][c].face = getNewFace();
     });
-    return { grid };
+    return grid;
   }
   const areAdjacent = function([r1,c1],[r2,c2]) {
     const rDiff = Math.abs(r1 - r2);
@@ -115,13 +126,6 @@ namespace("face-swap.FaceSwap", {}, () => {
     return true;
   }
   const swapAndResolve = function(grid, [r1,c1], [r2,c2]) {
-    grid = grid.map(row => row.map((cell) => {
-      const newCell = {};
-      if (cell.face) {
-        newCell.face = cell.face;
-      }
-      return newCell;
-    }));
     const face1 = grid[r1][c1].face;
     const face2 = grid[r2][c2].face;
     const matches = getMatches(grid, face1, r2, c2).concat(getMatches(grid, face2, r1, c1));
@@ -146,10 +150,60 @@ namespace("face-swap.FaceSwap", {}, () => {
       return sr == r && sc == c;
     }
   }
-  const stepUpdate = function(eventName, setState, wrapper) {
-    return function() {
-      console.log({ when: eventName, newState: wrapper.newState });
-      setState(wrapper.newState);
+  const drawGrid = function(grid) {
+    const tdAttrs = `class="text-center" style="width: ${ size }; height: ${ size }; minWidth: ${ size }; minHeight: ${ size };"`;
+    const btnAttrs = `class="tn btn-dark border rounded border-dark border-1" style="width: \"100%\"; height: \"100%\";"`;
+    const cellTpl = ((cell) => `<td ${tdAttrs}><button ${btnAttrs}>${ drawIcon(icons[cell.face]) }</button></td>`);
+    return grid.map((row) => `<tr>${ row.map(cellTpl).join("") }</tr>`).join("");
+  }
+  const renderGrid = function(grid, selected) {
+    console.log({ fn: "renderGrid", grid});
+    return (<>
+      { grid.map((row,r) => {
+        return <tr key={`row${r}`}>
+          { row.map(($,c) => {
+            return <td key={`cell${r}x${c}`} className="text-center" style={{
+              width: size,
+              height: size,
+              minWidth: size,
+              minHeight: size,
+          }}>
+            <button 
+              key={`button${r}x${c}`} 
+              className={`btn btn-dark border rounded ${ isSelected(selected,r,c)?"border-info border-4":"border-dark border-1"}`}
+              style={{width:"100%",height:"100%"}}
+              onClick={() => this.click(r,c)}
+              >{ icons[$.face] }</button>
+          </td>;
+          })}
+        </tr>;
+      })}
+    </>);
+  }
+  const animate = function(grid, callback) {
+    const stepUpdate = function(message, obj) {
+      return () => {
+        console.log({ message, obj });
+        document.getElementById(frameId).innerHTML = drawGrid(grid);
+        animate(obj.grid, callback);
+      }
+    }
+    const empties = getOpenSpots(grid);
+    console.log({ when: "animate", grid, empties });
+    if (empties) {
+      const wrapper = {};
+      setTimeout(stepUpdate("empties", wrapper), delay);
+      wrapper.grid = shiftDown(grid, empties);
+    } else {
+      const firstMatches = getFirstMatches(grid);
+      console.log({ when: "animate else", firstMatches });
+      if (firstMatches) {
+        const wrapper = {};
+        setTimeout(stepUpdate("first matches", wrapper), delay);
+        wrapper.grid = clearMatches(grid, firstMatches);
+      } else {
+        callback(grid);
+      }
     }
   }
   return class extends React.Component {
@@ -165,25 +219,10 @@ namespace("face-swap.FaceSwap", {}, () => {
       this.afterRender();
     }
     afterRender() {
-      const me = this;
-      const setState = function(newState){me.setState(newState)};
-      const grid = copyGrid(this.state.grid);
-      const empties = getOpenSpots(grid);
-      console.log({ when: "afterRender", grid, empties });
-      if (empties) {
-        const wrapper = {};
-        setTimeout(stepUpdate("empties", setState, wrapper), delay);
-        wrapper.newState = shiftDown(grid, empties);
-      } else {
-        const firstMatches = getFirstMatches(grid);
-        console.log({ when: "afterRender else", firstMatches });
-        if (firstMatches) {
-          const wrapper = {};
-          setTimeout(stepUpdate("first matches", setState, wrapper), delay);
-          wrapper.newState = clearMatches(grid, firstMatches);
-        } else {
-          this.setState({ hold: undefined });
-        }
+      if (this.state.hold) {
+        animate(copyGrid(this.state.grid), (grid) => {
+          this.setState({ grid, hold: undefined });
+        });
       }
     }
     click(r, c) {
@@ -193,40 +232,33 @@ namespace("face-swap.FaceSwap", {}, () => {
         } else if (!areAdjacent(this.state.selected, [r,c])) {
           this.setState({ selected: undefined });
         } else {
-          let newState = swapAndResolve(this.state.grid, this.state.selected, [r,c]);
+          let newState = swapAndResolve(copyGrid(this.state.grid), this.state.selected, [r,c]);
           if (newState) this.setState(newState);
         }
       }
     }
     render() {
       if (this.state.grid) {
-        return (<div className="d-flex flex-column justify-content-center">
-          <div className="d-flex justify-content-center">
-            <table>
-              <tbody>
-                { this.state.grid.map((row,r) => {
-                  return <tr key={`row${r}`}>
-                    { row.map(($,c) => {
-                      return <td key={`cell${r}x${c}`} className="text-center" style={{
-                        width: size,
-                        height: size,
-                        minWidth: size,
-                        minHeight: size,
-                    }}>
-                      <button 
-                        key={`button${r}x${c}`} 
-                        className={`btn btn-dark border rounded ${ isSelected(this.state.selected,r,c)?"border-info border-4":"border-dark border-1"}`}
-                        style={{width:"100%",height:"100%"}}
-                        onClick={() => this.click(r,c)}
-                        >{ icons[$.face] }</button>
-                    </td>;
-                    })}
-                  </tr>;
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>)
+        if (this.state.hold) {
+          return (<div className="d-flex flex-column justify-content-center">
+            <div className="d-flex justify-content-center">
+              <table>
+                <tbody id={frameId}>
+                </tbody>
+              </table>
+            </div>
+          </div>);
+        } else {
+          return (<div className="d-flex flex-column justify-content-center">
+            <div className="d-flex justify-content-center">
+              <table>
+                <tbody>
+                  { renderGrid(this.state.grid, this.state.selected) }
+                </tbody>
+              </table>
+            </div>
+          </div>);
+        }
       } else {
         return <></>;
       }
