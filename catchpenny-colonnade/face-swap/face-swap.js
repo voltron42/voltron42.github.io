@@ -1,27 +1,41 @@
-namespace("face-swap.FaceSwap", {}, () => {
+namespace("face-swap.FaceSwap", {
+  "face-swap.Icons": "icons"
+}, ({ icons }) => {
   const frameId = "animation-frame-id-"+(new Date()).getTime();
   const fontSize = "2.5em";
   const size = "4em";
   const iconStyle = { fontSize };
   const delay = 350;
   const clearIcon = "atom";
-  const icons = {
-    "happy":<i className="fas fa-face-grin color-yellow" style={ iconStyle }></i>,
-    "angry":<i className="fas fa-face-angry color-red" style={ iconStyle }></i>,
-    "wacky":<i className="fas fa-face-grin-tongue-wink color-orange" style={ iconStyle }></i>,
-    "sad":<i className="fas fa-face-sad-tear color-blue" style={ iconStyle }></i>,
-    "lovey":<i className="fas fa-face-grin-hearts color-pink" style={ iconStyle }></i>,
-    "sick":<i className="fas fa-face-dizzy color-green" style={ iconStyle }></i>,
-    "tense":<i className="fas fa-face-grimace color-grey" style={ iconStyle }></i>,
-    "atom":<i className="fas fa-atom color-white" style={ iconStyle }></i>,
-    "lightbulb":<i className="fas fa-lightbulb" style={ iconStyle }></i>,
-    "sun":<i className="fas fa-sun" style={ iconStyle }></i>,
-    "bolt":<i className="fas fa-bolt" style={ iconStyle }></i>,
-    "bomb":<i className="fas fa-bomb" style={ iconStyle }></i>
-  };
-  const drawIcon = function(icon) {
-    if (icon) {
-      return `<i class="${ icon.props.className }" style="font-size: ${ icon.props.style.fontSize };"></i>`;
+  const iconPrefixes = {
+    "solid": "fas",
+    "regular": "far"
+  }
+  const faceIcons = {
+    "happy":{ iconType: "solid", icon: "face-grin", color: "yellow" },
+    "angry":{ iconType: "solid", icon: "face-angry", color: "red" },
+    "wacky":{ iconType: "solid", icon: "face-grin-tongue-wink", color: "orange" },
+    "sad":{ iconType: "solid", icon: "face-sad-tear", color: "blue" },
+    "lovey":{ iconType: "solid", icon: "face-grin-hearts", color: "pink" },
+    "sick":{ iconType: "solid", icon: "face-dizzy", color: "green" },
+    "tense":{ iconType: "solid", icon: "face-grimace", color: "grey" },
+    "atom":{ iconType: "solid", icon: "atom", color: "white" },
+    "lightbulb":{ iconType: "solid", icon: "lightbulb" },
+    "sun":{ iconType: "solid", icon: "sun" },
+    "bolt":{ iconType: "solid", icon: "bolt" },
+    "bomb":{ iconType: "solid", icon: "bomb" }
+  }
+  const getIconClass = function(faceName) {
+    let { iconType, icon, color } = faceIcons[faceName];
+    let className = iconPrefixes[iconType] + " fa-" + icon;
+    if (color) {
+      className += " color-" + color;
+    }
+    return className;
+  }
+  const drawIcon = function(face) {
+    if (face) {
+      return `<i class="${ getIconClass(face) }" style="font-size: ${ fontSize };"></i>`;
     } else {
       return "";
     }
@@ -152,7 +166,7 @@ namespace("face-swap.FaceSwap", {}, () => {
   const drawGrid = function(grid) {
     const tdAttrs = `class="text-center" style="width: ${ size }; height: ${ size }; minWidth: ${ size }; minHeight: ${ size };"`;
     const btnAttrs = `class="tn btn-dark border rounded border-dark border-1" style="width: \"100%\"; height: \"100%\";"`;
-    const cellTpl = ((cell) => `<td ${tdAttrs}><button ${btnAttrs}>${ drawIcon(icons[cell.face]) }</button></td>`);
+    const cellTpl = ((cell) => `<td ${tdAttrs}><button ${btnAttrs}>${ drawIcon(cell.face) }</button></td>`);
     return grid.map((row) => `<tr>${ row.map(cellTpl).join("") }</tr>`).join("");
   }
   const animate = function(grid, callback) {
@@ -244,7 +258,9 @@ namespace("face-swap.FaceSwap", {}, () => {
                         className={`btn btn-dark border rounded ${ isSelected(this.state.selected,r,c)?"border-info border-4":"border-dark border-1"}`}
                         style={{width:"100%",height:"100%"}}
                         onClick={() => this.click(r,c)}
-                        >{ icons[$.face] }</button>
+                        >
+                        <i className={ getIconClass($.face) } style={ iconStyle }></i>
+                      </button>
                     </td>;
                     })}
                   </tr>;
