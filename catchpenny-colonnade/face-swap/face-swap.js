@@ -3,7 +3,7 @@ namespace("face-swap.FaceSwap", {}, () => {
   const fontSize = "2.5em";
   const size = "4em";
   const iconStyle = { fontSize };
-  const delay = 750;
+  const delay = 350;
   const clearIcon = "atom";
   const icons = {
     "happy":<i className="fas fa-face-grin color-yellow" style={ iconStyle }></i>,
@@ -80,7 +80,6 @@ namespace("face-swap.FaceSwap", {}, () => {
     console.log({ fn: "getFirstMatches", grid});
     for (let r = 7; r >= 0; r--) {
       for (let c = 0; c < 8; c++) {
-        console.log({ grid, r, c });
         const face = grid[r][c].face;
         const matches = getMatches(grid, face, r, c);
         if(matches.length > 0) return { face, matches };
@@ -156,30 +155,6 @@ namespace("face-swap.FaceSwap", {}, () => {
     const cellTpl = ((cell) => `<td ${tdAttrs}><button ${btnAttrs}>${ drawIcon(icons[cell.face]) }</button></td>`);
     return grid.map((row) => `<tr>${ row.map(cellTpl).join("") }</tr>`).join("");
   }
-  const renderGrid = function(grid, selected) {
-    console.log({ fn: "renderGrid", grid});
-    return (<>
-      { grid.map((row,r) => {
-        return <tr key={`row${r}`}>
-          { row.map(($,c) => {
-            return <td key={`cell${r}x${c}`} className="text-center" style={{
-              width: size,
-              height: size,
-              minWidth: size,
-              minHeight: size,
-          }}>
-            <button 
-              key={`button${r}x${c}`} 
-              className={`btn btn-dark border rounded ${ isSelected(selected,r,c)?"border-info border-4":"border-dark border-1"}`}
-              style={{width:"100%",height:"100%"}}
-              onClick={() => this.click(r,c)}
-              >{ icons[$.face] }</button>
-          </td>;
-          })}
-        </tr>;
-      })}
-    </>);
-  }
   const animate = function(grid, callback) {
     const stepUpdate = function(message, obj) {
       return () => {
@@ -221,6 +196,7 @@ namespace("face-swap.FaceSwap", {}, () => {
     afterRender() {
       if (this.state.hold) {
         animate(copyGrid(this.state.grid), (grid) => {
+          document.getElementById(frameId).innerHTML = "";
           this.setState({ grid, hold: undefined });
         });
       }
@@ -238,12 +214,13 @@ namespace("face-swap.FaceSwap", {}, () => {
       }
     }
     render() {
+      console.log({ state: this.state });
       if (this.state.grid) {
         if (this.state.hold) {
           return (<div className="d-flex flex-column justify-content-center">
             <div className="d-flex justify-content-center">
               <table>
-                <tbody id={frameId}>
+                <tbody id={frameId} dangerouslySetInnerHTML={{ __html: drawGrid(this.state.grid)}}>
                 </tbody>
               </table>
             </div>
@@ -253,7 +230,25 @@ namespace("face-swap.FaceSwap", {}, () => {
             <div className="d-flex justify-content-center">
               <table>
                 <tbody>
-                  { renderGrid(this.state.grid, this.state.selected) }
+                { this.state.grid.map((row,r) => {
+                  return <tr key={`row${r}`}>
+                    { row.map(($,c) => {
+                      return <td key={`cell${r}x${c}`} className="text-center" style={{
+                        width: size,
+                        height: size,
+                        minWidth: size,
+                        minHeight: size,
+                    }}>
+                      <button 
+                        key={`button${r}x${c}`} 
+                        className={`btn btn-dark border rounded ${ isSelected(this.state.selected,r,c)?"border-info border-4":"border-dark border-1"}`}
+                        style={{width:"100%",height:"100%"}}
+                        onClick={() => this.click(r,c)}
+                        >{ icons[$.face] }</button>
+                    </td>;
+                    })}
+                  </tr>;
+                })}
                 </tbody>
               </table>
             </div>
