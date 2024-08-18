@@ -1,5 +1,5 @@
 namespace("face-swap.FaceSwap", {
-  "face-swap.Icons": "icons"
+  "common.Icons": "icons"
 }, ({ icons }) => {
   const frameId = "animation-frame-id-"+(new Date()).getTime();
   const fontSize = "2.5em";
@@ -25,6 +25,15 @@ namespace("face-swap.FaceSwap", {
     "bolt":{ iconType: "solid", icon: "bolt" },
     "bomb":{ iconType: "solid", icon: "bomb" }
   }
+  const buildIconDefs = function(){
+    return Object.entries(faceIcons).map(([faceName, { iconType, icon, color }]) => {
+      const { width, height, path } = icons[`${iconType}.${icon}`];
+      const x = (512 - width) / 2;
+      const y = (512 - height) / 2;
+      const fillAttr = color?` fill="${color}"`:"";
+      return `<g id="${faceName}"><path d="${path}" x="${x}" y="${x}" stroke="none" ${fillAttr}/></g>`;
+    }).join("\n");
+  };
   const getIconClass = function(faceName) {
     let { iconType, icon, color } = faceIcons[faceName];
     let className = iconPrefixes[iconType] + " fa-" + icon;

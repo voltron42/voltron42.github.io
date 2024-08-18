@@ -1,4 +1,4 @@
-namespace("face-swap.Icons", {}, () => {
+namespace("common.Icons", {}, () => {
     return {
         "regular.address-book": {
           "width": 512,
