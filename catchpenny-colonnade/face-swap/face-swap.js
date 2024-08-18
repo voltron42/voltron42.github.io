@@ -6,11 +6,34 @@ namespace("face-swap.FaceSwap", {
   const size = "4em";
   const iconStyle = { fontSize };
   const delay = 350;
+  const iconSize = 512;
+  const cellSize = 600;
+  const rows = 8;
+  const columns = 8;
+  const iconPadding = (cellSize - iconSize) / 2;
   const clearIcon = "atom";
   const iconPrefixes = {
     "solid": "fas",
     "regular": "far"
   }
+  const colors = {
+    "yellow": "happy",
+    "red": "angry",
+    "orange": "wacky",
+    "blue": "sad",
+    "pink": "lovey",
+    "green": "sick",
+    "grey": "tense"
+  }
+  const faces = {
+    "happy": "yellow", 
+    "angry": "red",
+    "wacky": "orange",
+    "sad": "blue",
+    "lovey": "pink",
+    "sick": "green",
+    "tense": "grey",
+  };
   const faceIcons = {
     "happy":{ iconType: "solid", icon: "face-grin", color: "yellow" },
     "angry":{ iconType: "solid", icon: "face-angry", color: "red" },
@@ -28,12 +51,33 @@ namespace("face-swap.FaceSwap", {
   const buildIconDefs = function(){
     return Object.entries(faceIcons).map(([faceName, { iconType, icon, color }]) => {
       const { width, height, path } = icons[`${iconType}.${icon}`];
-      const x = (512 - width) / 2;
-      const y = (512 - height) / 2;
+      const x = iconPadding + ((iconSize - width) / 2);
+      const y = iconPadding + ((iconSize - height) / 2);
       const fillAttr = color?` fill="${color}"`:"";
-      return `<g id="${faceName}"><path d="${path}" x="${x}" y="${x}" stroke="none" ${fillAttr}/></g>`;
+      return `<g id="${faceName}">
+        <path d="${path}" stroke="none" ${fillAttr}/>
+      </g>`;
     }).join("\n");
   };
+  const selectedFrame = `<g id="selected"><rect x="22" y="22" rx="88" ry="88" width="566" height="566" fill="none" stroke="white" stroke-width="20"/></g>`;
+  const drawIconSVG = function(faceName,[r,c],selected) {
+    return `<g>
+      <rect x="${c*cellSize}" y="${r*cellSize}" width="${cellSize}" height="${cellSize}" fill="#212529"/>
+      ${ faceName ? `<use href="#${faceName}" x="${c*cellSize + 44}" y="${r*cellSize + 44}"/>` : "" }
+      ${ selected ? `<use href="#selected" x="${c*cellSize}" y="${r*cellSize}"/>` : "" }
+    </g>`;
+  }
+  const drawGridSVG = function(grid) {
+    return `<svg width="100%" height="100%" viewBox="0 0 ${columns * cellSize} ${rows * cellSize}">
+      <defs>${buildIconDefs()}</defs>
+      ${ grid.map((row, r) => {
+        return row.map(($, c) => {
+          return drawIconSVG($.face, [r,c]);
+        }).join("");
+      }).join("") }
+    </svg>`;
+    return ;
+  }
   const getIconClass = function(faceName) {
     let { iconType, icon, color } = faceIcons[faceName];
     let className = iconPrefixes[iconType] + " fa-" + icon;
@@ -49,15 +93,6 @@ namespace("face-swap.FaceSwap", {
       return "";
     }
   }
-  const faces = {
-    "happy": "yellow", 
-    "angry": "red",
-    "wacky": "orange",
-    "sad": "blue",
-    "lovey": "pink",
-    "sick": "green",
-    "tense": "grey",
-  };
   const copyGrid = function(grid) {
     return grid.map(row => row.map(({ face }) => {
       var cell = {};
@@ -73,22 +108,22 @@ namespace("face-swap.FaceSwap", {
   }
   const getMatches = function(grid, face, r, c) {
     const vertical = [[r,c]];
-    for (let y = r - 1; y >= 0; y--) {
-      if (grid[y][c].face != face) break;
-      vertical.push([y,c]);
+    for (let row = r - 1; row >= 0; row--) {
+      if (grid[row][c].face != face) break;
+      vertical.push([row,c]);
     }
-    for (let y = r + 1; y < 8; y++) {
-      if (grid[y][c].face != face) break;
-      vertical.push([y,c]);
+    for (let row = r + 1; row < rows; row++) {
+      if (grid[row][c].face != face) break;
+      vertical.push([row,c]);
     }
     const horizontal = [[r,c]];
-    for (let x = c - 1; x >= 0; x--) {
-      if (grid[r][x].face != face) break;
-      horizontal.push([r, x]);
+    for (let column = c - 1; column >= 0; column--) {
+      if (grid[r][column].face != face) break;
+      horizontal.push([r, column]);
     }
-    for (let x = c + 1; x < 8; x++) {
-      if (grid[r][x].face != face) break;
-      horizontal.push([r, x]);
+    for (let column = c + 1; column < columns; column++) {
+      if (grid[r][column].face != face) break;
+      horizontal.push([r, column]);
     }
     let results = [];
     if (horizontal.length >= 3) {
@@ -100,9 +135,8 @@ namespace("face-swap.FaceSwap", {
     return results;
   }
   const getFirstMatches = function(grid) {
-    console.log({ fn: "getFirstMatches", grid});
-    for (let r = 7; r >= 0; r--) {
-      for (let c = 0; c < 8; c++) {
+    for (let r = rows-1; r >= 0; r--) {
+      for (let c = 0; c < columns; c++) {
         const face = grid[r][c].face;
         const matches = getMatches(grid, face, r, c);
         if(matches.length > 0) return { face, matches };
@@ -117,7 +151,6 @@ namespace("face-swap.FaceSwap", {
     return grid;
   }
   const getOpenSpots = function(grid) {
-    console.log({ fn: "getOpenSpots", grid});
     const open = Array.from(grid).reduce((acc, row, r) => {
       return acc.concat(row.map((_, c) => {
         return { r, c };
@@ -159,7 +192,7 @@ namespace("face-swap.FaceSwap", {
     }
   };
   const buildInitState = function() {
-    const grid = Array(8).fill(Array(8).fill({})).map((row) => {
+    const grid = Array(rows).fill(Array(columns).fill({})).map((row) => {
       return row.map(($) => {
         return { face: getNewFace() };
       });
@@ -181,20 +214,17 @@ namespace("face-swap.FaceSwap", {
   const animate = function(grid, callback) {
     const stepUpdate = function(message, obj) {
       return () => {
-        console.log({ message, obj });
-        document.getElementById(frameId).innerHTML = drawGrid(grid);
+        document.getElementById(frameId).innerHTML = drawGridSVG(grid);
         animate(obj.grid, callback);
       }
     }
     const empties = getOpenSpots(grid);
-    console.log({ when: "animate", grid, empties });
     if (empties) {
       const wrapper = {};
       setTimeout(stepUpdate("empties", wrapper), delay);
       wrapper.grid = shiftDown(grid, empties);
     } else {
       const firstMatches = getFirstMatches(grid);
-      console.log({ when: "animate else", firstMatches });
       if (firstMatches) {
         const wrapper = {};
         setTimeout(stepUpdate("first matches", wrapper), delay);
@@ -208,7 +238,6 @@ namespace("face-swap.FaceSwap", {
     constructor(props) {
       super(props);
       this.state = buildInitState();
-      console.log({ state: this.state });
     }
     componentDidMount() {
       this.afterRender();
@@ -237,45 +266,26 @@ namespace("face-swap.FaceSwap", {
       }
     }
     render() {
-      console.log({ state: this.state });
       if (this.state.grid) {
         if (this.state.hold) {
           return (<div className="d-flex flex-column justify-content-center">
-            <div className="d-flex justify-content-center">
-              <table>
-                <tbody id={frameId} dangerouslySetInnerHTML={{ __html: drawGrid(this.state.grid)}}>
-                </tbody>
-              </table>
+            <div className="d-flex justify-content-center align-items-center w-100 h-100" id={frameId} dangerouslySetInnerHTML={{ __html: drawGridSVG(this.state.grid)}}>
             </div>
           </div>);
         } else {
           return (<div className="d-flex flex-column justify-content-center">
-            <div className="d-flex justify-content-center">
-              <table>
-                <tbody>
-                { this.state.grid.map((row,r) => {
-                  return <tr key={`row${r}`}>
-                    { row.map(($,c) => {
-                      return <td key={`cell${r}x${c}`} className="text-center" style={{
-                        width: size,
-                        height: size,
-                        minWidth: size,
-                        minHeight: size,
-                    }}>
-                      <button 
-                        key={`button${r}x${c}`} 
-                        className={`btn btn-dark border rounded ${ isSelected(this.state.selected,r,c)?"border-info border-4":"border-dark border-1"}`}
-                        style={{width:"100%",height:"100%"}}
-                        onClick={() => this.click(r,c)}
-                        >
-                        <i className={ getIconClass($.face) } style={ iconStyle }></i>
-                      </button>
-                    </td>;
-                    })}
-                  </tr>;
-                })}
-                </tbody>
-              </table>
+            <div className="d-flex justify-content-center align-items-center w-100 h-100">
+              <svg width="100%" height="100%" viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}>
+                <defs dangerouslySetInnerHTML={{ __html: selectedFrame + buildIconDefs() }}></defs>
+                { this.state.grid.map((row, r) => {
+                  return row.map(($, c) => {
+                    return <a key={`cell${r}x${c}`} href="#" onClick={(e) => {
+                      e.preventDefault();
+                      this.click(r,c);
+                    }} dangerouslySetInnerHTML={{ __html: drawIconSVG($.face, [r,c], isSelected(this.state.selected, r, c)) }}></a>
+                  });
+                }) }
+              </svg>
             </div>
           </div>);
         }
