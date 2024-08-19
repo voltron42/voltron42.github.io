@@ -2,9 +2,6 @@ namespace("face-swap.FaceSwap", {
   "common.Icons": "icons"
 }, ({ icons }) => {
   const frameId = "animation-frame-id-"+(new Date()).getTime();
-  const fontSize = "2.5em";
-  const size = "4em";
-  const iconStyle = { fontSize };
   const delay = 350;
   const iconSize = 512;
   const cellSize = 600;
@@ -12,10 +9,6 @@ namespace("face-swap.FaceSwap", {
   const columns = 8;
   const iconPadding = (cellSize - iconSize) / 2;
   const clearIcon = "atom";
-  const iconPrefixes = {
-    "solid": "fas",
-    "regular": "far"
-  }
   const colors = {
     "yellow": "happy",
     "red": "angry",
@@ -34,6 +27,16 @@ namespace("face-swap.FaceSwap", {
     "sick": "green",
     "tense": "grey",
   };
+  const specificColors = {
+    "red": "#F03",
+    "orange": "#F63",
+    "yellow": "#FF6",
+    "green": "#0F9",
+    "blue": "#39F",
+    "pink": "#F0F",
+    "grey": "#CCC",
+    "white": "#FFF",
+  }
   const faceIcons = {
     "happy":{ iconType: "solid", icon: "face-grin", color: "yellow" },
     "angry":{ iconType: "solid", icon: "face-angry", color: "red" },
@@ -53,7 +56,7 @@ namespace("face-swap.FaceSwap", {
       const { width, height, path } = icons[`${iconType}.${icon}`];
       const x = iconPadding + ((iconSize - width) / 2);
       const y = iconPadding + ((iconSize - height) / 2);
-      const fillAttr = color?` fill="${color}"`:"";
+      const fillAttr = color?` fill="${specificColors[color]}"`:"";
       return `<g id="${faceName}">
         <path d="${path}" stroke="none" ${fillAttr}/>
       </g>`;
@@ -77,21 +80,6 @@ namespace("face-swap.FaceSwap", {
       }).join("") }
     </svg>`;
     return ;
-  }
-  const getIconClass = function(faceName) {
-    let { iconType, icon, color } = faceIcons[faceName];
-    let className = iconPrefixes[iconType] + " fa-" + icon;
-    if (color) {
-      className += " color-" + color;
-    }
-    return className;
-  }
-  const drawIcon = function(face) {
-    if (face) {
-      return `<i class="${ getIconClass(face) }" style="font-size: ${ fontSize };"></i>`;
-    } else {
-      return "";
-    }
   }
   const copyGrid = function(grid) {
     return grid.map(row => row.map(({ face }) => {
@@ -132,21 +120,34 @@ namespace("face-swap.FaceSwap", {
     if (vertical.length >= 3) {
       results = results.concat(vertical);
     }
+    if (results.length > 0) {
+      console.log({ horizontal, vertical, results });
+    }
     return results;
   }
   const getFirstMatches = function(grid) {
     for (let r = rows-1; r >= 0; r--) {
       for (let c = 0; c < columns; c++) {
         const face = grid[r][c].face;
-        const matches = getMatches(grid, face, r, c);
-        if(matches.length > 0) return { face, matches };
+        if (faces[face]) {
+          const matches = getMatches(grid, face, r, c);
+          if(matches.length > 0) return { face, matches };
+        }
       }
     }
   }
-  const clearMatches = function(grid, { face, matches }) {
-    const mutator = ((face == clearIcon)?(cell) => { delete cell.face }:(cell) => { cell.face = clearIcon });
-    Array.from(matches).forEach(([r,c]) => {
-      mutator(grid[r][c]);
+  const clearFaces = function(grid, matchMap) {
+    return grid.map((row,r) => {
+      return row.map(($, c) => {
+        return {
+          face: matchMap[[r,c].join("x")]?clearIcon:$.face
+        }
+      });
+    });
+  }
+  const readyEmpties = function(grid,clearings) {
+    clearings.forEach(([r,c]) => {
+      delete grid[r][c].face;
     });
     return grid;
   }
@@ -183,8 +184,9 @@ namespace("face-swap.FaceSwap", {
   const swapAndResolve = function(grid, [r1,c1], [r2,c2]) {
     const face1 = grid[r1][c1].face;
     const face2 = grid[r2][c2].face;
-    const matches = getMatches(grid, face1, r2, c2).concat(getMatches(grid, face2, r1, c1));
-    if (matches.length > 0) {
+    const matches1 = getMatches(grid, face1, r2, c2);
+    const matches2 = getMatches(grid, face2, r1, c1);
+    if (matches1.concat(matches2).length > 0) {
       const temp = grid[r1][c1];
       grid[r1][c1] = grid[r2][c2];
       grid[r2][c2] = temp;
@@ -205,12 +207,6 @@ namespace("face-swap.FaceSwap", {
       return sr == r && sc == c;
     }
   }
-  const drawGrid = function(grid) {
-    const tdAttrs = `class="text-center" style="width: ${ size }; height: ${ size }; minWidth: ${ size }; minHeight: ${ size };"`;
-    const btnAttrs = `class="tn btn-dark border rounded border-dark border-1" style="width: \"100%\"; height: \"100%\";"`;
-    const cellTpl = ((cell) => `<td ${tdAttrs}><button ${btnAttrs}>${ drawIcon(cell.face) }</button></td>`);
-    return grid.map((row) => `<tr>${ row.map(cellTpl).join("") }</tr>`).join("");
-  }
   const animate = function(grid, callback) {
     const stepUpdate = function(message, obj) {
       return () => {
@@ -224,13 +220,30 @@ namespace("face-swap.FaceSwap", {
       setTimeout(stepUpdate("empties", wrapper), delay);
       wrapper.grid = shiftDown(grid, empties);
     } else {
-      const firstMatches = getFirstMatches(grid);
-      if (firstMatches) {
+      const clearings = grid.reduce((acc, row, r) => {
+        return acc.concat(row.map(({face},c) => [face,c]).filter(([face]) => face === clearIcon).map(([_,c]) => [r,c]));
+      }, []);
+      if (clearings.length > 0) {
         const wrapper = {};
-        setTimeout(stepUpdate("first matches", wrapper), delay);
-        wrapper.grid = clearMatches(grid, firstMatches);
-      } else {
-        callback(grid);
+        setTimeout(stepUpdate("ready empties", wrapper), delay);
+        wrapper.grid = readyEmpties(grid,clearings);
+        } else {
+        let firstMatches = getFirstMatches(grid);
+        if (firstMatches) {
+          const wrapper = {};
+          setTimeout(stepUpdate("first matches", wrapper), delay);
+          do{
+            let matchMap = firstMatches.matches.reduce((acc,rc) => {
+              acc[rc.join("x")] = true;
+              return acc;
+            }, {});
+            grid = clearFaces(grid, matchMap);
+            firstMatches = getFirstMatches(grid);
+          } while(firstMatches);
+          wrapper.grid = grid;
+        } else {
+          callback(grid);
+        }
       }
     }
   }
@@ -268,12 +281,12 @@ namespace("face-swap.FaceSwap", {
     render() {
       if (this.state.grid) {
         if (this.state.hold) {
-          return (<div className="d-flex flex-column justify-content-center">
+          return (<div className="d-flex flex-column justify-content-center w-100 h-100">
             <div className="d-flex justify-content-center align-items-center w-100 h-100" id={frameId} dangerouslySetInnerHTML={{ __html: drawGridSVG(this.state.grid)}}>
             </div>
           </div>);
         } else {
-          return (<div className="d-flex flex-column justify-content-center">
+          return (<div className="d-flex flex-column justify-content-center w-100 h-100">
             <div className="d-flex justify-content-center align-items-center w-100 h-100">
               <svg width="100%" height="100%" viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}>
                 <defs dangerouslySetInnerHTML={{ __html: selectedFrame + buildIconDefs() }}></defs>

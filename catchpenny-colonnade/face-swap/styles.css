@@ -1,26 +1,23 @@
 .color-red {
-  color: red;
+  color: #F03;
 }
 .color-orange {
-  color: coral;
+  color: #F63;
 }
 .color-yellow {
-  color: yellow;
+  color: #FF6;
 }
 .color-green {
-  color: springgreen;
+  color: #0F9;
 }
 .color-blue {
-  color: dodgerblue;
-}
-.color-purple {
-  color: violet;
+  color: #39F;
 }
 .color-pink {
-  color: fuchsia;
+  color: #F0F;
 }
 .color-grey {
-  color: lightgrey;
+  color: #CCC;
 }
 .color-white {
   color: white;
