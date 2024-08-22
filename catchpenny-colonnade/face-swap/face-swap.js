@@ -94,6 +94,66 @@ namespace("face-swap.FaceSwap", {
     const keys = Object.keys(faces);
     return keys[Math.floor(Math.random() * keys.length)];
   }
+  const getAllMatches = function(grid) {
+    const rowsMatches = grid.reduce((acc, row, r) => {
+      return acc.concat(row.reduce((rowMatches, { face }, c) => {
+        if (rowMatches.length === 0 || face !== rowMatches[0].face) {
+          rowMatches.unshift({ face, row: r, firstColumn: c, count: 1 });
+        } else {
+          rowMatches[0].count++;
+        }
+        return rowMatches;
+      }, []).filter(({ count }) => count >= 3));
+    }, []).map(({ face, row, firstColumn, count }) => {
+      return {
+        face,
+        coords: Array(count).fill("").map((_,i) => [ row, firstColumn + i ])
+      };
+    });
+    const columnsMatches = Array(columns).fill("").reduce((acc, _, c) => {
+      return acc.concat(grid.reduce((columnMatches, row, r) => {
+        let { face } = row[c];
+        if (columnMatches.length === 0 || face !== columnMatches[0].face) {
+          columnMatches.unshift({ face, firstRow: r, column: c, count: 1 });
+        } else {
+          columnMatches[0].count++;
+        }
+        return columnMatches;
+      }, []).filter(({ count }) => count >= 3));
+    }, []).map(({ face, firstRow, column, count }) => {
+      return {
+        face,
+        coords: Array(count).fill("").map((_,i) => [ firstRow + i, column ])
+      };
+    });
+    if (rowsMatches.length > 0 && columnsMatches.length === 0) {
+      return rowsMatches;
+    }
+    if (rowsMatches.length === 0 && columnsMatches.length > 0) {
+      return columnsMatches;
+    }
+    const rowsMap = rowsMatches.reduce((acc, { coords }, i) => coords.reduce((outVal, [ r, c ]) => {
+      outVal[`${r}x${c}`] = i;
+      return outVal;
+    }, acc), {});
+    const rowsMapKeys = Object.keys(rowsMap);
+    const columnsMap = columnsMatches.reduce((acc, { coords }, i) => coords.reduce((outVal, [ r, c ]) => {
+      outVal[`${r}x${c}`] = i;
+      return outVal;
+    }, acc), {});
+    const columnsMapKeys = Object.keys(columnsMap);
+    const exclusiveRowMatches = rowsMapKeys.filter((key) => columnsMapKeys.indexOf(key) < 0).map((key) => rowsMap[key]).filter((r,i,indicies) => indicies.indexOf(r) === i).map(r => rowsMatches[r]);
+    const exclusiveColumnMatches = columnsMapKeys.filter((key) => rowsMapKeys.indexOf(key) < 0).map((key) => columnsMap[key]).filter((c,i) => exclusiveColumnIndicies.indexOf(c) === i).map(c => columnsMatches[r]);
+    const intersections = rowsMapKeys.filter((key) => columnsMapKeys.indexOf(key) >= 0).map((key) => {
+      return {
+        key,
+        columnMatch: columnsMap[key],
+        rowMatch: rowsMap[key]
+      };
+    });
+    const columnDoubleMatches = intersections.map(i => i.columnMatch).filter((k,i,myArray) => myArray.indexOf(k) != i);
+    const rowDoubleMatches = intersections.map(i => i.rowMatch).filter((k,i,myArray) => myArray.indexOf(k) != i);
+  }
   const getMatches = function(grid, face, r, c) {
     const vertical = [[r,c]];
     for (let row = r - 1; row >= 0; row--) {
