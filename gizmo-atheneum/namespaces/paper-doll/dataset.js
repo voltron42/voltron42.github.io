@@ -192,17 +192,17 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
       background.push(`<rect x="${minX}" y="${minY}" width="${width}" height="${height}" fill="url(#${ getPatternId(schematic.bgPattern) })" stroke="none"/>`);
     }
     return { 
+      dim: [ minX, minY, width, height ],
       width: frameWidth, 
       height: frameHeight, 
-      viewBox: `${minX} ${minY} ${width} ${height}`,
       defs: buildDefs(meta,defs), 
       background, 
       svgLayers 
     };
   }
   const drawSVG = function(dataset, schematic) {
-    const { width, height, viewBox, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
-    return `<svg width="${ width }" height="${ height }" viewBox="${ viewBox }">
+    const { width, height, dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
+    return `<svg width="${ width }" height="${ height }" viewBox="${ dim.join(" ") }">
       <defs>${ defs }</defs>
       <g>${ background }</g>
       ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }
