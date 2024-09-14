@@ -1,4 +1,8 @@
-namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
+namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
+  "gizmo-atheneum.namespaces.Ajax": "Ajax",
+  "gizmo-atheneum.namespaces.Point": "XY"
+}, ({ Ajax, XY }) => {
+  const baseURL = "https://scullery-plateau.github.io/apps/outfitter/datasets";
   const SCALES = {
     lanky: [0.8, 1.1],
     thin: [0.8, 1.0],
@@ -51,9 +55,14 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
       return document.body.clientWidth;
     }
   });
+  const calcFrameFromScreen = function(percentOfScreenWidth, percentOfScreenHeight) {
+    const frameHeight = getScreenHeight() * percentOfScreenHeight;
+    const frameWidth = getScreenWidth() * percentOfScreenWidth;
+    return [ Math.min(frameWidth, frameHeight * width / height), Math.min(frameHeight, frameWidth * height / width) ];
+  }
   const getPoint = function(layer,xField,yField,defaultPoint) {
-    let [defaultX, defaultY] = defaultPoint.toJSON();
-    let [xVal,yVal] = [xField,yField].map((field) => layer[field]);
+    const [defaultX, defaultY] = defaultPoint.toJSON();
+    const [xVal,yVal] = [xField,yField].map((field) => layer[field]);
     return new XY([isNaN(xVal)?defaultX:xVal,isNaN(yVal)?defaultY:yVal]);
   }
   const getBodyScaleAndHeadShift = function(schematic) {
@@ -66,15 +75,14 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
     return { bodyScale, headShift };
   }
   const getFlipMove = function(layer,headShift,bodyScale) {
-    let resize = getPoint(layer,'resizeX','resizeY',XY.identityMultiplier());
-    let flip = resize.times([layer.flip ? -1.0 : 1.0, 1.0]);
-    let move = getPoint(layer,'moveX','moveY',XY.origin());
+    const resize = getPoint(layer,'resizeX','resizeY',XY.identityMultiplier());
+    const flip = resize.times([layer.flip ? -1.0 : 1.0, 1.0]);
+    const move = getPoint(layer,'moveX','moveY',XY.origin());
     if (HEAD_PARTS[layer.part]) {
-      move = move.plus(headShift.toJSON());
+      return { flip, move: move.plus(headShift.toJSON()) };
     } else {
-      flip = flip.times(bodyScale.toJSON());
+      return { move, flip: flip.times(bodyScale.toJSON()) };
     }
-    return { flip, move };
   }
   const updateMinMax = function(part, flip, move, minmax) {
     let partMin = new XY(part.min).times(flip.toJSON()).plus(move.toJSON());
@@ -92,7 +100,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
   const getImgDim = function(minmax) {
     let [minX, minY] = minmax.min.toJSON();
     let [maxX, maxY] = minmax.max.toJSON();
-    let halfWidth = Math.max(Math.abs(maxX), Math.abs(minX));
+    const halfWidth = Math.max(Math.abs(maxX), Math.abs(minX));
     minmax.min = new XY([-1 * halfWidth, minY]);
     minmax.max = new XY([halfWidth, maxY]);
     const padding = [10, 10];
@@ -102,10 +110,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
     [maxX, maxY] = minmax.max.toJSON();
     const width = maxX - minX;
     const height = maxY - minY;
-    let frameHeight = getScreenHeight() * 0.75;
-    let frameWidth = getScreenWidth() * 0.25;
-    [frameWidth, frameHeight] = [Math.min(frameWidth,frameHeight * width / height),Math.min(frameHeight,frameWidth * height / width)];
-    return { minX, minY, width, height, frameWidth, frameHeight};
+    return { minX, minY, width, height};
   }
   const getPatternId = function(patternIndex) {
     return patternIndex >= 0 && `patterns-${ patternIndex >= 10 ? '' : '0' }${ patternIndex }`;
@@ -125,6 +130,26 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
     Object.keys(shading).reduce(appendDefs(meta.shadings),out);
     return out.join('');
   };
+  const versions = {
+    "fit":["0.0.1"],
+    "hulk":["0.0.1"],
+    "superman":["0.0.1"],
+    "woman":["0.0.1"]
+  };
+  const colorValidator = (color) => (typeof color === "string") // todo
+  const minMaxValidator = function(minFn, maxFn) {
+    return (value, dataset, layer) => (value >= minFn(dataset,layer) && )
+  }
+  const schematicFields = "bodyType,version,bgPattern,bgColor,bodyScale,layers".split(",");
+  const layerFields = "part,index,base,detail,outline,pattern,shading,opacity,rotate,resizeX,resizeY,moveX,moveY".split(",");
+  const layerValidators = {
+    part: (part, dataset) => (part in dataset.parts),
+    index: (index, dataset, layer) => (index >= 0 && index < dataset.parts[layer.part].length),
+    base: colorValidator,
+    detail: colorValidator,
+    pattern: (pattern, dataset) => (pattern >= 0 && pattern < dataset.patternCount)
+    // todo
+  };
   const buildSVGComponents = function(meta, schematic) {
     const minmax = {
       min:new XY([0, 0]),
@@ -138,13 +163,13 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
     defs.patterns[getPatternId(schematic.bgPattern)] = true;
     const { bodyScale, headShift } = getBodyScaleAndHeadShift(schematic);
     const svgLayers = schematic.layers.map((layer) => {
-      let part = meta.parts[layer.part][layer.index];
+      const part = meta.parts[layer.part][layer.index];
       defs.layers.push(part.defs);
       const { flip, move } = getFlipMove(layer,headShift,bodyScale);
       const [ flipX, flipY ] = flip.toJSON();
       const [ moveX, moveY ] = move.toJSON();
       const [cx, cy] = updateMinMax(part,flip,move,minmax).toJSON();
-      let group = []
+      const group = [];
       if (part.layers.base) {
         group.push(`<use href="#${ part.layers.base }" fill="${ layer.base || 'white'}" stroke="none"/>`);
       }
@@ -200,8 +225,8 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
       svgLayers 
     };
   }
-  const drawSVG = function(dataset, schematic) {
-    const { width, height, dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
+  const drawSVG = function(dataset, schematic, width, height) {
+    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
     return `<svg width="${ width }" height="${ height }" viewBox="${ dim.join(" ") }">
       <defs>${ defs }</defs>
       <g>${ background }</g>
@@ -218,6 +243,40 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {}, () => {
   };
   Dataset.getBodyScales = function() {
     return Array.from(Object.keys(SCALES));
+  }
+  Dataset.getVersions = function() {
+    return Object.entries(versions).reduce((acc, [k,v]) => {
+      acc[k] = Array.from(v);
+      return acc;
+    }, {});
+  }
+  Dataset.calcFrameFromScreen = calcFrameFromScreen;
+  Dataset.load = function(bodyType, version, onSuccess, onFail, onStateChange) {
+    if(!(bodyType in versions)) {
+      throw `"${bodyType}" is not a valid dataset name`;
+    }
+    if(versions[bodyType].indexOf(version) < 0) {
+      throw `"${version}" is not a valid version of "${bodyType}"`;
+    }
+    const filepath = `${baseURL}/${bodyType}.${version}.json`
+    Ajax.get(filepath,{
+      failure: onFail,
+      stateChange: onStateChange,
+      success: ({ responseText }) => {
+        try {
+          const metadata = JSON.parse(responseText);
+          metadata.patternCount = Object.keys(metadata.patterns).length;
+          metadata.shadingCount = Object.keys(metadata.shadings).length;
+          onSuccess(new Dataset(metadata));
+        } catch (e) {
+          onFail({ 
+            requestedFile: filepath,
+            statusText: e.message,
+            responseText: responseText,
+          })
+        }
+      }
+    });
   }
   return Dataset;
 });
