@@ -11,9 +11,11 @@
     </style>
     <script src="https://voltron42.github.io/gizmo-atheneum/util/keyeventwrapper.js"></script>
     <script src="https://voltron42.github.io/gizmo-atheneum/structure/importnamespace/script.js"></script>
+    <script src="gamepad.js"></script>
     <script src="crescendo.js"></script>
     <script>
       function init() {
+        initGamepad();
         initKeyEventWrapper();
         const Crescendo = importNamespace("crescendo.Crescendo");
         document.getElementById("defs").innerHTML = Crescendo.getDefs();

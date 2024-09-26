@@ -84,9 +84,44 @@ namespace("crescendo.Crescendo", () => {
     id: 2181,
     color: "blue",
     x: 40,
-    y: 60,
-    r: 50,
+    y: 55,
+    r: 80,
+    intakeState: "empty"
+  }, {
+    id: 2040,
+    color: "blue",
+    x: 40,
+    y: 65,
+    r: 80,
+    intakeState: "intakeOn"
+  }, {
+    id: 4005,
+    color: "blue",
+    x: 40,
+    y: 75,
+    r: 80,
+    intakeState: "ready"
+  }, {
+    id: 1234,
+    color: "red",
+    x: 160,
+    y: 55,
+    r: 280,
     intakeState: "loading"
+  }, {
+    id: 4321,
+    color: "red",
+    x: 160,
+    y: 65,
+    r: 280,
+    intakeState: "empty"
+  }, {
+    id: 5678,
+    color: "red",
+    x: 160,
+    y: 75,
+    r: 280,
+    intakeState: "ready"
   }];
   const Crescendo = function(layerId) {
     this.run = function() {

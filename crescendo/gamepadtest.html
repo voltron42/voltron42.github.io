@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script src="gamepad.js"></script>
+    <script>
+      const buttonLabels = {
+        "Xbox 360 Controller (XInput STANDARD GAMEPAD)": {
+          axes: "Lx,Ly,Rx,Ry".split(","),
+          buttons: "A,B,X,Y,Ls,Rs,Lt,Rt,Select,Start,L3,R3,Up,Down,Left,Right,Menu".split(",")
+        }
+      };
+      function init() {
+        initGamepad();
+        console.log("init");
+        document.addEventListener("gamepadbuttons",({ detail }) => {
+          //console.log(detail);
+        })
+      }
+    </script>
+    <style>
+      body {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body onload="init()">
+  </body>
+</html>
