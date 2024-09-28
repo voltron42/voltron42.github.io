@@ -1,16 +1,30 @@
 <html>
   <head>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
     <script src="https://voltron42.github.io/gizmo-atheneum/util/keyeventwrapper.js"></script>
     <script>
+      function wrapList(list) {
+        return `<ul>${list.map(i => `<li>${i}</li>`).join("")}</ul>`;
+      }
       function init() {
+        const monitor = document.getElementById("monitor");
+        const history = document.getElementById("history");
         initKeyEventWrapper();
         const keyLogger = {};
-        
-        document.addEventListener("keyhold",({detail}) => {
+        const keyHistory = [];
+        const display = function() {
+          monitor.innerHTML = wrapList(Object.keys(keyLogger));
+          history.innerHTML = wrapList(keyHistory);
+        };
+        document.addEventListener("keyhold",({ detail }) => {
           keyLogger[detail.code] = true;
+          display();
         });
-        document.addEventListener("keyrelease",({detail}) => {
+        document.addEventListener("keyrelease",({ detail }) => {
           delete keyLogger[detail.code];
+          keyHistory.unshift(e.detail.code);
+          display();
         });
       }
     </script>
@@ -20,7 +34,11 @@
       }
     </style>
   </head>
-  <body onload="init()">
-    <div id="console"></div>
+  <body onload="init()" class="container-fluid bg-dark text-light">
+    <div class="row">
+      <div id="monitor" class="col-5">
+      </div>
+      <div id="history" class="col-5"></div>
+    </div>
   </body>
 </html>
