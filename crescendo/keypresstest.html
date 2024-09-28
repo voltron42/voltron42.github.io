@@ -5,15 +5,13 @@
       function init() {
         initKeyEventWrapper();
         const keyLogger = {};
+        
         document.addEventListener("keyhold",({detail}) => {
           keyLogger[detail.code] = true;
-          console.log({ keys: Object.keys(keyLogger) });
         });
         document.addEventListener("keyrelease",({detail}) => {
           delete keyLogger[detail.code];
-          console.log({ keys: Object.keys(keyLogger) });
         });
-        console.log("init");
       }
     </script>
     <style>
@@ -23,5 +21,6 @@
     </style>
   </head>
   <body onload="init()">
+    <div id="console"></div>
   </body>
 </html>
