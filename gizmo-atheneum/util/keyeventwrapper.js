@@ -54,6 +54,9 @@
     },{});
     detail.preventDefault = (() => {
       e.preventDefault();
+      if (keyHolds[detail.keyCode]) {
+        keyHolds[detail.keyCode].preventDefault = true;
+      }
     });
     wrapKeyEvent({
       event: detail.type,
@@ -66,6 +69,8 @@
         wrapKeyEvent(mapped, detail);
       }
       keyHolds[detail.keyCode] = { hold: mapped.hold };
+    } else if (keyHolds[detail.keyCode] && keyHolds[detail.keyCode].preventDefault) {
+      e.preventDefault();
     }
   });
 
