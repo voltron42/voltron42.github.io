@@ -27,7 +27,10 @@ namespace('gizmo-atheneum.namespaces.CSV',{},() => {
         }
         arrData[ arrData.length - 1 ].push( strMatchedValue );
       }
-      return( arrData );
+      return arrData;
     }
-    return { parse };
+    const isRowEmpty = function(row) {
+      return row.length === 0 || (row.length === 1 && row[0].length === 0);
+    }
+    return { parse, isRowEmpty };
   });
