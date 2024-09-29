@@ -1,4 +1,4 @@
-namespace("crescendo.MyGamepads", () => {
+namespace("2181robotics.crescendo.MyGamepads", () => {
   const buttonLabels = {
     "Xbox 360 Controller (XInput STANDARD GAMEPAD)": {
       axes: "Lx,Ly,Rx,Ry".split(","),
