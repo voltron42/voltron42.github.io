@@ -24,18 +24,31 @@ namespace("2181robotics.scouting.Scouting", {
     }
     render() {
       return <>{
-        this.state.data == undefined && <div className="h-100 d-flex flex-column justify-content-center align-content-center">
+        this.state.data == undefined && <div className="h-100 d-flex flex-column justify-content-around align-content-around">
+          <span></span>
           <button className="btn btn-primary" onClick={ () => this.loadCsvData() }>Load CSV File</button>
+          <span></span>
         </div>
       }{
         this.state.data && <div className="d-flex flex-column justify-content-center">
-          <h3 className="text-center">Replace the following table with some other display of the processed data:</h3>
-          <TableComponent headers={this.state.data.headers} records={this.state.data.records}/>
-          <hr className="text-center"/>
-          <h3 className="text-center">Sample Data Analysis by Totals</h3>
-          <TableComponent headers={this.state.analyze.headers} records={Analyze.rankTotals(this.state.analyze.records)}/>
-          <h3 className="text-center">Sample Data Analysis by Wins then Totals</h3>
-          <TableComponent headers={this.state.analyze.headers} records={Analyze.rankWinsThenTotals(this.state.analyze.records)}/>
+          <div className="card bg-primary mt-4">
+            <h3 className="card-header text-center">Replace the following table with some other display of the processed data:</h3>
+            <div className="card-body bg-dark text-center">
+              <TableComponent headers={this.state.data.headers} records={this.state.data.records}/>
+            </div>
+          </div>
+          <div className="card bg-primary mt-4 mb-4">
+            <h3 className="card-header text-center">Sample Data Analysis by Totals</h3>
+            <div className="card-body bg-dark text-center">
+              <TableComponent headers={this.state.analyze.headers} records={Analyze.rankTotals(this.state.analyze.records)}/>
+            </div>
+          </div>
+          <div className="card bg-primary mb-4">
+            <h3 className="card-header text-center">Sample Data Analysis by Wins then Totals</h3>
+            <div className="card-body bg-dark text-center">
+              <TableComponent headers={this.state.analyze.headers} records={Analyze.rankWinsThenTotals(this.state.analyze.records)}/>
+            </div>
+          </div>
         </div>
       }</>
     }
