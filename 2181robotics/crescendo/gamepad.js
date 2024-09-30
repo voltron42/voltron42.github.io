@@ -9,14 +9,17 @@
       if (oldValue != newValue) {
         if (!newValue) {
           window.dispatchEvent(new CustomEvent(`gamepad${singular}released`,{ detail: { gamepadIndex, gamepadType, index, label }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}released`, { detail: { gamepadType, index, label }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}released`, { detail: { gamepadType }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}released`, { detail: { gamepadType }}));
         } else if (!oldValue) {
           window.dispatchEvent(new CustomEvent(`gamepad${singular}triggered`,{ detail: { gamepadIndex, gamepadType, index, label, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}triggered`, { detail: { gamepadType, index, label }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}triggered`,{ detail: { gamepadType, newValue }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}triggered`,{ detail: { gamepadType, newValue }}));
         } else {
           window.dispatchEvent(new CustomEvent(`gamepad${singular}changed`,{ detail: { gamepadIndex, gamepadType, index, label, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}changed`, { detail: { gamepadType, index, label }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}changed`,{ detail: { gamepadType, newValue }}));
           window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}changed`,{ detail: { gamepadType, newValue }}));
         }

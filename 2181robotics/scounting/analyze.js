@@ -41,14 +41,8 @@ namespace("2181robotics.scouting.Analyze", () => {
       }
     };
   }
-  const copyRecord = function(record) {
-    return Object.entries(record).reduce((outval, [ k, v ]) => {
-      outval[k] = v;
-      return outval;
-    }, {});
-  }
   const rankBy = function(records, predicate) {
-    records = records.map(copyRecord);
+    records = records.map(r => Object.assign({}, r));
     records.sort(predicate);
     records.forEach((record, i) => {
       record.rank = i + 1;

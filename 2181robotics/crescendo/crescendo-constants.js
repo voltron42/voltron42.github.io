@@ -1,4 +1,4 @@
-namespace("2181robotics.crescendo.Crescendo", () => {
+namespace("2181robotics.crescendo.CrescendoConstants", () => {
   const getDefs = function() {
     return `<g id="floor">
       <rect width="200" height="100" fill="grey" stroke="white" stroke-width="2"/>
@@ -25,47 +25,43 @@ namespace("2181robotics.crescendo.Crescendo", () => {
       <circle cx="0" cy="0" r="1.5" fill="none" stroke="orange"/>
     </g>
     <linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="green">
+      <stop offset="0%" stop-color="yellow">
       </stop>
-      <stop offset="100%" stop-color="yellow">
+      <stop offset="100%" stop-color="green">
       </stop>
     </linearGradient>
-    <pattern id="loading" x="0" y="0" width="3" height="3" patternUnits="userSpaceOnUse">
-      <rect y="-3" width="3" height="3" fill="url(#gradient)">
+    <pattern id="loading" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect y="0" width="6" height="6" fill="url(#gradient)">
         <animate 
           attributeName="y"
           begin="0s"
           dur="0.75s"
-          from="-3"
+          from="6"
           to="0"
           repeatCount="indefinite"/>
       </rect>
-      <rect y="0" width="3" height="3" fill="url(#gradient)">
+      <rect y="-6" width="6" height="6" fill="url(#gradient)">
         <animate 
           attributeName="y"
           begin="0s"
           dur="0.75s"
           from="0"
-          to="3"
+          to="-6"
           repeatCount="indefinite"/>
       </rect>
     </pattern>`;
-  }
-  const ring = function([x,y]) {
-    return `<use href="#ring" x="${x}" y="${y}"/>`;
-  }
+  };
   const intakeStates = {
     empty: "white",
     intakeOn: "yellow",
     loading: "url(#loading)",
     ready: "green"
+  };
+  const getIntakeStates = function() {
+    return Object.keys(intakeStates);
   }
-  const robot = function({id,color,x,y,r,intakeState}) {
-    return `<g transform="translate(${x},${y}) rotate(${r})">
-      <rect x="-2.5" y="-2.5" width="5" height="5" fill="${color}"/>
-      <polygon fill="${intakeStates[intakeState]}" points="0 -1.5 -1.5 1.5 1.5 1.5"/>
-      <title>${id}</title>
-    </g>`;
+  const getIntakeStateColor = function(intakeState) {
+    return intakeStates[intakeState];
   }
   const rings = [
     [60,20],
@@ -80,6 +76,9 @@ namespace("2181robotics.crescendo.Crescendo", () => {
     [100,65],
     [100,80]
   ];
+  const getInitRings = function() {
+    return rings.map(xy => Array.from(xy));
+  }
   const robots = [{
     id: 2181,
     color: "blue",
@@ -87,6 +86,7 @@ namespace("2181robotics.crescendo.Crescendo", () => {
     y: 55,
     r: 80,
     intakeState: "empty"
+    /*
   }, {
     id: 2040,
     color: "blue",
@@ -122,12 +122,10 @@ namespace("2181robotics.crescendo.Crescendo", () => {
     y: 75,
     r: 280,
     intakeState: "ready"
+    */
   }];
-  const Crescendo = function(layerId) {
-    this.run = function() {
-      document.getElementById(layerId).innerHTML = rings.map(ring).concat(robots.map(robot)).join("");
-    }
-  };
-  Crescendo.getDefs = getDefs;
-  return Crescendo;
+  const getInitRobots = function() {
+    return robots.map(r => Object.assign({}, r));
+  }
+  return { getDefs, getIntakeStates, getIntakeStateColor, getInitRings, getInitRobots };
 });

@@ -21,7 +21,7 @@
     }
     const newService = factoryFn(imports);
     if ((typeof newService) != "object" && (typeof newService) != "function") {
-      throw new Error(`A namespace must be an object or function; it cannot be a primitive value: ${newService}`);
+      throw new Error(`A namespace must be an object or function; it cannot be a primitive value: ${name} - ${newService}`);
     }
     register[name] = { service: newService };
     return register[name].service;
