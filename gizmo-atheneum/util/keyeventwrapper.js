@@ -64,7 +64,7 @@
     }, detail);
     if (detail.type in eventMap) {
       const mapped = eventMap[detail.type]
-      if (keyHolds[detail.keyCode].hold != mapped.hold) {
+      if ((keyHolds[detail.keyCode]||{}).hold != mapped.hold) {
         document.dispatchEvent(new CustomEvent(mapped.event, { detail }));
         wrapKeyEvent(mapped, detail);
       }
