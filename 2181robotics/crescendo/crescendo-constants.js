@@ -1,4 +1,5 @@
 namespace("2181robotics.crescendo.CrescendoConstants", () => {
+  const border = []
   const getDefs = function() {
     return `<g id="floor">
       <rect width="200" height="100" fill="grey" stroke="white" stroke-width="2"/>

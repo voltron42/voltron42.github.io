@@ -45,6 +45,13 @@ namespace("2181robotics.crescendo.Crescendo", {
     intakeEngaged: false,
   };
   const Crescendo = function(layerId) {
+    const collideXY = function(x, deltaX, y, deltaY) {
+      // TODO - detect (and interrupt) collisions
+      return { 
+        x: x + deltaX, 
+        y: y + deltaY 
+      };
+    };
     this.run = function() {
       const sprites = {
         rings: Constants.getInitRings(),
@@ -64,8 +71,9 @@ namespace("2181robotics.crescendo.Crescendo", {
       redraw();
       setInterval(() => {
         const robot = sprites.robots[0];
-        robot.x += config.moveSpeed * inputStates.posXDelta;
-        robot.y += config.moveSpeed * inputStates.posYDelta;
+        const { x, y } = collideXY(robot.x, config.moveSpeed * inputStates.posXDelta, robot.y, config.moveSpeed * inputStates.posYDelta)
+        robot.x = x;
+        robot.y = y;
         robot.r += config.rotationSpeed * inputStates.rotationDelta;
         robot.intakeState = inputStates.intakeEngaged?"loading":"empty";
         redraw();
