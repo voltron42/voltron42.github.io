@@ -16,8 +16,25 @@ namespace("2181robotics.beach-bash.Robot", () => {
       <use href="#mark${numbers[number]}" stroke="${color}"/>
     </g>`;
   }
-  const Robot = function(color, number) {
-    
+  const Robot = function(color, number, x, y, initConfig) {
+    const id = color + numbers[number];
+    const state = {
+      x, y, r:0, intakeState
+    };
+    const config = Object.assign({}, initConfig);
+    this.getId = (() => id);
+    this.move = function(deltaX, deltaY, deltaR) {
+      // TODO
+    }
+    this.reconfigure = function(newConfig) {
+      Object.assign(config, newConfig);
+    }
+    this.setIntakeState = function(newIntakeState) {
+      if (!(newIntakeState in intakeStates)) {
+        throw `Invalid intake state: ${newIntakeState}`;
+      }
+      state.intakeState = newIntakeState;
+    }
   };
   Robot.getIntakeStates = function() {
     return Object.keys(intakeStates);
