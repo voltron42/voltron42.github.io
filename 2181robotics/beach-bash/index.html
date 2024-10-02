@@ -13,16 +13,88 @@
     <!-- local styles -->
     <link rel="stylesheet" href="styles.css"/>
 
-    <style>
-      th {
-        width: 60%;
-        text-align: right;
-      }
-    </style>
+    <!-- local namespaces -->
+    <script type="text/javascript" src="beach-bash.js"></script>
+
+    <!-- init script -->
+    <script>
+      const game = (function() {
+        const BeachBash = importNamespace("2181robotics.beach-bash.BeachBash");
+        return new BeachBash();
+      })();
+    </script>
   </head>
-  <body class="container bg-dark text-light">
+  <body class="container bg-dark text-light" onload="game.init()">
     <svg width="0" height="0">
       <defs>
+        <g id="floor">
+          <rect width="360" height="360" fill="white"/>
+          <rect title="floor-bounds" x="0.5" y="30" width="359" height="324" fill="white" stroke="black"/>
+          <rect x="165" y="7" width="30" height="16" stroke="black" stroke-width="3"/>
+          <rect x="165" y="7" width="30" height="16" fill="white"/>
+          <line x1="0.5" y1="192" x2="359.5" y2="192" stroke="#555"/>
+          <line x1="180" y1="30" x2="180" y2="354" stroke="#555" stroke-width="2"/>
+          <line x1="162" y1="30" x2="162" y2="354" stroke="#555"/>
+          <line x1="198" y1="30" x2="198" y2="354" stroke="#555"/>
+          <rect x="12.5" y="7" width="48" height="24" fill="red"/>
+          <rect x="36.5" y="11" width="20" height="16" fill="white"/>
+          <polygon points="16.5 27 32.5 27 24.5 11" fill="white" />
+          <line x1="24.5" y1="11" x2="24.5" y2="27" stroke="red" stroke-width="2"/>
+          <rect x="99.5" y="7" width="48" height="24" fill="blue"/>
+          <rect x="123.5" y="11" width="20" height="16" fill="white"/>
+          <polygon points="103.5 27 119.5 27 111.5 11" fill="white" />
+          <line x1="109" y1="11" x2="109" y2="27" stroke="blue" stroke-width="2"/>
+          <line x1="114" y1="11" x2="114" y2="27" stroke="blue" stroke-width="2"/>
+          <rect x="212.5" y="7" width="48" height="24" fill="red"/>
+          <rect x="236.5" y="11" width="20" height="16" fill="white"/>
+          <polygon points="216.5 27 232.5 27 224.5 11" fill="white" />
+          <line x1="222" y1="11" x2="222" y2="27" stroke="red" stroke-width="2"/>
+          <line x1="227" y1="11" x2="227" y2="27" stroke="red" stroke-width="2"/>
+          <rect x="299.5" y="7" width="48" height="24" fill="blue"/>
+          <rect x="323.5" y="11" width="20" height="16" fill="white"/>
+          <polygon points="303.5 27 319.5 27 311.5 11" fill="white" />
+          <line x1="311.5" y1="11" x2="311.5" y2="27" stroke="blue" stroke-width="2"/>
+          <rect x="0.5" y="30" width="96" height="161" fill="#fdd" stroke="red" stroke-width="2"/>
+          <rect x="0.5" y="193" width="96" height="161" fill="#ddf" stroke="blue" stroke-width="2"/>
+          <rect x="263.5" y="30" width="96" height="161" fill="#ddf" stroke="blue" stroke-width="2"/>
+          <rect x="263.5" y="193" width="96" height="161" fill="#fdd" stroke="red" stroke-width="2"/>
+          <polygon points="15 31 58 31 36.5 52.5" fill="none" stroke="red" stroke-width="4"/>
+          <polygon points="102 31 145 31 123.5 52.5" fill="none" stroke="blue" stroke-width="4"/>
+          <polygon points="215 31 258 31 236.5 52.5" fill="none" stroke="red" stroke-width="4"/>
+          <polygon points="302 31 345 31 323.5 52.5" fill="none" stroke="blue" stroke-width="4"/>
+          <rect title="north-net-base" x="154.5" y="30" width="51" height="31.5" fill="#ddd" stroke="black"//>
+          <rect title="south-net-base" x="154.5" y="322.5" width="51" height="31.5" fill="#ddd" stroke="black"//>
+          <rect title="hoop-base" x="168" y="174" width="24" height="36" fill="#ddd" stroke="black"//>
+          <ellipse title="hoop" cx="180" cy="192" rx="2" ry="18" fill="none" stroke="#333" stroke-width="2"/>
+        </g>
+        <pattern id="jaws-pattern" viewBox="-10 -10 20 20" width="100%" height="100%">
+          <g transform="translate(-10.5 -10)">
+            <g transform="scale(0.04)">
+              <rect x="0" y="0" width="525" height="525" fill="#09c"/>
+              <path fill="white" transform="translate(6.5, 6.5)" d="M257.97 20.22C150.394 88.557 72.1 275.18 69.874 494.374h375.188c-2.2-219.194-79.52-405.817-187.094-474.156zm-18.845 163.06l18.344 36.282 18.342-36.28c9.99 2.326 19.72 6.537 29.063 12.437l4.156 48.56 20.095-28.624c7.938 8.123 15.48 17.558 22.594 28.156L345.436 279l18.375-15.344c24.39 44.295 42.05 103.6 49.532 170.78-10.036-32.144-26.553-60.393-47.625-82.342l4-35.813L344.093 333c-6.098-4.53-12.452-8.595-19.03-12.156l-3.345-40.97-26.314 28.876c-7.31-2.074-14.792-3.58-22.437-4.438l-15.5-33.25-15.5 33.282c-8.14.916-16.12 2.522-23.876 4.812l-24.875-27.28-3.157 38.874c-6.645 3.585-13.065 7.68-19.22 12.25l-25.624-16.72 4.03 35.814c-21.08 21.95-37.618 50.19-47.656 82.344 7.482-67.188 25.17-126.485 49.562-170.782L169.5 279l-6.28-35.188c7.37-10.983 15.213-20.71 23.468-29.03l19.25 27.374 3.937-46.312c9.4-5.963 19.193-10.22 29.25-12.563z"/>
+            </g>
+          </g>
+        </pattern>
+        <circle id="shark-ball" cx="0" cy="0" r="9" fill="url(#jaws-pattern)" stroke="black"/>
+        <polygon id="vert" points="1 4 1 6 2 7 3 6 3 4 2 3" fill="black"/>
+        <polygon id="horiz" points="4 1 6 1 7 2 6 3 4 3 3 2" fill="black"/>
+        <g id="zero">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="0" y="6"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="12"/>
+        </g>
+        <g id="zerozero">
+          <use href="#zero" x="0" y="0"/>
+          <use href="#zero" x="10" y="0"/>
+        </g>
+        <g id="zerozerozero">
+          <use href="#zero" x="0" y="0"/>
+          <use href="#zero" x="10" y="0"/>
+          <use href="#zero" x="20" y="0"/>
+        </g>
         <g id="redRobot1">
           <rect x="-18" y="-18" width="36" height="36" fill="red" stroke="black"/>
           <polygon points="0 -14 14 14 -14 14" fill="white"/>
@@ -45,51 +117,27 @@
           <line x1="-4" y1="-18" x2="-4" y2="18" stroke="blue" stroke-width="2"/>
           <line x1="4" y1="-18" x2="4" y2="18" stroke="blue" stroke-width="2"/>
         </g>
-        <pattern id="jaws-pattern" viewBox="-10 -10 20 20" width="100%" height="100%">
-          <g transform="translate(-10.5 -10)">
-            <g transform="scale(0.04)">
-              <rect x="0" y="0" width="525" height="525" fill="#09c"/>
-              <path fill="white" transform="translate(6.5, 6.5)" d="M257.97 20.22C150.394 88.557 72.1 275.18 69.874 494.374h375.188c-2.2-219.194-79.52-405.817-187.094-474.156zm-18.845 163.06l18.344 36.282 18.342-36.28c9.99 2.326 19.72 6.537 29.063 12.437l4.156 48.56 20.095-28.624c7.938 8.123 15.48 17.558 22.594 28.156L345.436 279l18.375-15.344c24.39 44.295 42.05 103.6 49.532 170.78-10.036-32.144-26.553-60.393-47.625-82.342l4-35.813L344.093 333c-6.098-4.53-12.452-8.595-19.03-12.156l-3.345-40.97-26.314 28.876c-7.31-2.074-14.792-3.58-22.437-4.438l-15.5-33.25-15.5 33.282c-8.14.916-16.12 2.522-23.876 4.812l-24.875-27.28-3.157 38.874c-6.645 3.585-13.065 7.68-19.22 12.25l-25.624-16.72 4.03 35.814c-21.08 21.95-37.618 50.19-47.656 82.344 7.482-67.188 25.17-126.485 49.562-170.782L169.5 279l-6.28-35.188c7.37-10.983 15.213-20.71 23.468-29.03l19.25 27.374 3.937-46.312c9.4-5.963 19.193-10.22 29.25-12.563z"/>
-            </g>
-          </g>
-        </pattern>
-        <circle id="shark-ball" cx="0" cy="0" r="9" fill="url(#jaws-pattern)" stroke="black"/>
       </defs>
     </svg>
     <div class="d-flex flex-column justify-content-center h-100">
       <div class="row">
         <div class="col-6">
           <svg width="100%" height="100%" viewBox="0 0 360 360">
-            <rect width="360" height="360" fill="white"/>
-            <rect x="0.5" y="30" width="359" height="324" fill="white" stroke="black"/>
-            <line x1="0.5" y1="192" x2="359.5" y2="192" stroke="#555"/>
-            <line x1="180" y1="30" x2="180" y2="354" stroke="#555"/>
-            <line x1="162" y1="30" x2="162" y2="354" stroke="#555"/>
-            <line x1="198" y1="30" x2="198" y2="354" stroke="#555"/>
-            <circle cx="162" cy="100" r="6" fill="red" stroke="black"/>
-            <circle cx="198" cy="137" r="6" fill="blue" stroke="black"/>
-            <circle cx="198" cy="247" r="6" fill="red" stroke="black"/>
-            <circle cx="162" cy="284" r="6" fill="blue" stroke="black"/>
-            <rect x="154.5" y="30" width="51" height="31.5" fill="#ddd" stroke="black"//>
-            <rect x="154.5" y="322.5" width="51" height="31.5" fill="#ddd" stroke="black"//>
-            <rect x="168" y="174" width="24" height="36" fill="#ddd" stroke="black"//>
-            <rect x="12.5" y="7" width="48" height="24" fill="red"/>
-            <rect x="99.5" y="7" width="48" height="24" fill="blue"/>
-            <rect x="212.5" y="7" width="48" height="24" fill="red"/>
-            <rect x="299.5" y="7" width="48" height="24" fill="blue"/>
-            <rect x="0.5" y="30" width="96" height="161" fill="#fdd" stroke="red" stroke-width="2"/>
-            <rect x="0.5" y="193" width="96" height="161" fill="#ddf" stroke="blue" stroke-width="2"/>
-            <rect x="263.5" y="30" width="96" height="161" fill="#ddf" stroke="blue" stroke-width="2"/>
-            <rect x="263.5" y="193" width="96" height="161" fill="#fdd" stroke="red" stroke-width="2"/>
-            <polygon points="15 31 58 31 36.5 52.5" fill="none" stroke="red" stroke-width="4"/>
+            <use href="#floor"/>
+
+            <use id="timer" href="#zerozerozero" x="165" y="7"/>
+            <use id="red1score" href="#zerozero" x="36.5" y="11"/>
+            <use id="blue2score" href="#zerozero" x="123.5" y="11"/>
+            <use id="red2score" href="#zerozero" x="236.5" y="11"/>
+            <use id="blue1score" href="#zerozero" x="323.5" y="11"/>
             <circle cx="36.5" cy="40" r="6" fill="red" stroke="black"/>
-            <polygon points="102 31 145 31 123.5 52.5" fill="none" stroke="blue" stroke-width="4"/>
-            <circle cx="123.5" cy="40" r="6" fill="blue" stroke="black"/>
-            <polygon points="215 31 258 31 236.5 52.5" fill="none" stroke="red" stroke-width="4"/>
             <circle cx="236.5" cy="40" r="6" fill="red" stroke="black"/>
-            <polygon points="302 31 345 31 323.5 52.5" fill="none" stroke="blue" stroke-width="4"/>
+            <circle cx="162" cy="100" r="6" fill="red" stroke="black"/>
+            <circle cx="198" cy="247" r="6" fill="red" stroke="black"/>
+            <circle cx="123.5" cy="40" r="6" fill="blue" stroke="black"/>
             <circle cx="323.5" cy="40" r="6" fill="blue" stroke="black"/>
-            <ellipse cx="180" cy="192" rx="2" ry="18" fill="none" stroke="white" stroke-width="2"/>
+            <circle cx="198" cy="137" r="6" fill="blue" stroke="black"/>
+            <circle cx="162" cy="284" r="6" fill="blue" stroke="black"/>
             <use href="#redRobot1" x="49" y="111"></use>
             <use href="#redRobot2" x="312" y="273"></use>
             <use href="#blueRobot1" x="312" y="111"></use>
@@ -109,7 +157,7 @@
                   <label for="launchAngle">Launch Angle (degrees)</label>
                 </th>
                 <td>
-                  <input type="number" id="launchAngle" value="45" max="90" min="0"/>
+                  <input type="number" id="launchAngle" value="45" max="90" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="launchVelocity">
@@ -117,7 +165,7 @@
                   <label for="launchVelocity">Launch Velocity (ft/sec)</label>
                 </th>
                 <td>
-                  <input type="number" id="launchVelocity" value="80" max="85" min="0"/>
+                  <input type="number" id="launchVelocity" value="80" max="85" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
             </tbody>
@@ -131,7 +179,7 @@
                   <label for="moveSpeed">Movement Speed (ft/sec)</label>
                 </th>
                 <td>
-                  <input type="number" id="moveSpeed" value="10.5" step="0.5" max="10.5" min="0"/>
+                  <input type="number" id="moveSpeed" value="10.5" step="0.5" max="10.5" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="intakeDelay">
@@ -139,7 +187,7 @@
                   <label for="intakeDelay">Intake Delay (millis)</label>
                 </th>
                 <td>
-                  <input type="number" id="intakeDelay" value="500" step="10" max="10000" min="0"/>
+                  <input type="number" id="intakeDelay" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="timeToReset">
@@ -147,7 +195,7 @@
                   <label for="timeToReset">Time To Reset (millis)</label>
                 </th>
                 <td>
-                  <input type="number" id="timeToReset" value="500" step="10" max="10000" min="0"/>
+                  <input type="number" id="timeToReset" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
             </tbody>
