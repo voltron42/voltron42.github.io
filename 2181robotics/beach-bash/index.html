@@ -26,7 +26,7 @@
   </head>
   <body class="container bg-dark text-light" onload="game.init()">
     <svg width="0" height="0">
-      <defs>
+      <defs id="svgDefs">
         <g id="floor">
           <rect width="360" height="360" fill="white"/>
           <rect title="floor-bounds" x="0.5" y="30" width="359" height="324" fill="white" stroke="black"/>
@@ -67,6 +67,32 @@
           <rect title="hoop-base" x="168" y="174" width="24" height="36" fill="#ddd" stroke="black"//>
           <ellipse title="hoop" cx="180" cy="192" rx="2" ry="18" fill="none" stroke="#333" stroke-width="2"/>
         </g>
+        <linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="yellow">
+          </stop>
+          <stop offset="100%" stop-color="green">
+          </stop>
+        </linearGradient>
+        <pattern id="loading" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+          <rect y="0" width="6" height="6" fill="url(#gradient)">
+            <animate 
+              attributeName="y"
+              begin="0s"
+              dur="0.75s"
+              from="6"
+              to="0"
+              repeatCount="indefinite"/>
+          </rect>
+          <rect y="-6" width="6" height="6" fill="url(#gradient)">
+            <animate 
+              attributeName="y"
+              begin="0s"
+              dur="0.75s"
+              from="0"
+              to="-6"
+              repeatCount="indefinite"/>
+          </rect>
+        </pattern>
         <pattern id="jaws-pattern" viewBox="-10 -10 20 20" width="100%" height="100%">
           <g transform="translate(-10.5 -10)">
             <g transform="scale(0.04)">
@@ -86,36 +112,93 @@
           <use href="#horiz" x="0" y="0"/>
           <use href="#horiz" x="0" y="12"/>
         </g>
-        <g id="zerozero">
-          <use href="#zero" x="0" y="0"/>
-          <use href="#zero" x="10" y="0"/>
+        <g id="one">
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
         </g>
-        <g id="zerozerozero">
-          <use href="#zero" x="0" y="0"/>
-          <use href="#zero" x="10" y="0"/>
-          <use href="#zero" x="20" y="0"/>
+        <g id="two">
+          <use href="#vert" x="0" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+          <use href="#horiz" x="0" y="12"/>
         </g>
+        <g id="three">
+          <use href="#vert" x="6" y="0"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+          <use href="#horiz" x="0" y="12"/>
+        </g>
+        <g id="four">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+        </g>
+        <g id="five">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+          <use href="#horiz" x="0" y="12"/>
+        </g>
+        <g id="six">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="0" y="6"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+          <use href="#horiz" x="0" y="12"/>
+        </g>
+        <g id="seven">
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="0"/>
+        </g>
+        <g id="eight">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="0" y="6"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+          <use href="#horiz" x="0" y="12"/>
+        </g>
+        <g id="nine">
+          <use href="#vert" x="0" y="0"/>
+          <use href="#vert" x="6" y="6"/>
+          <use href="#vert" x="6" y="0"/>
+          <use href="#horiz" x="0" y="0"/>
+          <use href="#horiz" x="0" y="6"/>
+        </g>
+        <g id="markOne">
+          <line x1="0" y1="-18" x2="0" y2="18" stroke-width="2"/>
+        </g>
+        <g id="markTwo">
+          <line x1="-4" y1="-18" x2="-4" y2="18" stroke-width="2"/>
+          <line x1="4" y1="-18" x2="4" y2="18" stroke-width="2"/>
+        </g>
+        <circle id="ball" r="6" stroke="black"/>
         <g id="redRobot1">
           <rect x="-18" y="-18" width="36" height="36" fill="red" stroke="black"/>
-          <polygon points="0 -14 14 14 -14 14" fill="white"/>
-          <line x1="0" y1="-18" x2="0" y2="18" stroke="red" stroke-width="2"/>
+          <polygon points="0 -14 14 14 -14 14" fill="url(#loading)"/>
+          <use href="#markOne" stroke="red"/>
         </g>
         <g id="redRobot2">
           <rect x="-18" y="-18" width="36" height="36" fill="red" stroke="black"/>
-          <polygon points="0 -14 14 14 -14 14" fill="white"/>
-          <line x1="-4" y1="-18" x2="-4" y2="18" stroke="red" stroke-width="2"/>
-          <line x1="4" y1="-18" x2="4" y2="18" stroke="red" stroke-width="2"/>
+          <polygon points="0 -14 14 14 -14 14" fill="yellow"/>
+          <use href="#markTwo" stroke="red"/>
         </g>
         <g id="blueRobot1">
           <rect x="-18" y="-18" width="36" height="36" fill="blue" stroke="black"/>
-          <polygon points="0 -14 14 14 -14 14" fill="white"/>
-          <line x1="0" y1="-18" x2="0" y2="18" stroke="blue" stroke-width="2"/>
+          <polygon points="0 -14 14 14 -14 14" fill="#0f0"/>
+          <use href="#markOne" stroke="blue"/>
         </g>
         <g id="blueRobot2">
           <rect x="-18" y="-18" width="36" height="36" fill="blue" stroke="black"/>
           <polygon points="0 -14 14 14 -14 14" fill="white"/>
-          <line x1="-4" y1="-18" x2="-4" y2="18" stroke="blue" stroke-width="2"/>
-          <line x1="4" y1="-18" x2="4" y2="18" stroke="blue" stroke-width="2"/>
+          <use href="#markTwo" stroke="blue"/>
         </g>
       </defs>
     </svg>
@@ -125,11 +208,27 @@
           <svg width="100%" height="100%" viewBox="0 0 360 360">
             <use href="#floor"/>
 
-            <use id="timer" href="#zerozerozero" x="165" y="7"/>
-            <use id="red1score" href="#zerozero" x="36.5" y="11"/>
-            <use id="blue2score" href="#zerozero" x="123.5" y="11"/>
-            <use id="red2score" href="#zerozero" x="236.5" y="11"/>
-            <use id="blue1score" href="#zerozero" x="323.5" y="11"/>
+            <g id="timer" transform="translate(165, 7)">
+              <use href="#four" x="0"/>
+              <use href="#five" x="10"/>
+              <use href="#six" x="20"/>
+            </g>
+            <g id="red1score" transform="translate(36.5, 11)">
+              <use href="#zero" x="0"/>
+              <use href="#one" x="10"/>
+            </g>
+            <g id="blue2score" transform="translate(123.5, 11)">
+              <use href="#two" x="0"/>
+              <use href="#three" x="10"/>
+            </g>
+            <g id="red2score" transform="translate(236.5, 11)">
+              <use href="#seven" x="0"/>
+              <use href="#eight" x="10"/>
+            </g>
+            <g id="blue1score" transform="translate(323.5, 11)">
+              <use href="#nine" x="0"/>
+              <use href="#zero" x="10"/>
+            </g>
             <circle cx="36.5" cy="40" r="6" fill="red" stroke="black"/>
             <circle cx="236.5" cy="40" r="6" fill="red" stroke="black"/>
             <circle cx="162" cy="100" r="6" fill="red" stroke="black"/>
@@ -138,11 +237,17 @@
             <circle cx="323.5" cy="40" r="6" fill="blue" stroke="black"/>
             <circle cx="198" cy="137" r="6" fill="blue" stroke="black"/>
             <circle cx="162" cy="284" r="6" fill="blue" stroke="black"/>
+            <g id="sharkBalls">
+              <use href="#shark-ball" x="125" y="315"/>
+            </g>
+            <g id="redOne"></g>
+            <g id="redTwo"></g>
+            <g id="blueOne"></g>
+            <g id="blueTwo"></g>
             <use href="#redRobot1" x="49" y="111"></use>
             <use href="#redRobot2" x="312" y="273"></use>
             <use href="#blueRobot1" x="312" y="111"></use>
             <use href="#blueRobot2" x="49" y="273"></use>
-            <use href="#shark-ball" x="125" y="315"/>
           </svg>
         </div>
         <div class="col-6">
