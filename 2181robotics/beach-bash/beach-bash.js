@@ -3,7 +3,16 @@ namespace("2181robotics.beach-bash.BeachBash", {
   "2181robotics.beach-bash.Constants": "Constants",
   "2181robotics.beach-bash.DigitalDisplay": "DigitalDisplay",
   "2181robotics.beach-bash.Robot": "Robot",
-}, ({ BeachBall, Constants, DigitalDisplay, Robot }) => {
+  "2181robotics.beach-bash.Utilities": "Utilities",
+}, ({ BeachBall, Constants, DigitalDisplay, Robot, Utilities }) => {
+  const frameRate = 24;
+  const frameDelay = 1000 / frameRate;
+  const border = [ 0.5, 30, 359, 324 ];
+  const obstacles = [
+    [154.5, 30, 51, 31.5],
+    [154.5, 322.5, 51, 31.5],
+    [168, 174, 24, 36]
+  ];
   const digitalDisplays = {
     timer: { initValue: 150, digitCount: 3 },
     red1score: { initValue: 0, digitCount: 2 },
@@ -20,6 +29,19 @@ namespace("2181robotics.beach-bash.BeachBash", {
     "red-2": [312, 273],
     "blue-1": [312, 111],
     "blue-2": [49, 273]
+  }
+  const configConversions = {
+
+  }
+  const initConfig = {
+    launchAngle: 60,
+    launchVelocity: 80,
+    moveSpeed: 10.5,
+    intakeDelay: 500,
+    timeToReact: 500,
+    rollingDeceleration: 1,
+    collisionDeceleration: 1,
+    initHeight: 18
   }
   return function() {
     const state = {};
@@ -42,9 +64,10 @@ namespace("2181robotics.beach-bash.BeachBash", {
         return acc;
       }, {});
       Object.values(state.robots).forEach(robot => robot.draw());
+      state.sharkBalls = [];
     }
     this.config = function(event) {
-
+      // todo
     }
   }
 });

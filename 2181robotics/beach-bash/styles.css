@@ -2,3 +2,8 @@ th {
   width: 60%;
   text-align: right;
 }
+
+input {
+  width: 6em!important;
+  text-align: center;
+}

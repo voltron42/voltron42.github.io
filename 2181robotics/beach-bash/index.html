@@ -19,6 +19,7 @@
     <script type="text/javascript" src="beach-bash.js"></script>
     <script type="text/javascript" src="digital-display.js"></script>
     <script type="text/javascript" src="robot.js"></script>
+    <script type="text/javascript" src="utilities.js"></script>
 
     <!-- init script -->
     <script>
@@ -238,18 +239,10 @@
             <g id="redTwo"></g>
             <g id="blueOne"></g>
             <g id="blueTwo"></g>
-            <g id="sharkBall0">
-              <use href="#shark-ball" x="125" y="315"/>
-            </g>
-            <g id="sharkBall1">
-              <use href="#shark-ball" x="125" y="215"/>
-            </g>
-            <g id="sharkBall2">
-              <use href="#shark-ball" x="235" y="315"/>
-            </g>
-            <g id="sharkBall3">
-              <use href="#shark-ball" x="235" y="215"/>
-            </g>
+            <g id="sharkBall0"></g>
+            <g id="sharkBall1"></g>
+            <g id="sharkBall2"></g>
+            <g id="sharkBall3"></g>
           </svg>
         </div>
         <div class="col-6">
@@ -262,18 +255,26 @@
             <tbody>
               <tr key="launchAngle">
                 <th>
-                  <label for="launchAngle">Launch Angle (degrees)</label>
+                  <label class="form-label" for="launchAngle">Launch Angle (degrees)</label>
                 </th>
                 <td>
-                  <input type="number" id="launchAngle" value="45" max="90" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="launchAngle" value="45" max="90" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="launchVelocity">
                 <th>
-                  <label for="launchVelocity">Launch Velocity (ft/sec)</label>
+                  <label class="form-label" for="launchVelocity">Launch Velocity (ft/sec)</label>
                 </th>
                 <td>
-                  <input type="number" id="launchVelocity" value="80" max="85" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="launchVelocity" value="80" max="85" min="0" onchange="game.config(event)"/>
+                </td>
+              </tr>
+              <tr key="initHeight">
+                <th>
+                  <label class="form-label" for="initHeight">Initial Height (inches)</label>
+                </th>
+                <td>
+                  <input class="form-control" type="number" id="initHeight" value="18" max="48" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
             </tbody>
@@ -284,26 +285,26 @@
             <tbody>
               <tr key="moveSpeed">
                 <th>
-                  <label for="moveSpeed">Movement Speed (ft/sec)</label>
+                  <label class="form-label" for="moveSpeed">Movement Speed (ft/sec)</label>
                 </th>
                 <td>
-                  <input type="number" id="moveSpeed" value="10.5" step="0.5" max="10.5" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="moveSpeed" value="10.5" step="0.5" max="10.5" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="intakeDelay">
                 <th>
-                  <label for="intakeDelay">Intake Delay (millis)</label>
+                  <label class="form-label" for="intakeDelay">Intake Delay (millis)</label>
                 </th>
                 <td>
-                  <input type="number" id="intakeDelay" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="intakeDelay" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="timeToReset">
                 <th>
-                  <label for="timeToReset">Time To Reset (millis)</label>
+                  <label class="form-label" for="timeToReset">Time To Reset (millis)</label>
                 </th>
                 <td>
-                  <input type="number" id="timeToReset" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="timeToReset" value="500" step="10" max="10000" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
             </tbody>
@@ -314,18 +315,18 @@
             <tbody>
               <tr key="rollingDeceleration">
                 <th>
-                  <label for="rollingDeceleration">Rolling Deceleration (ft/sec<sup>2</sup>)</label>
+                  <label class="form-label" for="rollingDeceleration">Rolling Deceleration (ft/sec<sup>2</sup>)</label>
                 </th>
                 <td>
-                  <input type="number" id="rollingDeceleration" value="1" step="0.1" max="10" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="rollingDeceleration" value="1" step="0.1" max="10" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
               <tr key="collisionDeceleration">
                 <th>
-                  <label for="collisionDeceleration">Rolling Deceleration (ft/sec<sup>2</sup>)</label>
+                  <label class="form-label" for="collisionDeceleration">Collision Deceleration (ft/sec<sup>2</sup>)</label>
                 </th>
                 <td>
-                  <input type="number" id="collisionDeceleration" value="1" step="0.1" max="10" min="0" onchange="game.config(event)"/>
+                  <input class="form-control" type="number" id="collisionDeceleration" value="1" step="0.1" max="10" min="0" onchange="game.config(event)"/>
                 </td>
               </tr>
             </tbody>
