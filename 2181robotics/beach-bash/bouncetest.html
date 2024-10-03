@@ -14,8 +14,7 @@
     
     <!-- local namespaces -->
     <script type="text/javascript" src="bounce.js"></script>
-    <script type="text/javascript" src="bouncetest.js"></script>
-    <script type="text/javascript" src="utilities.js"></script>
+    <script type="text/javascript" src="bounce-test.js"></script>
     
     <!-- init script -->
     <script>
@@ -35,13 +34,27 @@
         </radialGradient>
       </defs>
     </svg>
-    <div class="card">
-      <h2 class="card-title">2D Bounce Test</h2>
-      <div class="card-body" id="bounceTest2d"></div>
-    </div>
-    <div class="card">
-      <h2 class="card-title">3D Bounce Test</h2>
-      <div class="card-body" id="bounceTest3d"></div>
+    <div class="d-flex flex-column">
+      <div class="d-flex">
+        <div class="card">
+          <h2 class="card-title">2D Bounce Test - Animate</h2>
+          <div class="card-body" id="animate2d"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">3D Bounce Test - Animate</h2>
+          <div class="card-body" id="animate3d"></div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="card">
+          <h2 class="card-title">2D Bounce Test - Draw Path</h2>
+          <div class="card-body" id="bounceTest2d"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">3D Bounce Test - Draw Path</h2>
+          <div class="card-body" id="bounceTest3d"></div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -5,12 +5,12 @@ namespace("2181robotics.beach-bash.Bounce", () => {
     return degrees * Math.PI / 180;
   }
   const formula2d = function(launchAngleDegrees, launchVelocityFtPerSec, initHeightFt) {
-    const radians = degToRad(launchAngleDegrees);
+    const launchAngle = degToRad(launchAngleDegrees);
     // x = t * M
     // y = A * t ^ 2 + B * t + C
-    const m = launchVelocityFtPerSec * Math.cos(radians);
+    const m = launchVelocityFtPerSec * Math.cos(launchAngle);
     const a = gravity / -2;
-    const b = launchVelocityFtPerSec * Math.sin(radians);
+    const b = launchVelocityFtPerSec * Math.sin(launchAngle);
     // c = initHeightFt
     return function(timeInSec) {
       return {
@@ -27,9 +27,9 @@ namespace("2181robotics.beach-bash.Bounce", () => {
     // d = t * M
     // x ^ 2 + y ^ 2 = d ^ 2
     const a = gravity / -2;
-    const b = launchVelocityFtPerSec * Math.sin(radians);
+    const b = launchVelocityFtPerSec * Math.sin(launchAngle);
     // c = initHeightFt
-    const m = launchVelocityFtPerSec * Math.cos(radians);
+    const m = launchVelocityFtPerSec * Math.cos(launchAngle);
     const mx = m * Math.sin(heading);
     const my = m * Math.cos(heading);
     return function(timeInSec) {
@@ -48,6 +48,7 @@ namespace("2181robotics.beach-bash.Bounce", () => {
     while(lastFrame()[terminatingProperty] > 0) {
       frames.push(calc(frames.length));
     }
+    return frames;
   }
   const calcPath2d = function(launchAngle, launchVelocity, initHeight) {
     const formula = formula2d(launchAngle, launchVelocity, initHeight);
