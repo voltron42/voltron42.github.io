@@ -1,7 +1,7 @@
 namespace("2181robotics.beach-bash.BounceTest", {
   "2181robotics.beach-bash.Bounce": "Bounce"
 }, ({ Bounce }) => {
-  const frameRate = 12;
+  const frameRate = 24;
   const heading = 30;
   const launchAngle = 65;
   const launchVelocity = 20;
@@ -53,7 +53,7 @@ namespace("2181robotics.beach-bash.BounceTest", {
       }, 1000 / frameRate);
       setInterval(() => {
         const { x, y, z } = path3d[index3d];
-        document.getElementById("animate3d").innerHTML = wrapSVG(1, minMaxXY3d, circle(x, y, 0.5 + z / 7));
+        document.getElementById("animate3d").innerHTML = wrapSVG(1, minMaxXY3d, circle(x, y, 0.5 + z / 12));
         index3d = (index3d + 1) % path3d.length;
       }, 1000 / frameRate);
     }

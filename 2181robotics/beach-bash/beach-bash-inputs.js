@@ -14,7 +14,7 @@ namespace("2181robotics.beach-bash.BeachBashInputs", () => {
   const events = eventTypes.reduce((outVal, eventType) => {
     return outVal.concat(actionTypes.map(actionType => `gamepad${actionType}${eventType}`));
   }, []);
-  const init = function(initStates, actionMapping, keyboardValueMapping, defaultKeyboardValue) {
+  const init = function() {
     initGamepad(buttonLabels);
     events.forEach((eventName) => {
       window.addEventListener(eventName, ({ detail }) => {

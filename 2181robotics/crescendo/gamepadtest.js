@@ -48,6 +48,7 @@ namespace("2181robotics.crescendo.GamepadTest", () => {
     };
     events.forEach((eventName) => {
       window.addEventListener(eventName, ({ detail }) => {
+        console.log(Object.assign({ eventName }, detail ));
         var { newValue, label } = detail;
         states[label] = newValue;
       });
@@ -55,6 +56,7 @@ namespace("2181robotics.crescendo.GamepadTest", () => {
     actionTypes.forEach((actionType) => {
       const eventName = `gamepad${actionType}released`;
       window.addEventListener(eventName, ({ detail }) => {
+        console.log(Object.assign({ eventName }, detail ));
         var { label } = detail;
         states[label] = 0;
       });

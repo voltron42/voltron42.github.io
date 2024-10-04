@@ -1,12 +1,11 @@
 namespace("2181robotics.beach-bash.BeachBash", {
   "2181robotics.beach-bash.BeachBall": "BeachBall",
+  "2181robotics.beach-bash.BeachBashInputs": "BeachBashInputs",
   "2181robotics.beach-bash.Constants": "Constants",
   "2181robotics.beach-bash.DigitalDisplay": "DigitalDisplay",
   "2181robotics.beach-bash.Robot": "Robot",
   "2181robotics.beach-bash.Utilities": "Utilities",
-}, ({ BeachBall, Constants, DigitalDisplay, Robot, Utilities }) => {
-  const frameRate = 24;
-  const frameDelay = 1000 / frameRate;
+}, ({ BeachBall, BeachBashInputs, Constants, DigitalDisplay, Robot, Utilities }) => {
   const border = [ 0.5, 30, 359, 324 ];
   const obstacles = [
     [154.5, 30, 51, 31.5],
@@ -30,22 +29,31 @@ namespace("2181robotics.beach-bash.BeachBash", {
     "blue-1": [312, 111],
     "blue-2": [49, 273]
   }
-  const configConversions = {
-
-  }
   const initConfig = {
+    frameRate: 24,
     launchAngle: 60,
     launchVelocity: 80,
+    initHeight: 18,
     moveSpeed: 10.5,
     intakeDelay: 500,
-    timeToReact: 500,
-    rollingDeceleration: 1,
-    collisionDeceleration: 1,
-    initHeight: 18
+    timeToReset: 500,
   }
   return function() {
     const state = {};
     this.init = function() {
+      BeachBashInputs.init();
+      window.addEventListener("beachBashInputEngaged",({ detail }) => {
+        console.log(detail);
+      });
+      window.addEventListener("beachBashInputDisengaged",({ detail }) => {
+        console.log(detail);
+      });
+      Object.entries(initConfig).forEach(([id, value]) => {
+        const elem = document.getElementById(id);
+        if (elem) {
+          elem.value = value;
+        }
+      });
       state.digitalDisplays = Object.entries(digitalDisplays).reduce((acc,[id, { initValue, digitCount }]) => {
         acc[id] = new DigitalDisplay(id, digitCount);
         acc[id].update(initValue);
@@ -59,15 +67,18 @@ namespace("2181robotics.beach-bash.BeachBash", {
       state.balls.forEach(ball => ball.draw());
       state.robots = Object.entries(robotInitLoc).reduce((acc, [key, [x, y]]) => {
         const [color, number] = key.split("-");
-        const robot = new Robot(color, number, x, y, {});
+        const robot = new Robot(color, number, x, y, initConfig);
         acc[robot.getId()] = robot;
         return acc;
       }, {});
+      state.robotIndex = Object.keys(state.robots);
       Object.values(state.robots).forEach(robot => robot.draw());
       state.sharkBalls = [];
     }
-    this.config = function(event) {
-      // todo
+    this.config = function(e) {
+      const newConfig = {};
+      newConfig[e.target.id] = parseFloat(e.target.value);
+      Object.values(state.robots).forEach(robot => robot.reconfigure(newConfig));
     }
   }
 });

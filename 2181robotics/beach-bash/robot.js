@@ -1,4 +1,5 @@
 namespace("2181robotics.beach-bash.Robot", () => {
+  const wheelBaseDegreesPerFeet = 360 / (Math.sqrt(2 * 16 * 16) * 2 * Math.PI);
   const numbers = {
     "1": "One",
     "2": "Two"
@@ -23,11 +24,17 @@ namespace("2181robotics.beach-bash.Robot", () => {
     };
     const config = Object.assign({}, initConfig);
     this.getId = (() => id);
+    this.getPoly = (() => [0,1,2,3].map(i => {
+      const radians = (state.r + 45 + i * 90) * Math.PI / 180;
+      return [ Math.cos(radians), Math.sin(radians) ];
+    }));
     this.draw = function() {
       document.getElementById(id).innerHTML = draw(color, number, state);
     }
     this.move = function(deltaX, deltaY, deltaR) {
-      // TODO
+      state.x += deltaX * config.moveSpeed * 12 / config.frameRate;
+      state.y += deltaY * config.moveSpeed * 12 / config.frameRate;
+      state.r += deltaR * config.moveSpeed * 12 * wheelBaseDegreesPerFeet / config.frameRate;
     }
     this.reconfigure = function(newConfig) {
       Object.assign(config, newConfig);
@@ -41,9 +48,6 @@ namespace("2181robotics.beach-bash.Robot", () => {
   };
   Robot.getIntakeStates = function() {
     return Object.keys(intakeStates);
-  }
-  Robot.getIntakeStateColor = function(intakeState) {
-    return intakeStates[intakeState];
   }
   return Robot;
 });
