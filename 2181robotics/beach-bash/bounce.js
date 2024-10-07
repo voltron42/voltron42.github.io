@@ -30,8 +30,8 @@ namespace("2181robotics.beach-bash.Bounce", () => {
     const b = launchVelocityFtPerSec * Math.sin(launchAngle);
     // c = initHeightFt
     const m = launchVelocityFtPerSec * Math.cos(launchAngle);
-    const mx = m * Math.sin(heading);
-    const my = m * Math.cos(heading);
+    const mx = m * Math.cos(heading);
+    const my = m * Math.sin(heading);
     return function(timeInSec) {
       return {
         t: timeInSec,
@@ -55,7 +55,7 @@ namespace("2181robotics.beach-bash.Bounce", () => {
     return calcPath(formula, "y");
   }
   const calcPath3d = function(heading, launchAngle, launchVelocity, initHeight) {
-    const formula = formula3d(heading, launchAngle, launchVelocity, initHeight);
+    const formula = formula3d(heading - 90, launchAngle, launchVelocity, initHeight);
     return calcPath(formula, "z");
   }
   return { calcPath2d, calcPath3d };

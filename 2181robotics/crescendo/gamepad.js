@@ -27,7 +27,7 @@
       }
     };
   }
-  const pollGamepad = function(buttonLabels,state,{id,axes,buttons,timestamp},gamepadIndex,axisThreshold) {
+  const pollGamepad = function(buttonLabels, state, { id, axes, buttons, timestamp }, gamepadIndex, axisThreshold) {
     if (timestamp > state.timestamp) {
       state.timestamp = timestamp;
       buttonLabels = buttonLabels || { axes: [], buttons: [] };
@@ -42,7 +42,7 @@
     clearInterval(gamepads[index]);
     delete gamepads[index];
   }
-  window.initGamepad = function(buttonLabels, axisThreshold) {
+  window.initGamepad = function(buttonLabels, { axisThreshold, throwWhenGamepadNotFound }) {
     axisThreshold = isNaN(axisThreshold)?DEFAULT_AXIS_THRESHOLD:axisThreshold;
     buttonLabels = buttonLabels || {};
     window.addEventListener("gamepaddisconnected", (e) => {
@@ -56,7 +56,17 @@
         interval: setInterval(() => {
           const gamepad = navigator.getGamepads()[e.gamepad.index];
           if (gamepad) {
-            pollGamepad(buttonLabels[gamepad.id], state, gamepad, e.gamepad.index, axisThreshold);
+            const labels = buttonLabels[gamepad.id];
+            if (labels || !throwWhenGamepadNotFound) {
+              pollGamepad(labels, state, gamepad, e.gamepad.index, axisThreshold);
+            } else {
+              throw {
+                errorMessage: "Not configured for gamepad",
+                type: gamepad.id,
+                axesCount: gamepad.axes.length,
+                buttonCount: gamepad.buttons.length
+              };
+            }
           } else {
             clearGamepad(e.gamepad.index);
           }

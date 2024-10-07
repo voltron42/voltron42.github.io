@@ -1,20 +1,12 @@
 namespace("2181robotics.beach-bash.BounceTest", {
-  "2181robotics.beach-bash.Bounce": "Bounce"
-}, ({ Bounce }) => {
+  "2181robotics.beach-bash.Bounce": "Bounce",
+  "2181robotics.beach-bash.GridMath": "GridMath"
+}, ({ Bounce, GridMath }) => {
   const frameRate = 24;
-  const heading = 30;
+  const heading = 78;
   const launchAngle = 65;
   const launchVelocity = 20;
   const initHeight = 1.5;
-  const getMinMaxXY = function(path) {
-    const xs = path.map(p => p.x);
-    const ys = path.map(p => p.y);
-    const minX = Math.min.apply(null,xs);
-    const maxX = Math.max.apply(null,xs);
-    const minY = Math.min.apply(null,ys);
-    const maxY = Math.max.apply(null,ys);
-    return { minX, maxX, minY, maxY };
-  }
   const wrapSVG = function(margin, minMaxXY, content) {
     const { minX, maxX, minY, maxY } = minMaxXY;
     const x = minX - margin;
@@ -31,11 +23,11 @@ namespace("2181robotics.beach-bash.BounceTest", {
   }
 
   const path2d = Bounce.calcPath2d(launchAngle, launchVelocity, initHeight);
-  const minMaxXY2d = getMinMaxXY(path2d);
+  const minMaxXY2d = GridMath.minMaxXYObj(path2d);
   const svg2d = wrapSVG(1, minMaxXY2d, path2d.map(({x,y}) => circle(x,y,0.5)).join(""));
   
   const path3d = Bounce.calcPath3d(heading, launchAngle, launchVelocity, initHeight);
-  const minMaxXY3d = getMinMaxXY(path3d);
+  const minMaxXY3d = GridMath.minMaxXYObj(path3d);
   const svg3d = wrapSVG(1, minMaxXY3d, path3d.map(({x,y,z}) => circle(x,y,0.5+z/10)).join(""));
   
   console.log({ minMaxXY2d, minMaxXY3d })
