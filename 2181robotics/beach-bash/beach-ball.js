@@ -28,6 +28,9 @@ namespace("2181robotics.beach-bash.BeachBall", {
         });
       });
     };
+    me.land = () => {
+      trajectory.splice(0, trajectory.length);
+    };
     me.move = () => {
       const previous = Object.assign({}, state);
       const { x, y, z } = trajectory.shift();
@@ -36,7 +39,8 @@ namespace("2181robotics.beach-bash.BeachBall", {
         detail: {
           id,
           previous,
-          current: Object.assign({}, state)
+          current: Object.assign({}, state),
+          interactWithRobot
         }
       }));
     };
@@ -50,6 +54,17 @@ namespace("2181robotics.beach-bash.BeachBall", {
         }
       }
     });
+    const interactWithRobot = (robotDetail) => {
+      if (isBallWithinBoundsOfRobot(robotDetail.poly,Object.assign({}, state))) {
+        // is robot moving? -> how does it affect ball trajectory?
+        if (me.isMoving()) {
+          // ball also in motion -> update trajectory
+        } else {
+          // ball not in motion
+          // is robot moving towards ball?
+        }
+      }
+    }
     window.addEventListener("robotMove",({ detail }) => {
       if (detail.isLoaded(id)) {
         state.x = detail.x;
@@ -57,9 +72,8 @@ namespace("2181robotics.beach-bash.BeachBall", {
         state.z = detail.launchHeight;
       } else if (detail.isLoadable(Object.assign({}, state))) {
         detail.loadBall(me);
-      } else if (isBallWithinBoundsOfRobot(detail.poly,Object.assign({}, state))) {
-          // is ball within bounds of robot?
-          // todo - robot is moving -> how does it affect ball trajectory?
+      } else {
+        interactWithRobot(detail);
       }
     });
   };

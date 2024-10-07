@@ -36,39 +36,40 @@ namespace("2181robotics.beach-bash.Robot", {
         delta[k] = v;
       }
     };
+    const buildRobotMoveDetail = () => Object.assign({
+      id,
+      launchHeight: config.initHeight,
+      delta: Object.assign({}, delta),
+      poly: getPoly(),
+      isLoadable: ({ x, y, z }) => {
+        if (state.intakeState !== "intakeOn") {
+          return false;
+        }
+        if (z !== 6) {
+          return false;
+        }
+        return GridMath.distance(state.x, state.y, x, y) < 6;
+      },
+      isLoaded: (ballId) => {
+        if(!state.loadedBall) {
+          return false;
+        }
+        return state.loadedBall.getId() === ballId;
+      },
+      loadBall: (ball) => {
+        state.loadedBall = ball;
+        state.intakeState = "loading";
+        setTimeout(() => {
+          state.intakeState = "ready";
+        }, config.intakeDelay);
+      }
+    }, state);
     this.move = function() {
       state.x += delta.x * config.moveSpeed * 12 / config.frameRate;
       state.y += delta.y * config.moveSpeed * 12 / config.frameRate;
       state.r += delta.r * config.moveSpeed * 12 * wheelBaseDegreesPerFeet / config.frameRate;
       window.dispatchEvent(new CustomEvent("robotMove", {
-        detail: Object.assign({
-          id,
-          launchHeight: config.initHeight,
-          delta: Object.assign({}, delta),
-          poly: getPoly(),
-          isLoadable: ({ x, y, z }) => {
-            if (state.intakeState !== "intakeOn") {
-              return false;
-            }
-            if (z !== 6) {
-              return false;
-            }
-            return GridMath.distance(state.x, state.y, x, y) < 6;
-          },
-          isLoaded: (ballId) => {
-            if(!state.loadedBall) {
-              return false;
-            }
-            return state.loadedBall.getId() === ballId;
-          },
-          loadBall: (ball) => {
-            state.loadedBall = ball;
-            state.intakeState = "loading";
-            setTimeout(() => {
-              state.intakeState = "ready";
-            }, config.intakeDelay);
-          }
-        },state)
+        detail: buildRobotMoveDetail()
       }));
     };
     this.reconfigure = function(newConfig) {
@@ -92,11 +93,7 @@ namespace("2181robotics.beach-bash.Robot", {
     }
     window.addEventListener("ballMove", ({ detail }) => {
       if (!state.loadedBall || state.loadedBall.id !== detail.id) {
-        // ignoring loaded ball
-        if (isBallWithinBoundsOfRobot(getPoly(),detail.current)) {
-        // is ball within bounds of robot?
-        // todo - ball is moving -> how do we affect trajectory?
-        }
+        detail.interactWithRobot(buildRobotMoveDetail());
       }
     });
   };
