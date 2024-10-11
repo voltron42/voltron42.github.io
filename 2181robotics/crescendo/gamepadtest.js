@@ -1,5 +1,9 @@
 namespace("2181robotics.crescendo.GamepadTest", () => {
   const buttonLabels = {
+    "Logitech Gamepad F310 (STANDARD GAMEPAD Vendor: 046d Product: c21d)":{
+      axes: "Lx,Ly,Rx,Ry".split(","),
+      buttons: "A,B,X,Y,Ls,Rs,Lt,Rt,Select,Start,L3,R3,DPadUp,DPadDown,DPadLeft,DPadRight,Menu".split(",")
+    },
     "Xbox 360 Controller (XInput STANDARD GAMEPAD)": {
       axes: "Lx,Ly,Rx,Ry".split(","),
       buttons: "A,B,X,Y,Ls,Rs,Lt,Rt,Select,Start,L3,R3,DPadUp,DPadDown,DPadLeft,DPadRight,Menu".split(",")
