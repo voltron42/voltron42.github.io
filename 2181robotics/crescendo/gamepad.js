@@ -42,7 +42,8 @@
     clearInterval(gamepads[index]);
     delete gamepads[index];
   }
-  window.initGamepad = function(buttonLabels, { axisThreshold, throwWhenGamepadNotFound }) {
+  window.initGamepad = function(buttonLabels, opts) {
+    let { axisThreshold, throwWhenGamepadNotFound } = opts || {};
     axisThreshold = isNaN(axisThreshold)?DEFAULT_AXIS_THRESHOLD:axisThreshold;
     buttonLabels = buttonLabels || {};
     window.addEventListener("gamepaddisconnected", (e) => {
