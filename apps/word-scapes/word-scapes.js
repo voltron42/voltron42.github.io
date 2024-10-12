@@ -119,9 +119,9 @@ namespace("word-scapes.WordScapes", {
                   this.setLimit(parseInt(e.target.value));
                 }}/>
               </div>
-              <div className="border border-2 rounded m-3 p-2 text-center">
+              { this.state.list.length > 0 && <div className="border border-2 rounded m-3 p-2 text-center">
                 <code className="text-light">{ this.state.list.map((index) => this.state.words[index]).join(", ") }</code>
-              </div>
+              </div> }
               { this.state.next && <div>
                   <button className="btn btn-primary" onClick={() => this.showMore()}>Show More</button>
                 </div>}
