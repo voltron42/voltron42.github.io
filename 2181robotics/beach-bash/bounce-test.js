@@ -1,8 +1,9 @@
 namespace("2181robotics.beach-bash.BounceTest", {
   "2181robotics.beach-bash.Bounce": "Bounce",
+  "2181robotics.beach-bash.Constants": "Constants",
   "2181robotics.beach-bash.GridMath": "GridMath"
 }, ({ Bounce, GridMath }) => {
-  const frameRate = 24;
+  const frameRate = Constants.frameRate();
   const heading = 78;
   const launchAngle = 65;
   const launchVelocity = 20;

@@ -1,6 +1,7 @@
 namespace("2181robotics.beach-bash.Robot", {
+  "2181robotics.beach-bash.Constants": "Constants",
   "2181robotics.beach-bash.GridMath": "GridMath"
-}, ({ GridMath }) => {
+}, ({ Constants, GridMath }) => {
   const wheelBaseDegreesPerFeet = 360 / (Math.sqrt(2 * 16 * 16) * 2 * Math.PI);
   const numbers = { "1": "One", "2": "Two" };
   const intakeStates = {
@@ -65,9 +66,9 @@ namespace("2181robotics.beach-bash.Robot", {
       }
     }, state);
     this.move = function() {
-      state.x += delta.x * config.moveSpeed * 12 / config.frameRate;
-      state.y += delta.y * config.moveSpeed * 12 / config.frameRate;
-      state.r += delta.r * config.moveSpeed * 12 * wheelBaseDegreesPerFeet / config.frameRate;
+      state.x += delta.x * config.moveSpeed * 12 / Constants.frameRate();
+      state.y += delta.y * config.moveSpeed * 12 / Constants.frameRate();
+      state.r += delta.r * config.moveSpeed * 12 * wheelBaseDegreesPerFeet / Constants.frameRate();
       window.dispatchEvent(new CustomEvent("robotMove", {
         detail: buildRobotMoveDetail()
       }));

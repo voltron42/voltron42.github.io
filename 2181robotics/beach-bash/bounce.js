@@ -1,6 +1,8 @@
-namespace("2181robotics.beach-bash.Bounce", () => {
+namespace("2181robotics.beach-bash.Bounce", {
+  "2181robotics.beach-bash.Constants":"Constants"
+}, ({ Constants }) => {
   const gravity = 32.174;
-  const frameRate = 24;
+  const frameRate = Constants.frameRate();
   const degToRad = function(degrees) {
     return degrees * Math.PI / 180;
   }

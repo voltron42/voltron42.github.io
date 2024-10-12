@@ -1,5 +1,6 @@
 namespace("2181robotics.beach-bash.Constants", () => {
   const constants = {
+    frameRate: 24,
     beachBallRadius: 6,
     robotHeight: 12
   };

@@ -30,7 +30,6 @@ namespace("2181robotics.beach-bash.BeachBash", {
     "blue-2": [49, 273]
   }
   const initConfig = {
-    frameRate: 24,
     launchAngle: 60,
     launchVelocity: 80,
     initHeight: 18,
@@ -64,7 +63,6 @@ namespace("2181robotics.beach-bash.BeachBash", {
           return new BeachBall(color, i, x, y);
         }));
       }, []);
-      state.balls.forEach(ball => ball.draw());
       state.robots = Object.entries(robotInitLoc).reduce((acc, [key, [x, y]]) => {
         const [color, number] = key.split("-");
         const robot = new Robot(color, number, x, y, initConfig);
@@ -72,8 +70,18 @@ namespace("2181robotics.beach-bash.BeachBash", {
         return acc;
       }, {});
       state.robotIndex = Object.keys(state.robots);
-      Object.values(state.robots).forEach(robot => robot.draw());
       state.sharkBalls = [];
+      window.addEventListener("beachBashInputEngaged",({ detail }) => {
+        // input
+      });
+      window.addEventListener("beachBashInputDisengaged",({ detail }) => {
+        // input
+      });
+      setInterval(() => {
+        // by frame
+        Object.values(state.robots).forEach(robot => robot.draw());
+        state.balls.forEach(ball => ball.draw());
+      }, 1000 / Constants.frameRate());
     }
     this.config = function(e) {
       const newConfig = {};
