@@ -18,12 +18,12 @@ namespace("2181robotics.beach-bash.Robot", {
       <use href="#mark${numbers[number]}" stroke="${color}"/>
     </g>`;
   };
-  const Robot = function(color, number, x, y, initConfig) {
+  const Robot = function(color, number, x, y, initConfig, bounds, obstacles) {
     const id = color + numbers[number];
     const state = { x, y, r:0, intakeState: "empty" };
     const delta = { x: 0, y: 0, r: 0 };
     const config = Object.assign({}, initConfig);
-    const getPoly = (() => "ABCD".reduce((acc,c,i) => {
+    const getPoly = (() => "ABCD".split("").reduce((acc,c,i) => {
       const radians = (state.r + 45 + i * 90) * Math.PI / 180;
       acc[c] = [ Math.cos(radians), Math.sin(radians) ];
       return acc;

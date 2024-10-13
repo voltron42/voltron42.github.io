@@ -1,27 +1,27 @@
 (function(){
-  const DEFAULT_AXIS_THRESHOLD = 0.05;
+  const DEFAULT_AXIS_THRESHOLD = 0.03;
   const gamepads = {};
-  const dispatcher = function(buttonLabels, state, gamepadType, gamepadIndex, singular, getter) {
+  const dispatcher = function(buttonLabels, state, gamepadType, gamepadIndex, inputType, getter) {
     return function(item, index) {
       const newValue = getter(item);
       const oldValue = state[index];
-      const label = buttonLabels[index];
+      const label = buttonLabels[index] || `${inputType}-${index}`;
       if (oldValue != newValue) {
         if (!newValue) {
-          window.dispatchEvent(new CustomEvent(`gamepad${singular}released`,{ detail: { gamepadIndex, gamepadType, index, label }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}released`, { detail: { gamepadType, index, label }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}released`, { detail: { gamepadType }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}released`, { detail: { gamepadType }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${inputType}released`,{ detail: { gamepadIndex, gamepadType, inputType, index, label }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}released`, { detail: { gamepadType, inputType, index, label }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${label}released`, { detail: { gamepadType, inputType }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${index}released`, { detail: { gamepadType, inputType }}));
         } else if (!oldValue) {
-          window.dispatchEvent(new CustomEvent(`gamepad${singular}triggered`,{ detail: { gamepadIndex, gamepadType, index, label, newValue }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}triggered`, { detail: { gamepadType, index, label }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}triggered`,{ detail: { gamepadType, newValue }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}triggered`,{ detail: { gamepadType, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${inputType}triggered`,{ detail: { gamepadIndex, gamepadType, inputType, index, label, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}triggered`, { detail: { gamepadType, inputType, index, label }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${label}triggered`,{ detail: { gamepadType, inputType, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${index}triggered`,{ detail: { gamepadType, inputType, newValue }}));
         } else {
-          window.dispatchEvent(new CustomEvent(`gamepad${singular}changed`,{ detail: { gamepadIndex, gamepadType, index, label, newValue }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}changed`, { detail: { gamepadType, index, label }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${label}changed`,{ detail: { gamepadType, newValue }}));
-          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${singular}${index}changed`,{ detail: { gamepadType, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${inputType}changed`,{ detail: { gamepadIndex, gamepadType, inputType, index, label, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}changed`, { detail: { gamepadType, inputType, index, label }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${label}changed`,{ detail: { gamepadType, inputType, newValue }}));
+          window.dispatchEvent(new CustomEvent(`gamepad${gamepadIndex}${inputType}${index}changed`,{ detail: { gamepadType, inputType, newValue }}));
         }
         state[index] = newValue;
       }

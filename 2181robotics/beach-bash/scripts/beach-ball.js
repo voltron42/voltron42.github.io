@@ -1,11 +1,11 @@
 namespace("2181robotics.beach-bash.BeachBall", {
   "2181robotics.beach-bash.Bounce": "Bounce",
   "2181robotics.beach-bash.Constants": "Constants"
-}, ({ Bounce, Constants }) => {
+}, ({ Bounce, Constants, GridMath }) => {
   const draw = function(x,y,z,color) {
     return `<circle cx="${x}" cy="${y}" r="${5.5 + z / 12}" fill="url(#${color}BallGrad)" stroke="black"/>`;
   }
-  const BeachBall = function(color, index, x, y) {
+  const BeachBall = function(color, index, x, y, bounds, obstacles) {
     const me = this;
     const id = `${color}Ball${index}`
     const state = {
@@ -40,7 +40,7 @@ namespace("2181robotics.beach-bash.BeachBall", {
           id,
           previous,
           current: Object.assign({}, state),
-          interactWithRobot
+          interactWithRobot,
         }
       }));
     };
@@ -55,7 +55,7 @@ namespace("2181robotics.beach-bash.BeachBall", {
       }
     });
     const interactWithRobot = (robotDetail) => {
-      if (isBallWithinBoundsOfRobot(robotDetail.poly,Object.assign({}, state))) {
+      if (GridMath.isBallWithinBoundsOfRobot(robotDetail.poly,Object.assign({}, state))) {
         // is robot moving? -> how does it affect ball trajectory?
         if (me.isMoving()) {
           // ball also in motion -> update trajectory

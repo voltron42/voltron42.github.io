@@ -4,8 +4,9 @@ namespace("2181robotics.beach-bash.BeachBash", {
   "2181robotics.beach-bash.Constants": "Constants",
   "2181robotics.beach-bash.DigitalDisplay": "DigitalDisplay",
   "2181robotics.beach-bash.Robot": "Robot",
+  "2181robotics.beach-bash.RobotControls": "RobotControls",
   "2181robotics.beach-bash.Utilities": "Utilities",
-}, ({ BeachBall, BeachBashInputs, Constants, DigitalDisplay, Robot, Utilities }) => {
+}, ({ BeachBall, BeachBashInputs, Constants, DigitalDisplay, Robot, RobotControls, Utilities }) => {
   const border = [ 0.5, 30, 359, 324 ];
   const obstacles = [
     [154.5, 30, 51, 31.5],
@@ -40,7 +41,7 @@ namespace("2181robotics.beach-bash.BeachBash", {
   return function() {
     const state = {};
     this.init = function() {
-      BeachBashInputs.init();
+      BeachBashInputs.init(RobotControls.buttonLabels());
       window.addEventListener("beachBashInputEngaged",({ detail }) => {
         console.log(detail);
       });
@@ -60,27 +61,28 @@ namespace("2181robotics.beach-bash.BeachBash", {
       }, {});
       state.balls = Object.entries(ballInit).reduce((acc, [color, points]) => {
         return acc.concat(points.map(([x,y],i) => {
-          return new BeachBall(color, i, x, y);
+          return new BeachBall(color, i, x, y, border, obstacles);
         }));
       }, []);
       state.robots = Object.entries(robotInitLoc).reduce((acc, [key, [x, y]]) => {
         const [color, number] = key.split("-");
-        const robot = new Robot(color, number, x, y, initConfig);
+        const robot = new Robot(color, number, x, y, initConfig, border, obstacles);
         acc[robot.getId()] = robot;
         return acc;
       }, {});
       state.robotIndex = Object.keys(state.robots);
       state.sharkBalls = [];
       window.addEventListener("beachBashInputEngaged",({ detail }) => {
-        // input
+        RobotControls.trigger(detail, state.robots);
       });
       window.addEventListener("beachBashInputDisengaged",({ detail }) => {
-        // input
+        RobotControls.releasel(detail, state.robots);
       });
       setInterval(() => {
-        // by frame
         Object.values(state.robots).forEach(robot => robot.draw());
         state.balls.forEach(ball => ball.draw());
+        Object.values(state.robots).forEach(robot => robot.move());
+        state.balls.forEach(ball => ball.move());
       }, 1000 / Constants.frameRate());
     }
     this.config = function(e) {
