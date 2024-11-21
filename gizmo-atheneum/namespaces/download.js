@@ -30,5 +30,11 @@ namespace('gizmo-atheneum.namespaces.Download',{
             encodeURIComponent(JSON.stringify(jsonData));
         triggerDownload(fileName,defaultFilename,".json",dataStr);
     };
-    return { triggerDownload, triggerJSONDownload, triggerPNGDownload };
+    const triggerCSVDownload = function (fileName, defaultFilename, delim, table) {
+      const dataStr =
+          'data:text/csv;charset=utf-8,' +
+          encodeURIComponent(table.map(row => row.join(delim)).join("\n"));
+      triggerDownload(fileName,defaultFilename,".csv",dataStr);
+  };
+  return { triggerDownload, triggerJSONDownload, triggerPNGDownload, triggerCSVDownload };
 });
