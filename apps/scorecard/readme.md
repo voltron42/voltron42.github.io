@@ -1,0 +1,20 @@
+* Ambition
+  1. Lazy
+  2. Traditional
+  3. Ambitious
+  4. Innovative
+* Daring
+  1. Propaganda
+  2. Stereotypical
+  3. Insightful
+  4. Revolutionary
+* Engaging
+  1. Repellent
+  2. Boring
+  3. Interesting
+  4. Exciting
+* Satisfaction
+  1. Punitive
+  2. Disappointing
+  3. Pleasent 
+  4. Rewarding
