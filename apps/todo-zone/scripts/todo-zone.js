@@ -8,6 +8,16 @@ namespace("todo-zone.TodoZone", {
   • zone-out time
   • task list
 
+  Task Schema
+  * name
+  * severity
+  * due date 
+  * history
+  
+  Task History Schema
+  * start time
+  * stop time
+
   "Working" screen:
 
     Big green button, big red button
@@ -28,9 +38,13 @@ namespace("todo-zone.TodoZone", {
     "Settings" button switches to "Settings"
     * trigger "Pause" event on task
     * change state to "Settings"
-  
-  "Planning" screen
 
+  "Settings" screen
+    * break duration
+    * "check-in" alert duration
+
+  "Planning" screen
+    table listing tasks
 
 
    */
@@ -40,7 +54,20 @@ namespace("todo-zone.TodoZone", {
     "Working",
     "Settings",
     "Reviewing"
-  ]
+  ];
+  var severities = [
+    "leisure",
+    "minor",
+    "major",
+    "urgent"
+  ];
+  var severityIcons = {
+    "leisure": "plus",
+    "minor": "check",
+    "major": "bolt",
+    "urgent": "exclamation"
+  };
+  var severityIconPrefix = "fas fa-heart-circle-";
   var getStateIndex = function(stateName) {
     return states.indexOf(stateName)
   }
@@ -52,7 +79,7 @@ namespace("todo-zone.TodoZone", {
           name: "Some Task"
         }],
         selectedTaskIndex: 0,
-        history: [],
+        breakHistory: [],
         reporting: {},
         lastActionTime: undefined,
         stateIndex: 2
@@ -70,6 +97,18 @@ namespace("todo-zone.TodoZone", {
     onBreak() {
 
     }
+    editTask(taskIndex) {
+
+    }
+    deleteTask(taskIndex) {
+
+    }
+    selectTask(taskIndex) {
+
+    }
+    viewTask(taskIndex) {
+
+    }
     render() {
       return <>
       { states[this.state.stateIndex] == "Working" &&
@@ -77,12 +116,12 @@ namespace("todo-zone.TodoZone", {
           <div className="d-flex flex-column justify-content-center w-100 h-100">
             <div className="d-flex justify-content-center w-100">
               <div className="w-50">
-                <button className="w-100" onClick={() => this.onTask()}>
+                <button className="btn btn-secondary w-100" onClick={() => this.onTask()}>
                   <h2>{this.state.tasks[this.state.selectedTaskIndex].name}</h2>
                 </button>
               </div>
               <div>
-                <button onClick={() => this.onSettings()}>
+                <button className="btn btn-secondary" onClick={() => this.onSettings()}>
                   <h2><i className="fas fa-cogs"></i></h2>
                 </button>
               </div>
@@ -98,12 +137,61 @@ namespace("todo-zone.TodoZone", {
           </div>
         </div>}
       { states[this.state.stateIndex] == "Planning" &&
-        <div className="d-flex justify-content-center">
-          { /* planning table here */ }
+        <div className="d-flex justify-content-center w-100 h-100">
+          <div className="d-flex flex-column justify-content-center w-100 h-100">
+            <div className="d-flex justify-content-center w-100">
+              <div className="w-50">
+                <button className="btn btn-secondary w-100" onClick={() => this.addTask()}>
+                  <h2>Add Task</h2>
+                </button>
+              </div>
+            </div>
+            <div className="d-flex justify-content-center w-100">
+              <table className="w-100">
+                <tbody>
+                  { this.state.tasks.map((task,taskIndex) => <tr>
+                    <td>
+                      <button className="btn btn-primary" onClick={ () => this.editTask(taskIndex) }>
+                        <i className="fas fa-pencil"></i>
+                      </button>
+                    </td>
+                    <td>
+                      <button className="btn btn-danger" onClick={ () => this.deleteTask(taskIndex) }>
+                        <i className="fas fa-xmark"></i>
+                      </button>
+                    </td>
+                    <td>
+                      <button className="btn btn-success" onClick={ () => this.selectTask(taskIndex) }>
+                        <i className="fas fa-check"></i>
+                      </button>
+                    </td>
+                    <td>
+                      <button className={`btn btn-${taskIndex == this.state.selectedTaskIndex?'success':'secondary'} w-100`} onClick={ () => this.viewTask(taskIndex) }>{task.name}</button>
+                    </td>
+                    <td>
+                      { ( task.severity > -1 ) && <i className={ severityIconPrefix + severityIcons[severities[task.severity]] }></i> }
+                    </td>
+                    <td>
+                      { task.dueDate && <>
+                        <span>{task.dueDate}</span>
+                        <button className="btn btn-secondary" onClick={ () => this.editDueDate(taskIndex) }>
+                          <i className="fa fa-calendar-days"></i>
+                        </button>
+                      </> }
+                    </td>
+                  </tr> )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>}
       { states[this.state.stateIndex] == "Break" &&
-        <div className="d-flex justify-content-center">
-          { /* Break timer here */ }
+        <div className="d-flex justify-content-center w-100 h-100">
+          <div className="d-flex flex-column justify-content-center w-100 h-100">
+            <h1 className="align-content-middle">
+              { /* Break timer here */ }
+            </h1>
+          </div>
         </div>}
       </>;
     }
